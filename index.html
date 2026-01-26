@@ -107,7 +107,14 @@
       width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;
       border-bottom:20px solid var(--btn);filter:drop-shadow(0 3px 6px rgba(0,0,0,.6));
       margin-top:-8px;
-    }
+    
+    /* Wheel legend */
+    .wheelLegend{width:100%;max-width:900px;display:grid;gap:8px}
+    .legendList{border:1px solid var(--line);border-radius:14px;background:#0c131c;padding:10px;max-height:180px;overflow:auto}
+    .legendItem{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);padding:4px 0;flex-wrap:wrap}
+    .legendBadge{min-width:34px;text-align:center;padding:2px 6px;border-radius:999px;border:1px solid var(--line);font-weight:900;color:#fff;background:#15202d}
+    @media (max-width:640px){ .legendList{max-height:220px} }
+}
 
     table{width:100%;border-collapse:collapse}
     th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
@@ -547,18 +554,22 @@ function drawWheel(ctx, segments, rotation=0){
     ctx.lineWidth=2;
     ctx.stroke();
 
+    // número da fatia (bem legível)
     const mid=(seg.start+seg.end)/2;
     ctx.save();
     ctx.rotate(mid);
     ctx.translate(radius*0.62,0);
     ctx.rotate(Math.PI/2);
+
     ctx.fillStyle="#e8f0fb";
-    ctx.font="900 12px system-ui";
-    const label = seg.race.name.length>18 ? seg.race.name.slice(0,18)+"…" : seg.race.name;
+    ctx.font="950 14px system-ui";
+    const label = String(i+1);
     ctx.fillText(label, -ctx.measureText(label).width/2, 0);
+
     ctx.restore();
   }
 
+  // centro
   ctx.beginPath();
   ctx.arc(0,0,radius*0.18,0,Math.PI*2);
   ctx.fillStyle="#0c131c";
@@ -574,6 +585,20 @@ function drawWheel(ctx, segments, rotation=0){
 
   ctx.restore();
 }
+
+
+
+function renderWheelLegend(segments){
+  const list = $("wheelLegendList");
+  if(!list) return;
+  list.innerHTML = segments.map((seg,i)=>{
+    const badge = `<span class="legendBadge">${i+1}</span>`;
+    const name = `<span>${escapeHTML(seg.race.name)}</span>`;
+    const perfect = seg.race.tier==="perfeita" ? `<span class="tag perfect" style="padding:2px 8px">PERFEITA</span>` : "";
+    return `<div class="legendItem">${badge}${name}${perfect}</div>`;
+  }).join("");
+}
+
 
 /* =========================
    Bonuses apply
@@ -1663,6 +1688,8 @@ function openWheelModal(playerId){
 
   const segments = buildWheelSegments(preferred);
 
+  renderWheelLegend(segments);
+
   const html = `
     <div class="overlay" id="ovWheel">
       <div class="modal">
@@ -1679,6 +1706,11 @@ function openWheelModal(playerId){
         <div class="wheelWrap">
           <div class="pointer"></div>
           <canvas id="wheelCanvas" width="560" height="560"></canvas>
+
+          <div class="wheelLegend">
+            <div class="muted mini">Legenda (número → raça)</div>
+            <div class="legendList" id="wheelLegendList"></div>
+          </div>
 
           <div class="row">
             <button id="btnSpin">Girar</button>
