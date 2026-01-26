@@ -333,15 +333,31 @@ function defaultDB(){
 
   // Desvantagens (Zomboid style) -> dão pontos extras
   const disadvantages = [
-  { id:"dv_fobia", name:"Fobia", points:{attr:+1, skillPicks:+1}, desc:"Você escolhe um medo forte. Pode atrapalhar em cenas tensas." },
+    { id:"dv_fobia", name:"Fobia", points:{attr:+1, skillPicks:+1}, desc:"Você escolhe um medo forte. Pode atrapalhar em cenas tensas." },
     { id:"dv_impulsivo", name:"Impulsivo", points:{attr:+1, skillPicks:+1}, desc:"Provocações te puxam. Decisões precipitadas (roleplay)." },
     { id:"dv_marcado", name:"Marcado pelo Véu", points:{attr:+2, skillPicks:+1}, desc:"Seu ‘sinal’ é mais visível — coisas te notam com facilidade." },
     { id:"dv_debito", name:"Dívida com a Guilda", points:{attr:+1, skillPicks:+2}, desc:"Um favor perigoso vai ser cobrado (o Mestre decide quando)." },
     { id:"dv_vozes", name:"Vozes na Cabeça", points:{attr:+2, skillPicks:+2}, desc:"Visões/lapsos em momentos de pressão (narrativo)." },
     { id:"dv_sem_sorte", name:"Sem Sorte", points:{attr:+1, skillPicks:+1}, desc:"1x por sessão o Mestre pode puxar um azar pequeno." },
-    { id:"dv_sono_inquieto", name:"Sono inquieto", points:{attr:+1, skillPicks:+1}, desc:"Seu descanso raramente é completo. O Mestre pode impor cansaço leve em cenas longas sem pausa (narrativo)." },
-    { id:"dv_miope", name:"Míope", points:{attr:+1, skillPicks:+1}, desc:"Sem correção adequada, detalhes à distância viram borrões. Pode afetar leitura/tiro/percepção em certas cenas." },
-    { id:"dv_preguica", name:"Preguiça", points:{attr:+1, skillPicks:+1}, desc:"Você tende a adiar esforço. Em situações de pressão, precisa de um empurrão (roleplay) para agir rápido." },
+
+    { id:"dv_sono", name:"Sono Inquieto", points:{attr:+1, skillPicks:+1}, desc:"Você dorme mal. Em cenas longas, o Mestre pode impor cansaço leve." },
+    { id:"dv_miope", name:"Míope", points:{attr:+1, skillPicks:+1}, desc:"Sem óculos/lente você sofre desvantagem em testes que dependem de visão à distância." },
+    { id:"dv_preguica", name:"Preguiçoso", points:{attr:+1, skillPicks:+2}, desc:"Tende a evitar esforço. O Mestre pode cobrar um custo narrativo quando você força o corpo." },
+    { id:"dv_ansiedade", name:"Ansiedade", points:{attr:+2, skillPicks:+1}, desc:"Pressão social ou risco aceleram seus pensamentos. Pode travar, gaguejar ou agir no impulso." },
+    { id:"dv_paranoia", name:"Paranoia", points:{attr:+1, skillPicks:+2}, desc:"Você desconfia de tudo. Ótimo pra notar coisas… péssimo pra confiar." },
+    { id:"dv_trauma", name:"Traumatizado", points:{attr:+2, skillPicks:+1}, desc:"Algo do passado volta em gatilhos. O Mestre escolhe quando isso pesa na cena." },
+    { id:"dv_medo_viloes", name:"Medo dos Vilões", points:{attr:+2, skillPicks:+1}, desc:"Quando um vilão importante aparece, você pode hesitar. Superável com roleplay/tempo." },
+
+    { id:"dv_teimoso", name:"Teimoso", points:{attr:+1, skillPicks:+1}, desc:"Muda de ideia com dificuldade. Discussões podem virar testes sociais (roleplay)." },
+    { id:"dv_sanguinario", name:"Sede de Sangue", points:{attr:+1, skillPicks:+2}, desc:"Em combate, você tende a exagerar. Pode gerar problemas depois." },
+    { id:"dv_orgulho", name:"Orgulhoso", points:{attr:+1, skillPicks:+1}, desc:"Você odeia perder. Pode aceitar desafios ruins só pra provar algo." },
+    { id:"dv_distracao", name:"Distraído", points:{attr:+1, skillPicks:+1}, desc:"Você perde detalhes óbvios quando está focado em outra coisa." },
+    { id:"dv_fobia_escuro", name:"Medo do Escuro", points:{attr:+1, skillPicks:+1}, desc:"No escuro total você fica tenso. O Mestre pode impor penalidades leves." },
+    { id:"dv_enjoo", name:"Enjoa Fácil", points:{attr:+1, skillPicks:+1}, desc:"Viagens longas, barcos, montarias… você sofre com enjoo (narrativo)." },
+    { id:"dv_codigo", name:"Código Moral", points:{attr:+1, skillPicks:+1}, desc:"Você tem limites que não cruza. Isso pode te colocar em risco." },
+    { id:"dv_alvo", name:"Alvo Marcado", points:{attr:+2, skillPicks:+1}, desc:"Alguém te caça/observa. Pode aparecer em momentos críticos (narrativo)." },
+    { id:"dv_voto", name:"Voto / Juramento", points:{attr:+1, skillPicks:+2}, desc:"Você jurou algo difícil. Quebrar tem consequência real na história." },
+    { id:"dv_instavel", name:"Instável no Véu", points:{attr:+2, skillPicks:+2}, desc:"Quando o Véu vibra, você vibra junto. Pode causar efeitos estranhos sem querer." },
   ];
 
   return {
@@ -365,7 +381,11 @@ function defaultDB(){
           attrs: mkAttrsZero(),
           skills: mkSkillsZero(),
           disadvantages: [],
-          pools: { attrBase: 10, skillPicksBase: 8 } // skill picks: cada pick = +4 em uma perícia
+          pools: { attrBase: 10, skillPicksBase: 8 },
+          levelSeen: 1,
+          levelAttrBonus: 0,
+          abilities: [],
+          currentStats: { vida: 0, defesa: 0, velocidade: 0, foco: 0 } // skill picks: cada pick = +4 em uma perícia
         },
         log: [{ts: Date.now(), text:"Conta criada. Primeiro login libera criação."}]
       }
@@ -449,12 +469,23 @@ let DB = loadDB();
   for(const p of DB.players){
     if(!p.character || typeof p.character !== "object"){ p.character = {}; changed = true; }
     const c = p.character;
+  const lvl = levelFromXp(p.xp);
+  const xpStart = (lvl-1)*100;
+  const xpNext = lvl*100;
+  const xpPct = clamp(Math.round((Number(p.xp||0)-xpStart)/100*100),0,100);
+  const abilitySlots = Math.floor(lvl/5);
 
     if(typeof c.bonusesApplied !== "boolean"){ c.bonusesApplied = false; changed = true; }
     if(!c.attrs || typeof c.attrs !== "object"){ c.attrs = mkAttrsZero(); changed = true; }
     if(!c.skills || typeof c.skills !== "object"){ c.skills = mkSkillsZero(); changed = true; }
     if(!Array.isArray(c.disadvantages)){ c.disadvantages = []; changed = true; }
     if(!c.pools || typeof c.pools !== "object"){ c.pools = { attrBase:10, skillPicksBase:8 }; changed = true; }
+    if(typeof c.levelSeen !== "number"){ c.levelSeen = 1; changed = true; }
+    if(typeof c.levelAttrBonus !== "number"){ c.levelAttrBonus = 0; changed = true; }
+    if(!Array.isArray(c.abilities)){ c.abilities = []; changed = true; }
+    if(!c.currentStats || typeof c.currentStats !== "object"){
+      c.currentStats = { vida:0, defesa:0, velocidade:0, foco:0 }; changed = true;
+    }
 
     if(!c.preferredRaceId){ c.preferredRaceId = "human_veil"; changed = true; }
     if(!c.classId){ c.classId = "cls1"; changed = true; }
@@ -466,6 +497,14 @@ let DB = loadDB();
     if(typeof p.characterCreated !== "boolean"){ p.characterCreated = false; changed = true; }
     if(!Number.isFinite(Number(p.xp))) { p.xp = 0; changed = true; }
   }
+  // garantir que usuários "player" tenham playerId (evita tela vazia após login)
+  for(const u of DB.users){
+    if(u && u.role==="player" && !u.playerId){
+      const p = DB.players.find(pp=>pp.username===u.username);
+      if(p){ u.playerId = p.id; changed = true; }
+    }
+  }
+
 
   if(changed) saveDB(DB);
 })();
@@ -519,7 +558,7 @@ function disadvBonus(player){
 }
 function totalAttrPoints(player){
   const base = player.character.pools?.attrBase ?? 10;
-  return base + disadvBonus(player).attr;
+  return base + disadvBonus(player).attr + Number(player.character.levelAttrBonus||0);
 }
 function totalSkillPicks(player){
   const base = player.character.pools?.skillPicksBase ?? 8;
@@ -535,6 +574,43 @@ function spentSkillPicks(player){
   let picks=0;
   for(const k of SKILL_KEYS) picks += Math.floor(Number(player.character.skills?.[k]||0)/4);
   return picks;
+}
+
+
+/* =========================
+   XP / Level (100 XP por level)
+========================= */
+function levelFromXp(xp){
+  const v = Math.max(0, Number(xp||0));
+  return Math.floor(v/100) + 1; // 0-99 => lvl1, 100-199 => lvl2 ...
+}
+function ensureLevelState(player){
+  const c = player.character;
+  if(typeof c.levelSeen !== "number") c.levelSeen = 1;
+  if(typeof c.levelAttrBonus !== "number") c.levelAttrBonus = 0;
+  if(!Array.isArray(c.abilities)) c.abilities = [];
+  if(!c.currentStats || typeof c.currentStats !== "object") c.currentStats = { vida:0, defesa:0, velocidade:0, foco:0 };
+}
+function applyXpDelta(player, delta, reason){
+  const d = Number(delta);
+  if(!Number.isFinite(d)) return;
+  player.xp = Math.max(0, Number(player.xp||0) + d);
+
+  ensureLevelState(player);
+  const newLevel = levelFromXp(player.xp);
+  const oldLevel = Math.max(1, Number(player.character.levelSeen||1));
+
+  if(newLevel > oldLevel){
+    const diff = newLevel - oldLevel;
+    player.character.levelAttrBonus = Number(player.character.levelAttrBonus||0) + diff*3; // +3 pontos por level
+    player.log.unshift({ts:Date.now(), text:`Up! Level ${oldLevel} → ${newLevel} (+${diff*3} pontos de Atributo)`});
+  }
+  player.character.levelSeen = newLevel;
+
+  if(reason){
+    player.log.unshift({ts:Date.now(), text:`XP ${d>=0?"+":""}${d} — ${reason}`});
+  }
+  saveDB(DB);
 }
 
 /* =========================
@@ -733,7 +809,11 @@ function masterCreatePlayerLogin(displayName, username, password){
       attrs: mkAttrsZero(),
       skills: mkSkillsZero(),
       disadvantages: [],
-      pools: { attrBase: 10, skillPicksBase: 8 }
+      pools: { attrBase: 10, skillPicksBase: 8 },
+          levelSeen: 1,
+          levelAttrBonus: 0,
+          abilities: [],
+          currentStats: { vida: 0, defesa: 0, velocidade: 0, foco: 0 }
     },
     log: [{ts:Date.now(), text:"Conta criada pelo Mestre. Primeiro login libera criação."}]
   });
@@ -807,7 +887,19 @@ function render(){
   if(!user) return;
 
   if(user.role==="master") renderMaster();
-  else renderPlayer(user.playerId);
+  else {
+    // Alguns navegadores podem ficar com DB antigo sem playerId. Tentamos recuperar.
+    let pid = user.playerId || (DB.players.find(p=>p.username===user.username)?.id);
+    if(!pid && DB.players.length===1) pid = DB.players[0].id;
+    if(pid && user.playerId!==pid){ user.playerId = pid; saveDB(DB); }
+    if(!pid){
+      const main = $("mainPanel"); const side = $("sidePanel");
+      if(main) main.innerHTML = `<div class="warn"><b>Erro:</b> não achei seu Player no banco local. Clique em <b>Resetar dados</b> e tente novamente.</div>`;
+      if(side) side.innerHTML = "";
+      return;
+    }
+    renderPlayer(pid);
+  }
 }
 
 function renderMaster(){
@@ -1074,9 +1166,35 @@ function openPlayerModal(pid){
    Player UI
 ========================= */
 function renderPlayer(playerId){
-  const p = getPlayer(playerId);
+  // Robust resolve: some saves may have user.playerId vazio; tentamos achar pelo username também
+  let p = getPlayer(playerId);
   const main = $("mainPanel");
   const side = $("sidePanel");
+
+  if(!p){
+    const u = findUserBySession();
+    const uname = String(u?.username||"").trim().toLowerCase();
+    p = DB.players.find(pp=>String(pp.username||"").trim().toLowerCase()===uname) || null;
+
+    // se achou, tenta re-sincronizar o user.playerId pra não quebrar de novo
+    if(p && u){
+      const uu = DB.users.find(x=>x.id===u.id);
+      if(uu && uu.role==="player" && !uu.playerId) uu.playerId = p.id;
+      saveDB(DB);
+    }
+  }
+
+  if(!p){
+    main.innerHTML = `
+      <h2 style="margin:0 0 6px 0;font-size:16px">Player</h2>
+      <div class="warn">Não consegui encontrar seu personagem no banco (playerId ausente). Clique em <b>Resetar dados</b> e faça login de novo.</div>
+    `;
+    side.innerHTML = `
+      <h3 style="margin:0 0 8px 0;font-size:14px">Diagnóstico</h3>
+      <div class="muted">Sessão está logada, mas não existe um registro de player correspondente.</div>
+    `;
+    return;
+  }
 
   if(!p.characterCreated){
     renderCharacterCreator(p);
@@ -1095,9 +1213,34 @@ function renderPlayer(playerId){
     return;
   }
 
+  const c = p.character || {};
+  // XP/Level: lvl 1 = 0-99xp, lvl 2 = 100-199xp, etc (100xp por nível)
+  const lvl = levelFromXp(Number(p.xp||0));
+  const xpStart = (lvl-1)*100;
+  const xpNext = lvl*100;
+  const xpPct = clamp(Math.round((Number(p.xp||0)-xpStart)/100*100), 0, 100);
+  const abilitySlots = Math.floor(lvl/5);
   const race = getRace(p.character.finalRaceId);
   const cls = getClass(p.character.classId);
   const d = calcDerived(p);
+  // stats atuais (ajustáveis pelo player)
+  const cur = p.character.currentStats || {vida:0,defesa:0,velocidade:0,foco:0};
+  if(!p.character.currentStats) p.character.currentStats = cur;
+
+  // ao FINALIZAR (ou se o DB estiver zerado), sincroniza com o máximo
+  if(p.characterCreated && (!cur.vida && !cur.defesa && !cur.velocidade && !cur.foco)){
+    cur.vida = d.vida;
+    cur.defesa = d.defesa;
+    cur.velocidade = d.velocidade;
+    cur.foco = d.foco;
+    saveDB(DB);
+  }
+
+  // nunca passa do máximo
+  cur.vida = clamp(Number(cur.vida||0), 0, d.vida);
+  cur.defesa = clamp(Number(cur.defesa||0), 0, d.defesa);
+  cur.velocidade = clamp(Number(cur.velocidade||0), 0, d.velocidade);
+  cur.foco = clamp(Number(cur.foco||0), 0, d.foco);
 
   main.innerHTML = `
     <h2 style="margin:0 0 6px 0;font-size:16px">Ficha do Player</h2>
@@ -1122,21 +1265,86 @@ function renderPlayer(playerId){
         </div>
       </div>
 
-      <span class="pill">XP: <b>${p.xp}</b></span>
+      <div style="width:100%">
+  <div class="row" style="justify-content:space-between">
+    <span class="pill">Level: <b>${lvl}</b> • XP: <b>${p.xp}</b> / ${xpNext}</span>
+    <span class="pill">Atributos bônus do Level: <b>${Number(c.levelAttrBonus||0)}</b></span>
+  </div>
+  <div class="kpiBar" style="margin-top:10px"><div style="width:${xpPct}%"></div></div>
+  <div class="row" style="margin-top:10px">
+    <div style="flex:1;min-width:180px">
+      <label class="mini">Adicionar/Remover XP (players podem)</label>
+      <input id="xpDelta" type="number" value="50" />
+    </div>
+    <div style="flex:2;min-width:220px">
+      <label class="mini">Motivo (opcional)</label>
+      <input id="xpReason" placeholder="ex: missão, combate, roleplay"/>
+    </div>
+    <div style="min-width:160px;align-self:end">
+      <button class="secondary" data-action="apply_xp">Aplicar XP</button>
+    </div>
+  </div>
+</div>
     </div>
 
     <div class="divider"></div>
 
     <div class="kpiGrid">
-      ${renderKpi("Vida", d.vida, d.pctVida, "var(--red)")}
-      ${renderKpi("Defesa", d.defesa, d.pctDef, "var(--gold)")}
-      ${renderKpi("Velocidade", d.velocidade, d.pctVel, "var(--cyan)")}
-      ${renderKpi("Foco do Véu", d.foco, d.pctFoco, "var(--violet)")}
+      ${renderKpi("Vida","vida", cur.vida, d.vida)}
+      ${renderKpi("Defesa","defesa", cur.defesa, d.defesa)}
+      ${renderKpi("Velocidade","velocidade", cur.velocidade, d.velocidade)}
+      ${renderKpi("Foco do Véu","foco", cur.foco, d.foco)}
     </div>
 
     <div class="divider"></div>
 
+    <div class="card" style="padding:14px;background:#0c131c">
+      <h3 style="margin:0 0 6px 0;font-size:14px">Habilidades (a cada 5 níveis)</h3>
+      <p class="muted" style="margin:0 0 10px 0">
+        Você libera <b>${abilitySlots}</b> espaço(s) de habilidade (lvl 5, 10, 15...). 
+        Ideia: você cria habilidades “livres” com bom senso e o Mestre valida na mesa.
+      </p>
+      <div class="row" style="justify-content:space-between">
+        <span class="pill">Usadas: <b>${(c.abilities||[]).length}</b> / ${abilitySlots}</span>
+        <span class="pill">Dica: escreva curto e claro</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <div style="flex:1;min-width:200px">
+          <label class="mini">Nome da habilidade</label>
+          <input id="abName" placeholder="ex: Corte do Véu"/>
+        </div>
+        <div style="flex:2;min-width:240px">
+          <label class="mini">Descrição / efeito (curta)</label>
+          <input id="abDesc" placeholder="ex: 1x por combate, você..."/>
+        </div>
+        <div style="min-width:160px;align-self:end">
+          <button class="secondary" data-action="add_ability" ${(c.abilities||[]).length >= abilitySlots ? "disabled" : ""}>Adicionar</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        ${(c.abilities||[]).length===0 ? `<p class="muted">Nenhuma habilidade criada ainda.</p>` : `
+          <table>
+            <thead><tr><th>Nome</th><th>Descrição</th><th class="right">Ações</th></tr></thead>
+            <tbody>
+              ${(c.abilities||[]).map(ab=>`
+                <tr>
+                  <td><b>${escapeHTML(ab.name)}</b><div class="muted mini">${new Date(ab.ts).toLocaleString()}</div></td>
+                  <td class="muted">${escapeHTML(ab.desc)}</td>
+                  <td class="right"><button class="danger mini" data-action="del_ability" data-ab="${ab.id}">Remover</button></td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `}
+      </div>
+    </div>
+
     <div class="grid" style="grid-template-columns:1fr;gap:12px">
+
       <div class="card" style="background:#0c131c">
         <div class="row" style="justify-content:space-between">
           <b>Buffs da Raça</b>
@@ -1213,12 +1421,22 @@ function renderPlayer(playerId){
   };
 }
 
-function renderKpi(title, value, pct, color){
+function renderKpi(title, key, current, max){
+  const cur = clamp(Math.round(Number(current||0)), 0, Math.round(Number(max||0) || 0));
+  const mx = Math.max(1, Math.round(Number(max||0) || 1));
+  const pct = clamp(Math.round(cur/mx*100), 0, 100);
+
   return `
     <div class="kpiBox">
-      <div class="kpiTitle"><b>${escapeHTML(title)}</b><span class="kpiValue">${value}</span></div>
-      <div class="kpiBar"><div style="width:${pct}%;background:${color}"></div></div>
-      <div class="muted mini" style="margin-top:8px">${pct}%</div>
+      <div class="kpiTitle">
+        <b>${escapeHTML(title)}</b>
+        <span class="muted mini"><b>${cur}</b> / ${mx}</span>
+      </div>
+      <div class="kpiBar"><div style="width:${pct}%"></div></div>
+      <div class="row" style="margin-top:10px;justify-content:flex-end">
+        <button class="secondary mini" data-action="stat_dec" data-stat="${key}">-</button>
+        <button class="secondary mini" data-action="stat_inc" data-stat="${key}">+</button>
+      </div>
     </div>
   `;
 }
@@ -1314,8 +1532,8 @@ function renderCharacterCreator(player){
     <div class="divider"></div>
 
     <div class="row" style="justify-content:flex-end">
-      <button class="secondary" id="btnPreview">Ver resumo</button>
-      <button id="btnConfirm" ${attrLeft<0 || skillPicksLeft<0 ? "disabled":""}>Finalizar criação</button>
+      <button class="secondary" id="btnOpenSummary">Ver resumo</button>
+      <button id="btnFinalizeCreation" ${attrLeft<0 || skillPicksLeft<0 ? "disabled":""}>Finalizar criação</button>
     </div>
 
     ${(attrLeft<0 || skillPicksLeft<0) ? `<div class="warn" style="margin-top:12px"><b class="bad">Você passou do limite de pontos.</b> Ajuste antes de finalizar.</div>` : ``}
@@ -1347,13 +1565,16 @@ function renderCharacterCreator(player){
     saveDB(DB);
   };
 
-  $("btnPreview").onclick = ()=>openCreationSummary(player.id, true);
-  $("btnConfirm").onclick = ()=>{
+  $("btnOpenSummary").onclick = ()=>openCreationSummary(player.id, false);
+  $("btnFinalizeCreation").onclick = ()=>{
     const p2 = getPlayer(player.id);
     if(spentAttrPoints(p2) > totalAttrPoints(p2)){ alert("Atributos acima do limite."); return; }
     if(spentSkillPicks(p2) > totalSkillPicks(p2)){ alert("Perícias acima do limite."); return; }
-    openCreationSummary(player.id, true);
+    finalizeCreation(player.id);
   };
+  // mantém a aba atual depois de qualquer alteração
+  setActiveTab(UI.activeTab);
+
 }
 
 function renderRaceTab(playerId){
@@ -1662,6 +1883,7 @@ function renderDisadvTab(playerId){
 function openCreationSummary(playerId, isPreview=false){
   const player = getPlayer(playerId);
   if(!player) return;
+  ensureLevelState(player);
 
   const prefRace = getRace(player.character.preferredRaceId);
   const cls = getClass(player.character.classId);
@@ -1689,7 +1911,7 @@ function openCreationSummary(playerId, isPreview=false){
           </div>
           <div class="row">
             <button class="secondary" id="btnCloseModal">Fechar</button>
-            <button id="btnFinalize" style="min-width:170px">Finalizar</button>
+            <button id="btnModalFinalize" style="min-width:170px">Finalizar</button>
           </div>
         </div>
 
@@ -1737,7 +1959,7 @@ function openCreationSummary(playerId, isPreview=false){
 
   $("btnCloseModal").onclick = close;
 
-  const btnFinalize = $("btnFinalize");
+  const btnFinalize = $("btnModalFinalize");
   if(btnFinalize){
     btnFinalize.onclick = ()=>{
       if(spentAttrPoints(player) > totalAttrPoints(player) || spentSkillPicks(player) > totalSkillPicks(player)){
@@ -1760,6 +1982,43 @@ function openCreationSummary(playerId, isPreview=false){
       toast("Criação finalizada! Abrindo o resumo…", true);
     };
   }
+}
+
+function finalizeCreation(playerId){
+  const p = getPlayer(playerId);
+  if(!p) return;
+
+  // valida pontos
+  if(spentAttrPoints(p) > totalAttrPoints(p)){ alert("Atributos acima do limite."); return; }
+  if(spentSkillPicks(p) > totalSkillPicks(p)){ alert("Perícias acima do limite."); return; }
+
+  // precisa ter raça e classe escolhidas
+  const race = getRace(p.character.preferredRaceId) || getRace(p.character.finalRaceId) || DB.races?.[0];
+  const cls  = getClass(p.character.classId) || DB.classes?.[0];
+  if(!race || !cls){ alert("Escolha uma raça e uma classe."); return; }
+
+  // aplica bônus só 1x
+  if(!p.character.bonusesApplied){
+    applyBonusesToSheet(p, race, cls);
+  }
+
+  // fixa raça final (se ainda não fixou)
+  if(!p.character.finalRaceId) p.character.finalRaceId = race.id;
+
+  // marca como criado
+  p.characterCreated = true;
+  p.log.unshift({ts:Date.now(), text:"Personagem finalizado."});
+  saveDB(DB);
+
+  // renderiza a ficha final
+  UI.activeTab = "tabDashboard";
+  try{
+    render();
+  }catch(err){
+    console.error("Erro ao renderizar ficha final, recarregando…", err);
+    location.reload();
+  }
+  toast("Personagem finalizado! ✅", true);
 }
 
 function openWheelModal(playerId){
@@ -1874,6 +2133,24 @@ function showWheelResult(playerId, race){
     : `<span class="tag">padrão</span>`;
 
   const d = calcDerived(p);
+  // stats atuais (ajustáveis pelo player)
+  const cur = p.character.currentStats || {vida:0,defesa:0,velocidade:0,foco:0};
+  if(!p.character.currentStats) p.character.currentStats = cur;
+
+  // ao FINALIZAR (ou se o DB estiver zerado), sincroniza com o máximo
+  if(p.characterCreated && (!cur.vida && !cur.defesa && !cur.velocidade && !cur.foco)){
+    cur.vida = d.vida;
+    cur.defesa = d.defesa;
+    cur.velocidade = d.velocidade;
+    cur.foco = d.foco;
+    saveDB(DB);
+  }
+
+  // nunca passa do máximo
+  cur.vida = clamp(Number(cur.vida||0), 0, d.vida);
+  cur.defesa = clamp(Number(cur.defesa||0), 0, d.defesa);
+  cur.velocidade = clamp(Number(cur.velocidade||0), 0, d.velocidade);
+  cur.foco = clamp(Number(cur.foco||0), 0, d.foco);
 
   result.innerHTML = `
     <div class="row" style="justify-content:space-between">
@@ -1966,8 +2243,108 @@ function render(){
   if(!user) return;
 
   if(user.role==="master") renderMaster();
-  else renderPlayer(user.playerId);
+  else {
+    // Alguns navegadores podem ficar com DB antigo sem playerId. Tentamos recuperar.
+    let pid = user.playerId || (DB.players.find(p=>p.username===user.username)?.id);
+    if(!pid && DB.players.length===1) pid = DB.players[0].id;
+    if(pid && user.playerId!==pid){ user.playerId = pid; saveDB(DB); }
+    if(!pid){
+      const main = $("mainPanel"); const side = $("sidePanel");
+      if(main) main.innerHTML = `<div class="warn"><b>Erro:</b> não achei seu Player no banco local. Clique em <b>Resetar dados</b> e tente novamente.</div>`;
+      if(side) side.innerHTML = "";
+      return;
+    }
+    renderPlayer(pid);
+  }
 }
+
+
+/* =========================
+   
+/* =========================
+   Safety: prevent form submit / page reload on buttons
+   (evita bug de voltar para aba Raças / resetar UI)
+========================= */
+document.addEventListener("submit", (e)=>{ e.preventDefault(); }, true);
+
+// Garante que todo <button> seja tratado como type="button"
+document.addEventListener("click", (e)=>{
+  const b = e.target.closest && e.target.closest("button");
+  if(!b) return;
+  if(!b.hasAttribute("type")) b.setAttribute("type","button");
+  // alguns browsers deixam como submit; força button
+  if(String(b.getAttribute("type")).toLowerCase()==="submit") b.setAttribute("type","button");
+}, true);
+
+/* =========================
+   Delegation (ações extras do Player)
+========================= */
+document.addEventListener("click", (e)=>{
+  const btn = e.target.closest("[data-action]");
+  if(!btn) return;
+
+  const action = btn.dataset.action;
+  const user = findUserBySession();
+  if(!user || user.role!=="player") return;
+
+  const p = getPlayer(user.playerId);
+  if(!p) return;
+  ensureLevelState(p);
+
+  if(action==="apply_xp"){
+    const delta = Number($("xpDelta")?.value || 0);
+    const reason = String($("xpReason")?.value || "").trim();
+    applyXpDelta(p, delta, reason);
+    toast("XP aplicado!", true);
+    render();
+    return;
+  }
+
+  if(action==="stat_inc" || action==="stat_dec"){
+    const stat = btn.dataset.stat;
+    const d = calcDerived(p);
+    const maxMap = {vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco};
+    const step = (stat==="vida" || stat==="foco") ? 5 : 1;
+    const cur = p.character.currentStats || (p.character.currentStats = {vida:0,defesa:0,velocidade:0,foco:0});
+    const sign = (action==="stat_inc") ? +1 : -1;
+    cur[stat] = clamp(Number(cur[stat]||0) + sign*step, 0, maxMap[stat]||0);
+    saveDB(DB);
+    render();
+    return;
+  }
+
+  if(action==="add_ability"){
+    const lvl = levelFromXp(p.xp);
+    const slots = Math.floor(lvl/5);
+    const arr = p.character.abilities || (p.character.abilities = []);
+    if(arr.length >= slots){
+      toast("Você precisa de lvl 5/10/15... para liberar mais slots.", false);
+      return;
+    }
+    const name = String($("abName")?.value || "").trim();
+    const desc = String($("abDesc")?.value || "").trim();
+    if(!name || !desc){
+      toast("Preencha nome e descrição da habilidade.", false);
+      return;
+    }
+    arr.unshift({ id:"ab_"+Math.random().toString(16).slice(2,8), name, desc, ts:Date.now() });
+    p.log.unshift({ts:Date.now(), text:`Habilidade criada: ${name}`});
+    saveDB(DB);
+    render();
+    return;
+  }
+
+  if(action==="del_ability"){
+    const id = btn.dataset.ab;
+    const arr = p.character.abilities || [];
+    const ab = arr.find(x=>x.id===id);
+    p.character.abilities = arr.filter(x=>x.id!==id);
+    p.log.unshift({ts:Date.now(), text:`Habilidade removida: ${ab?.name||"—"}`});
+    saveDB(DB);
+    render();
+    return;
+  }
+});
 
 render();
 </script>
