@@ -836,33 +836,12 @@ function bindDashboardStatButtons(){
     if(!p.character.currentStats || typeof p.character.currentStats !== "object") p.character.currentStats = {};
 
     const derived = calcDerived(p);
+    const base = (stat in p.character.currentStats)
+      ? Number(p.character.currentStats[stat]||0)
+      : Number(derived[stat]||0);
 
-    // Garante baseStats e currentStats
-    if(!p.character.baseStats || typeof p.character.baseStats !== "object"){
-      p.character.baseStats = { vida:derived.vida, defesa:derived.defesa, velocidade:derived.velocidade, foco:derived.foco };
-    }
-    if(!p.character.currentStats || typeof p.character.currentStats !== "object"){
-      p.character.currentStats = { vida:p.character.baseStats.vida, defesa:p.character.baseStats.defesa, velocidade:p.character.baseStats.velocidade, foco:p.character.baseStats.foco };
-    }
-
-    const baseVal = Number(p.character.baseStats[stat] ?? derived[stat] ?? 0);
-    const curVal  = Number(p.character.currentStats[stat] ?? baseVal);
-
-    // Aqui o botão funciona como "distribuição/ajuste de máximo":
-    // - mexe no baseStats (Ref.)
-    // - e acompanha o currentStats junto (fica cheio quando aumenta; quando diminui, clampa)
-    const nextBase = Math.max(0, baseVal + dir*step);
-    p.character.baseStats[stat] = nextBase;
-
-    let nextCur = curVal;
-    if(dir > 0){
-      // ao aumentar, enche junto
-      nextCur = nextBase;
-    } else {
-      // ao reduzir, não pode ficar maior que o base
-      nextCur = Math.min(curVal, nextBase);
-    }
-    p.character.currentStats[stat] = Math.max(0, nextCur);
+    const next = Math.max(0, base + dir*step);
+    p.character.currentStats[stat] = next;
 
     saveDB(DB);
     render();
@@ -1334,45 +1313,66 @@ function renderPlayer(playerId){
   const race = getRace(p.character.finalRaceId);
   const cls = getClass(p.character.classId);
   const d = calcDerived(p);
+  // stats atuais do dashboard (persistem no player)
+  ensureLevelState(p);
+  let __statsChanged = false;
 
-  // baseStats = "máximo/base" (barra usa como referência).
-  // Se não existir, usa os derivados atuais como ponto de partida.
-  if(!p.character.baseStats || typeof p.character.baseStats !== "object"){
-    p.character.baseStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco };
-  } else {
-    // garante números e chaves
-    p.character.baseStats.vida = Math.max(0, Number(p.character.baseStats.vida ?? d.vida));
-    p.character.baseStats.defesa = Math.max(0, Number(p.character.baseStats.defesa ?? d.defesa));
-    p.character.baseStats.velocidade = Math.max(0, Number(p.character.baseStats.velocidade ?? d.velocidade));
-    p.character.baseStats.foco = Math.max(0, Number(p.character.baseStats.foco ?? d.foco));
-  }
+  // referência (base) do derivado anterior para manter vínculo quando a ficha muda (level/atributos/perícias/bônus)
+  const last = p.character.lastDerivedStats && typeof p.character.lastDerivedStats === "object"
+    ? p.character.lastDerivedStats
+    : null;
 
-  // currentStats = valor atual (pode cair durante jogo). Se não existir, começa cheio no baseStats.
-  if(!p.character.currentStats || typeof p.character.currentStats !== "object"){
-    p.character.currentStats = { 
-      vida:p.character.baseStats.vida, 
-      defesa:p.character.baseStats.defesa, 
-      velocidade:p.character.baseStats.velocidade, 
-      foco:p.character.baseStats.foco 
-    };
+  if(!p.character.currentStats){
+    // começa cheio com os valores derivados da ficha
+    p.character.currentStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco };
+    __statsChanged = true;
   } else {
     const cur0 = p.character.currentStats;
-    if(!Number.isFinite(Number(cur0.vida))) cur0.vida = p.character.baseStats.vida;
-    if(!Number.isFinite(Number(cur0.defesa))) cur0.defesa = p.character.baseStats.defesa;
-    if(!Number.isFinite(Number(cur0.velocidade))) cur0.velocidade = p.character.baseStats.velocidade;
-    if(!Number.isFinite(Number(cur0.foco))) cur0.foco = p.character.baseStats.foco;
 
+    // se faltar/virar inválido, volta pro derivado atual como base
+    if(!Number.isFinite(Number(cur0.vida))) cur0.vida = d.vida;
+    if(!Number.isFinite(Number(cur0.defesa))) cur0.defesa = d.defesa;
+    if(!Number.isFinite(Number(cur0.velocidade))) cur0.velocidade = d.velocidade;
+    if(!Number.isFinite(Number(cur0.foco))) cur0.foco = d.foco;
+
+    // nunca deixa negativo
     cur0.vida = Math.max(0, Number(cur0.vida));
     cur0.defesa = Math.max(0, Number(cur0.defesa));
     cur0.velocidade = Math.max(0, Number(cur0.velocidade));
     cur0.foco = Math.max(0, Number(cur0.foco));
+    __statsChanged = true;
+
+    // Se o derivado mudou (ex: upou nível e gastou pontos), ajusta o atual junto pra manter o "vínculo"
+    if(last){
+      const keys = ["vida","defesa","velocidade","foco"];
+      for(const k of keys){
+        const oldMax = Number(last[k]||0);
+        const newMax = Number(d[k]||0);
+        if(Number.isFinite(oldMax) && Number.isFinite(newMax)){
+          const delta = newMax - oldMax;
+          if(delta !== 0){
+            cur0[k] = clamp(Number(cur0[k]) + delta, 0, newMax);
+            __statsChanged = true;
+          } else {
+            cur0[k] = clamp(Number(cur0[k]), 0, newMax);
+            __statsChanged = true;
+          }
+        }
+      }
+    } else {
+      // sem histórico: só garante que não passa do derivado atual
+      cur0.vida = clamp(cur0.vida, 0, d.vida);
+      cur0.defesa = clamp(cur0.defesa, 0, d.defesa);
+      cur0.velocidade = clamp(cur0.velocidade, 0, d.velocidade);
+      cur0.foco = clamp(cur0.foco, 0, d.foco);
+      __statsChanged = true;
+    }
   }
 
-  // clamp: current não pode passar do base
-  p.character.currentStats.vida = clamp(Number(p.character.currentStats.vida), 0, Number(p.character.baseStats.vida));
-  p.character.currentStats.defesa = clamp(Number(p.character.currentStats.defesa), 0, Number(p.character.baseStats.defesa));
-  p.character.currentStats.velocidade = clamp(Number(p.character.currentStats.velocidade), 0, Number(p.character.baseStats.velocidade));
-  p.character.currentStats.foco = clamp(Number(p.character.currentStats.foco), 0, Number(p.character.baseStats.foco));
+  // atualiza a referência do derivado para próximas mudanças
+  p.character.lastDerivedStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco };
+
+  if(__statsChanged){ saveDB(DB); DB = loadDB(); }
 
   const cur = p.character.currentStats;
 
@@ -1424,10 +1424,10 @@ main.innerHTML = `
     <div class="divider"></div>
 
     <div class="kpiGrid">
-      ${renderKpi("Vida","vida", cur.vida, p.character.baseStats?.vida ?? d.vida)}
-      ${renderKpi("Defesa","defesa", cur.defesa, p.character.baseStats?.defesa ?? d.defesa)}
-      ${renderKpi("Velocidade","velocidade", cur.velocidade, p.character.baseStats?.velocidade ?? d.velocidade)}
-      ${renderKpi("Foco do Véu","foco", cur.foco, p.character.baseStats?.foco ?? d.foco)}
+      ${renderKpi("Vida","vida", cur.vida, d.vida)}
+      ${renderKpi("Defesa","defesa", cur.defesa, d.defesa)}
+      ${renderKpi("Velocidade","velocidade", cur.velocidade, d.velocidade)}
+      ${renderKpi("Foco do Véu","foco", cur.foco, d.foco)}
     </div>
 
     <div class="divider"></div>
@@ -1609,30 +1609,30 @@ main.innerHTML = `
   };
 }
 
-function renderKpi(title, stat, curVal, refVal){
-  const cur = Number(curVal ?? 0);
-  const ref = Math.max(1, Number(refVal ?? 0));
-  const pct = clamp(Math.round((cur / ref) * 100), 0, 100);
+function renderKpi(title, id, value, max){
+  const safeMax = Number.isFinite(Number(max)) ? Number(max) : 0;
+  const safeVal = Number.isFinite(Number(value)) ? Number(value) : 0;
+  const pct = safeMax>0 ? clamp(Math.round((safeVal/safeMax)*100), 0, 100) : 0;
 
   return `
     <div class="kpiBox">
       <div class="kpiTitle">
         <b>${title}</b>
-        <span class="pill mini">Ref.: ${refVal}</span>
+        <span class="pill mini">Ref.: ${safeMax}</span>
       </div>
 
       <div class="row" style="justify-content:space-between;margin-top:6px">
-        <div class="kpiValue"><span id="${stat}Val">${cur}</span></div>
+        <div class="kpiValue"><span id="${id}Val">${safeVal}</span></div>
         <div class="row" style="gap:6px">
-          <button type="button" class="secondary mini" data-stat="${stat}" data-step="5">-5</button>
-          <button type="button" class="secondary mini" data-stat="${stat}" data-step="1">-1</button>
-          <button type="button" class="secondary mini" data-stat="${stat}" data-step="1">+1</button>
-          <button type="button" class="secondary mini" data-stat="${stat}" data-step="5">+5</button>
+          <button type="button" class="secondary mini" data-stat="${id}" data-step="5">-5</button>
+          <button type="button" class="secondary mini" data-stat="${id}" data-step="1">-1</button>
+          <button type="button" class="secondary mini" data-stat="${id}" data-step="1">+1</button>
+          <button type="button" class="secondary mini" data-stat="${id}" data-step="5">+5</button>
         </div>
       </div>
 
-      <div class="kpiBar" title="${cur} / ${refVal}">
-        <div id="${stat}Fill" style="width:${pct}%"></div>
+      <div class="kpiBar" title="${safeVal} / ${safeMax}">
+        <div id="${id}Fill" style="width:${pct}%"></div>
       </div>
     </div>
   `;
@@ -2203,46 +2203,14 @@ function finalizeCreation(playerId){
   if(!p.character.finalRaceId) p.character.finalRaceId = race.id;
 
   // marca como criado
-  
-  // Define os status base (Vida/Defesa/Velocidade/Foco) ao finalizar a criação
-  // baseStats = "máximo/base" (o que a barra usa como referência)
-  // currentStats = valor atual (pode cair em combate, etc.)
-  // IMPORTANTE: na primeira finalização, a ficha começa "cheia" (current = base).
-  const derivedNow = calcDerived(p);
-
-  // Sempre recalcula o BASE a partir dos atributos/perícias finais no momento da finalização
-  p.character.baseStats = {
-    vida: Number(derivedNow.vida ?? 0),
-    defesa: Number(derivedNow.defesa ?? 0),
-    velocidade: Number(derivedNow.velocidade ?? 0),
-    foco: Number(derivedNow.foco ?? 0),
-  };
-
-  // Se é a primeira vez finalizando (ou não existe currentStats), começa cheio.
-  const firstFinalize = !p.characterCreated;
-  if(firstFinalize || !p.character.currentStats || typeof p.character.currentStats !== "object"){
-    p.character.currentStats = {
-      vida: p.character.baseStats.vida,
-      defesa: p.character.baseStats.defesa,
-      velocidade: p.character.baseStats.velocidade,
-      foco: p.character.baseStats.foco,
-    };
-  } else {
-    // Caso já exista (ex.: recarregou a página no meio), mantém, mas garante chaves
-    p.character.currentStats.vida = Number(p.character.currentStats.vida ?? p.character.baseStats.vida);
-    p.character.currentStats.defesa = Number(p.character.currentStats.defesa ?? p.character.baseStats.defesa);
-    p.character.currentStats.velocidade = Number(p.character.currentStats.velocidade ?? p.character.baseStats.velocidade);
-    p.character.currentStats.foco = Number(p.character.currentStats.foco ?? p.character.baseStats.foco);
-  }
-
-  // clamp: current não pode ultrapassar base
-  p.character.currentStats.vida = clamp(Number(p.character.currentStats.vida), 0, Number(p.character.baseStats.vida));
-  p.character.currentStats.defesa = clamp(Number(p.character.currentStats.defesa), 0, Number(p.character.baseStats.defesa));
-  p.character.currentStats.velocidade = clamp(Number(p.character.currentStats.velocidade), 0, Number(p.character.baseStats.velocidade));
-  p.character.currentStats.foco = clamp(Number(p.character.currentStats.foco), 0, Number(p.character.baseStats.foco));
-
   p.characterCreated = true;
-  p.log.unshift({ts:Date.now(), text:"Personagem finalizado."});
+  
+  // Ao finalizar, define os stats base (Ref.) e enche os stats atuais com o derivado da ficha
+  ensureLevelState(p);
+  const d0 = calcDerived(p);
+  p.character.lastDerivedStats = { vida:d0.vida, defesa:d0.defesa, velocidade:d0.velocidade, foco:d0.foco };
+  p.character.currentStats = { vida:d0.vida, defesa:d0.defesa, velocidade:d0.velocidade, foco:d0.foco };
+p.log.unshift({ts:Date.now(), text:"Personagem finalizado."});
   saveDB(DB);
 
   // renderiza a ficha final
@@ -2586,9 +2554,11 @@ if(action==="apply_xp"){
       }
 
       const d = calcDerived(p);
+      const STAT_MAX = { vida: 1000000, defesa: 1000000, velocidade: 1000000, foco: 1000000 };
       const min = 0;
-      const max = Number.POSITIVE_INFINITY;
-const rawStep = btn.dataset.step || btn.dataset.delta;
+      const max = Number.isFinite(STAT_MAX[stat]) ? STAT_MAX[stat] : 9999;
+
+      const rawStep = btn.dataset.step || btn.dataset.delta;
       const step = Number.isFinite(Number(rawStep))
         ? Number(rawStep)
         : (stat==="vida" || stat==="foco" ? 5 : 1);
