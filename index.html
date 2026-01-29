@@ -98,7 +98,8 @@
     .kpiTitle b{font-size:13px}
     .kpiValue{font-size:18px;font-weight:950}
     .kpiBar{height:12px;border-radius:999px;background:#0b121a;border:1px solid var(--line);overflow:hidden;margin-top:8px}
-    .kpiBar > div{height:100%;width:0%}
+    .kpiBar > div{height:100%;width:0%;background:var(--btn)}
+    .xpFill{background:var(--gold)!important}
 
     /* Wheel */
     .wheelWrap{display:grid;gap:14px;justify-items:center}
@@ -562,7 +563,7 @@ function totalAttrPoints(player){
 }
 function totalSkillPicks(player){
   const base = player.character.pools?.skillPicksBase ?? 8;
-  return base + disadvBonus(player).skillPicks;
+  return base + disadvBonus(player).skillPicks + (Number(player.levelSkillBonus||0));
 }
 function spentAttrPoints(player){
   let sum=0;
@@ -588,6 +589,7 @@ function ensureLevelState(player){
   const c = player.character;
   if(typeof c.levelSeen !== "number") c.levelSeen = 1;
   if(typeof c.levelAttrBonus !== "number") c.levelAttrBonus = 0;
+  if(typeof c.levelSkillBonus !== "number") c.levelSkillBonus = 0;
   if(!Array.isArray(c.abilities)) c.abilities = [];
   if(!c.currentStats || typeof c.currentStats !== "object") c.currentStats = { vida:0, defesa:0, velocidade:0, foco:0 };
 }
@@ -601,8 +603,18 @@ function applyXpDelta(player, delta, reason){
   const oldLevel = Math.max(1, Number(player.character.levelSeen||1));
 
   if(newLevel > oldLevel){
+    // A cada 5 níveis, ganha +1 pick de Perícia (equivale a +4 em uma perícia)
+    let skillGain = 0;
+    for(let l = oldLevel + 1; l <= newLevel; l++){
+      if(l % 5 === 0) skillGain++;
+    }
+
     const diff = newLevel - oldLevel;
     player.character.levelAttrBonus = Number(player.character.levelAttrBonus||0) + diff*3; // +3 pontos por level
+        if(skillGain>0){
+      player.character.levelSkillBonus = Number(player.character.levelSkillBonus||0) + skillGain;
+      player.log.unshift({ts:Date.now(), text:`+${skillGain} pick(s) de Perícia (níveis múltiplos de 5).`});
+    }
     player.log.unshift({ts:Date.now(), text:`Up! Level ${oldLevel} → ${newLevel} (+${diff*3} pontos de Atributo)`});
   }
   player.character.levelSeen = newLevel;
@@ -786,6 +798,78 @@ function calcDerived(player){
 }
 
 /* =========================
+   Dashboard Stat Buttons (direct bind)
+========================= */
+function bindDashboardStatButtons(){
+  if(window.__statBtnsBound) return;
+  window.__statBtnsBound = true;
+
+  document.addEventListener("click", (ev)=>{
+    const btn = ev.target.closest('button[data-stat][data-step]');
+    if(!btn) return;
+
+    // only inside the KPI cards area (vida/defesa/velocidade/foco)
+    const kpiBox = btn.closest(".kpiBox");
+    if(!kpiBox) return;
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    DB = loadDB();
+
+    const user = findUserBySession();
+    let pid = user?.playerId;
+    if(!pid && user?.username){
+      const byName = DB.players.find(pp=>pp.username===user.username);
+      if(byName) pid = byName.id;
+    }
+    const p = pid ? getPlayer(pid) : null;
+    if(!p) return;
+
+    const stat = btn.dataset.stat;
+    const step = Number(btn.dataset.step || 1);
+
+    const label = (btn.textContent||"").trim();
+    const dir = label.startsWith("-") ? -1 : 1;
+
+    if(!p.character) p.character = {};
+    if(!p.character.currentStats || typeof p.character.currentStats !== "object") p.character.currentStats = {};
+
+    const derived = calcDerived(p);
+
+    // Garante baseStats e currentStats
+    if(!p.character.baseStats || typeof p.character.baseStats !== "object"){
+      p.character.baseStats = { vida:derived.vida, defesa:derived.defesa, velocidade:derived.velocidade, foco:derived.foco };
+    }
+    if(!p.character.currentStats || typeof p.character.currentStats !== "object"){
+      p.character.currentStats = { vida:p.character.baseStats.vida, defesa:p.character.baseStats.defesa, velocidade:p.character.baseStats.velocidade, foco:p.character.baseStats.foco };
+    }
+
+    const baseVal = Number(p.character.baseStats[stat] ?? derived[stat] ?? 0);
+    const curVal  = Number(p.character.currentStats[stat] ?? baseVal);
+
+    // Aqui o botão funciona como "distribuição/ajuste de máximo":
+    // - mexe no baseStats (Ref.)
+    // - e acompanha o currentStats junto (fica cheio quando aumenta; quando diminui, clampa)
+    const nextBase = Math.max(0, baseVal + dir*step);
+    p.character.baseStats[stat] = nextBase;
+
+    let nextCur = curVal;
+    if(dir > 0){
+      // ao aumentar, enche junto
+      nextCur = nextBase;
+    } else {
+      // ao reduzir, não pode ficar maior que o base
+      nextCur = Math.min(curVal, nextBase);
+    }
+    p.character.currentStats[stat] = Math.max(0, nextCur);
+
+    saveDB(DB);
+    render();
+  }, true);
+}
+
+/* =========================
    Master tools
 ========================= */
 function masterCreatePlayerLogin(displayName, username, password){
@@ -868,6 +952,33 @@ function masterRemoveItem(playerId, itemId){
   p.inventory = p.inventory.filter(x=>x.id!==itemId);
   p.log.unshift({ts:Date.now(), text:`Item removido: ${it?.name||"—"}`});
   saveDB(DB);
+}
+
+
+function bindStatButtons(){
+  // remove handlers antigos reaplicando por atributo
+  document.querySelectorAll('button[],button[]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const action = btn.dataset.action;
+      const statId = btn.dataset.stat;
+      const delta = Number(btn.dataset.delta||0);
+      const user = findUserBySession();
+      if(!user) return;
+      const isPlayer = user.role==="player";
+      const p = isPlayer ? getPlayer(user.playerId) : getPlayer($("masterSelectPlayer")?.value);
+      if(!p) return;
+      const c = p.character;
+      c.currentStats = c.currentStats || { vida:0, defesa:0, velocidade:0, foco:0 };
+      const key = statId;
+      const cur = Number(c.currentStats[key]||0);
+      const next = clamp(cur + (action==="stat_dec" ? -delta : delta), 0, 1000000);
+      c.currentStats[key] = next;
+      saveDB(DB);
+      render();
+    };
+  });
 }
 
 /* =========================
@@ -1223,26 +1334,49 @@ function renderPlayer(playerId){
   const race = getRace(p.character.finalRaceId);
   const cls = getClass(p.character.classId);
   const d = calcDerived(p);
-  // stats atuais (ajustáveis pelo player)
-  const cur = p.character.currentStats || {vida:0,defesa:0,velocidade:0,foco:0};
-  if(!p.character.currentStats) p.character.currentStats = cur;
 
-  // ao FINALIZAR (ou se o DB estiver zerado), sincroniza com o máximo
-  if(p.characterCreated && (!cur.vida && !cur.defesa && !cur.velocidade && !cur.foco)){
-    cur.vida = d.vida;
-    cur.defesa = d.defesa;
-    cur.velocidade = d.velocidade;
-    cur.foco = d.foco;
-    saveDB(DB);
+  // baseStats = "máximo/base" (barra usa como referência).
+  // Se não existir, usa os derivados atuais como ponto de partida.
+  if(!p.character.baseStats || typeof p.character.baseStats !== "object"){
+    p.character.baseStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco };
+  } else {
+    // garante números e chaves
+    p.character.baseStats.vida = Math.max(0, Number(p.character.baseStats.vida ?? d.vida));
+    p.character.baseStats.defesa = Math.max(0, Number(p.character.baseStats.defesa ?? d.defesa));
+    p.character.baseStats.velocidade = Math.max(0, Number(p.character.baseStats.velocidade ?? d.velocidade));
+    p.character.baseStats.foco = Math.max(0, Number(p.character.baseStats.foco ?? d.foco));
   }
 
-  // nunca passa do máximo
-  cur.vida = clamp(Number(cur.vida||0), 0, d.vida);
-  cur.defesa = clamp(Number(cur.defesa||0), 0, d.defesa);
-  cur.velocidade = clamp(Number(cur.velocidade||0), 0, d.velocidade);
-  cur.foco = clamp(Number(cur.foco||0), 0, d.foco);
+  // currentStats = valor atual (pode cair durante jogo). Se não existir, começa cheio no baseStats.
+  if(!p.character.currentStats || typeof p.character.currentStats !== "object"){
+    p.character.currentStats = { 
+      vida:p.character.baseStats.vida, 
+      defesa:p.character.baseStats.defesa, 
+      velocidade:p.character.baseStats.velocidade, 
+      foco:p.character.baseStats.foco 
+    };
+  } else {
+    const cur0 = p.character.currentStats;
+    if(!Number.isFinite(Number(cur0.vida))) cur0.vida = p.character.baseStats.vida;
+    if(!Number.isFinite(Number(cur0.defesa))) cur0.defesa = p.character.baseStats.defesa;
+    if(!Number.isFinite(Number(cur0.velocidade))) cur0.velocidade = p.character.baseStats.velocidade;
+    if(!Number.isFinite(Number(cur0.foco))) cur0.foco = p.character.baseStats.foco;
 
-  main.innerHTML = `
+    cur0.vida = Math.max(0, Number(cur0.vida));
+    cur0.defesa = Math.max(0, Number(cur0.defesa));
+    cur0.velocidade = Math.max(0, Number(cur0.velocidade));
+    cur0.foco = Math.max(0, Number(cur0.foco));
+  }
+
+  // clamp: current não pode passar do base
+  p.character.currentStats.vida = clamp(Number(p.character.currentStats.vida), 0, Number(p.character.baseStats.vida));
+  p.character.currentStats.defesa = clamp(Number(p.character.currentStats.defesa), 0, Number(p.character.baseStats.defesa));
+  p.character.currentStats.velocidade = clamp(Number(p.character.currentStats.velocidade), 0, Number(p.character.baseStats.velocidade));
+  p.character.currentStats.foco = clamp(Number(p.character.currentStats.foco), 0, Number(p.character.baseStats.foco));
+
+  const cur = p.character.currentStats;
+
+main.innerHTML = `
     <h2 style="margin:0 0 6px 0;font-size:16px">Ficha do Player</h2>
 
     <div class="row" style="justify-content:space-between;align-items:flex-start">
@@ -1270,7 +1404,7 @@ function renderPlayer(playerId){
     <span class="pill">Level: <b>${lvl}</b> • XP: <b>${p.xp}</b> / ${xpNext}</span>
     <span class="pill">Atributos bônus do Level: <b>${Number(c.levelAttrBonus||0)}</b></span>
   </div>
-  <div class="kpiBar" style="margin-top:10px"><div style="width:${xpPct}%"></div></div>
+  <div class="kpiBar" style="margin-top:10px"><div class="xpFill" style="width:${xpPct}%"></div></div>
   <div class="row" style="margin-top:10px">
     <div style="flex:1;min-width:180px">
       <label class="mini">Adicionar/Remover XP (players podem)</label>
@@ -1290,10 +1424,10 @@ function renderPlayer(playerId){
     <div class="divider"></div>
 
     <div class="kpiGrid">
-      ${renderKpi("Vida","vida", cur.vida, d.vida)}
-      ${renderKpi("Defesa","defesa", cur.defesa, d.defesa)}
-      ${renderKpi("Velocidade","velocidade", cur.velocidade, d.velocidade)}
-      ${renderKpi("Foco do Véu","foco", cur.foco, d.foco)}
+      ${renderKpi("Vida","vida", cur.vida, p.character.baseStats?.vida ?? d.vida)}
+      ${renderKpi("Defesa","defesa", cur.defesa, p.character.baseStats?.defesa ?? d.defesa)}
+      ${renderKpi("Velocidade","velocidade", cur.velocidade, p.character.baseStats?.velocidade ?? d.velocidade)}
+      ${renderKpi("Foco do Véu","foco", cur.foco, p.character.baseStats?.foco ?? d.foco)}
     </div>
 
     <div class="divider"></div>
@@ -1365,47 +1499,101 @@ function renderPlayer(playerId){
     </div>
   `;
 
-  side.innerHTML = `
-    <h2 style="margin:0 0 6px 0;font-size:16px">Atributos e Perícias</h2>
-    <p class="muted" style="margin-top:0">Valores finais (já incluem bônus).</p>
+    // Painel lateral (gastar pontos + resumo rápido)
+    const disadvNames = (c.disadvantages||[]).map(id=>getDisadv(id)?.name).filter(Boolean);
+    const raceObj = getRace(c.finalRaceId||c.preferredRaceId);
+    const racePerks = raceObj?.perks || [];
+    const invList = (p.inventory||[]).slice(0,10).map(it=>`<div class="muted mini">• ${escapeHTML(it.name)}</div>`).join("") || `<span class="muted mini">Sem itens.</span>`;
+    const logList = (p.log||[]).slice(0,8).map(l=>`<div class="muted mini">• ${escapeHTML(l.text)} <span style="opacity:.6">(${nowStr(l.ts)})</span></div>`).join("") || `<span class="muted mini">Sem logs.</span>`;
 
-    <div class="card" style="background:#0c131c">
-      <b>Atributos</b>
-      <div class="divider"></div>
-      ${ATTR_KEYS.map(k=>`<div class="row" style="justify-content:space-between"><span>${ATTR_LABEL[k]}</span><b>${Number(p.character.attrs[k]||0)}</b></div>`).join("")}
-    </div>
+    side.innerHTML = `
+      <h2 style="margin:0 0 6px 0;font-size:16px">📌 Pontos & Resumo</h2>
 
-    <div class="divider"></div>
+      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
+        <div class="row" style="justify-content:space-between">
+          <b>Nível atual</b>
+          <span class="pill">LVL ${lvl}</span>
+        </div>
+        <div class="row" style="justify-content:space-between;margin-top:8px">
+          <span class="muted mini">Atributos disponíveis</span>
+          <span class="pill">+${Number(p.character.levelAttrBonus||0)}</span>
+        </div>
+        <div class="row" style="justify-content:space-between;margin-top:8px">
+          <span class="muted mini">Picks de perícia disponíveis</span>
+          <span class="pill">+${Number(p.character.levelSkillBonus||0)}</span>
+        </div>
+      </div>
 
-    <div class="card" style="background:#0c131c">
-      <b>Perícias</b>
-      <div class="divider"></div>
-      ${SKILL_KEYS.map(k=>`<div class="row" style="justify-content:space-between"><span>${SKILL_LABEL[k]}</span><b>${Number(p.character.skills[k]||0)}</b></div>`).join("")}
-    </div>
+      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
+        <div class="row" style="justify-content:space-between">
+          <b>Gastar pontos de Atributo</b>
+          <span class="pill">Disp.: ${Number(p.character.levelAttrBonus||0)}</span>
+        </div>
+        <p class="muted mini" style="margin:8px 0 0 0">Só dá para <b>adicionar</b> (não dá pra reduzir o que já está definido).</p>
+        <div class="divider"></div>
+        ${ATTR_KEYS.map(k=>`
+          <div class="selectCard" style="padding:10px">
+            <div class="left">
+              <b>${ATTR_LABEL[k]}</b>
+              <span class="muted mini">Atual: ${Number(c.attrs?.[k]||0)}</span>
+            </div>
+            <button class="secondary" data-action="lvl_attr_inc" data-key="${k}" type="button">+1</button>
+          </div>
+        `).join("")}
+      </div>
 
-    <div class="divider"></div>
+      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
+        <div class="row" style="justify-content:space-between">
+          <b>Gastar pick de Perícia</b>
+          <span class="pill">Disp.: ${Number(p.character.levelSkillBonus||0)}</span>
+        </div>
+        <p class="muted mini" style="margin:8px 0 0 0">Cada pick adiciona <b>+4</b> na perícia.</p>
+        <div class="divider"></div>
+        ${SKILL_KEYS.map(k=>`
+          <div class="selectCard" style="padding:10px">
+            <div class="left">
+              <b>${SKILL_LABEL[k]}</b>
+              <span class="muted mini">Atual: ${Number(c.skills?.[k]||0)}</span>
+            </div>
+            <button class="secondary" data-action="lvl_skill_inc" data-key="${k}" type="button">+4</button>
+          </div>
+        `).join("")}
+      </div>
 
-    <div class="card" style="background:#0c131c">
-      <div class="row" style="justify-content:space-between">
+      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
+        <b>Perks da Raça</b>
+        <div class="divider"></div>
+        ${(racePerks.length? racePerks.map(x=>`<div class="muted mini">• ${escapeHTML(x)}</div>`).join("") : `<span class="muted mini">—</span>`)}
+      </div>
+
+      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
+        <b>Desvantagens escolhidas</b>
+        <div class="divider"></div>
+        ${(disadvNames.length? disadvNames.map(x=>`<div class="muted mini">• ${escapeHTML(x)}</div>`).join("") : `<span class="muted mini">Nenhuma</span>`)}
+      </div>
+
+      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
         <b>Inventário</b>
-        <span class="pill">${(p.inventory||[]).length} itens</span>
+        <div class="divider"></div>
+        ${invList}
       </div>
-      <div class="divider"></div>
-      <div class="muted mini" style="max-height:220px;overflow:auto">
-        ${(p.inventory||[]).map(it=>`• ${escapeHTML(it.name)}`).join("<br>") || "—"}
-      </div>
-    </div>
 
-    <div class="divider"></div>
-
-    <div class="card" style="background:#0c131c">
-      <b>Diário</b>
-      <div class="divider"></div>
-      <div class="muted mini" style="max-height:220px;overflow:auto">
-        ${(p.log||[]).slice(0,20).map(l=>`• [${nowStr(l.ts)}] ${escapeHTML(l.text)}`).join("<br>") || "—"}
+      <div class="card" style="padding:14px;background:#0c131c">
+        <b>Logs recentes</b>
+        <div class="divider"></div>
+        ${logList}
       </div>
-    </div>
-  `;
+    `;
+
+  // ativa botões de VIDA/DEF/VEL/FOCO
+  bindDashboardStatButtons(playerId);
+
+
+
+
+  
+  // (removido) side.innerHTML extra que sobrescrevia o painel de nível/XP
+
 
   const inp = $("avatarChange");
   inp.onchange = async ()=>{
@@ -1421,21 +1609,30 @@ function renderPlayer(playerId){
   };
 }
 
-function renderKpi(title, key, current, max){
-  const cur = clamp(Math.round(Number(current||0)), 0, Math.round(Number(max||0) || 0));
-  const mx = Math.max(1, Math.round(Number(max||0) || 1));
-  const pct = clamp(Math.round(cur/mx*100), 0, 100);
+function renderKpi(title, stat, curVal, refVal){
+  const cur = Number(curVal ?? 0);
+  const ref = Math.max(1, Number(refVal ?? 0));
+  const pct = clamp(Math.round((cur / ref) * 100), 0, 100);
 
   return `
     <div class="kpiBox">
       <div class="kpiTitle">
-        <b>${escapeHTML(title)}</b>
-        <span class="muted mini"><b>${cur}</b> / ${mx}</span>
+        <b>${title}</b>
+        <span class="pill mini">Ref.: ${refVal}</span>
       </div>
-      <div class="kpiBar"><div style="width:${pct}%"></div></div>
-      <div class="row" style="margin-top:10px;justify-content:flex-end">
-        <button class="secondary mini" data-action="stat_dec" data-stat="${key}">-</button>
-        <button class="secondary mini" data-action="stat_inc" data-stat="${key}">+</button>
+
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <div class="kpiValue"><span id="${stat}Val">${cur}</span></div>
+        <div class="row" style="gap:6px">
+          <button type="button" class="secondary mini" data-stat="${stat}" data-step="5">-5</button>
+          <button type="button" class="secondary mini" data-stat="${stat}" data-step="1">-1</button>
+          <button type="button" class="secondary mini" data-stat="${stat}" data-step="1">+1</button>
+          <button type="button" class="secondary mini" data-stat="${stat}" data-step="5">+5</button>
+        </div>
+      </div>
+
+      <div class="kpiBar" title="${cur} / ${refVal}">
+        <div id="${stat}Fill" style="width:${pct}%"></div>
       </div>
     </div>
   `;
@@ -2006,6 +2203,44 @@ function finalizeCreation(playerId){
   if(!p.character.finalRaceId) p.character.finalRaceId = race.id;
 
   // marca como criado
+  
+  // Define os status base (Vida/Defesa/Velocidade/Foco) ao finalizar a criação
+  // baseStats = "máximo/base" (o que a barra usa como referência)
+  // currentStats = valor atual (pode cair em combate, etc.)
+  // IMPORTANTE: na primeira finalização, a ficha começa "cheia" (current = base).
+  const derivedNow = calcDerived(p);
+
+  // Sempre recalcula o BASE a partir dos atributos/perícias finais no momento da finalização
+  p.character.baseStats = {
+    vida: Number(derivedNow.vida ?? 0),
+    defesa: Number(derivedNow.defesa ?? 0),
+    velocidade: Number(derivedNow.velocidade ?? 0),
+    foco: Number(derivedNow.foco ?? 0),
+  };
+
+  // Se é a primeira vez finalizando (ou não existe currentStats), começa cheio.
+  const firstFinalize = !p.characterCreated;
+  if(firstFinalize || !p.character.currentStats || typeof p.character.currentStats !== "object"){
+    p.character.currentStats = {
+      vida: p.character.baseStats.vida,
+      defesa: p.character.baseStats.defesa,
+      velocidade: p.character.baseStats.velocidade,
+      foco: p.character.baseStats.foco,
+    };
+  } else {
+    // Caso já exista (ex.: recarregou a página no meio), mantém, mas garante chaves
+    p.character.currentStats.vida = Number(p.character.currentStats.vida ?? p.character.baseStats.vida);
+    p.character.currentStats.defesa = Number(p.character.currentStats.defesa ?? p.character.baseStats.defesa);
+    p.character.currentStats.velocidade = Number(p.character.currentStats.velocidade ?? p.character.baseStats.velocidade);
+    p.character.currentStats.foco = Number(p.character.currentStats.foco ?? p.character.baseStats.foco);
+  }
+
+  // clamp: current não pode ultrapassar base
+  p.character.currentStats.vida = clamp(Number(p.character.currentStats.vida), 0, Number(p.character.baseStats.vida));
+  p.character.currentStats.defesa = clamp(Number(p.character.currentStats.defesa), 0, Number(p.character.baseStats.defesa));
+  p.character.currentStats.velocidade = clamp(Number(p.character.currentStats.velocidade), 0, Number(p.character.baseStats.velocidade));
+  p.character.currentStats.foco = clamp(Number(p.character.currentStats.foco), 0, Number(p.character.baseStats.foco));
+
   p.characterCreated = true;
   p.log.unshift({ts:Date.now(), text:"Personagem finalizado."});
   saveDB(DB);
@@ -2285,13 +2520,45 @@ document.addEventListener("click", (e)=>{
 
   const action = btn.dataset.action;
   const user = findUserBySession();
-  if(!user || user.role!=="player") return;
+  if(!user) return;
 
-  const p = getPlayer(user.playerId);
+  let p = null;
+  if(user.role === "player"){
+    p = getPlayer(user.playerId);
+  } else if(user.role === "master"){
+    const sel = document.getElementById("m_selPlayer");
+    const pid = (sel && sel.value) ? sel.value : (DB.players[0]?.id || null);
+    if(pid) p = getPlayer(pid);
+  }
   if(!p) return;
   ensureLevelState(p);
 
-  if(action==="apply_xp"){
+  
+if(action==="lvl_attr_inc"){
+  const p = getPlayer(user.playerId);
+  if(!p) return;
+  if(Number(p.character.levelAttrBonus||0) <= 0){ toast("Sem pontos de atributo disponíveis.", false); return; }
+  const k = btn.dataset.key;
+  if(!ATTR_KEYS.includes(k)) return;
+  p.character.attrs[k] = Number(p.character.attrs?.[k]||0) + 1;
+  p.character.levelAttrBonus = Number(p.character.levelAttrBonus||0) - 1;
+  p.log.unshift({ts:Date.now(), text:`Ponto de atributo gasto: ${ATTR_LABEL[k]} +1`});
+  saveDB(DB); render(); return;
+}
+
+if(action==="lvl_skill_inc"){
+  const p = getPlayer(user.playerId);
+  if(!p) return;
+  if(Number(p.character.levelSkillBonus||0) <= 0){ toast("Sem picks de perícia disponíveis.", false); return; }
+  const k = btn.dataset.key;
+  if(!SKILL_KEYS.includes(k)) return;
+  p.character.skills[k] = Number(p.character.skills?.[k]||0) + 4;
+  p.character.levelSkillBonus = Number(p.character.levelSkillBonus||0) - 1;
+  p.log.unshift({ts:Date.now(), text:`Pick de perícia gasto: ${SKILL_LABEL[k]} +4`});
+  saveDB(DB); render(); return;
+}
+
+if(action==="apply_xp"){
     const delta = Number($("xpDelta")?.value || 0);
     const reason = String($("xpReason")?.value || "").trim();
     applyXpDelta(p, delta, reason);
@@ -2301,17 +2568,39 @@ document.addEventListener("click", (e)=>{
   }
 
   if(action==="stat_inc" || action==="stat_dec"){
-    const stat = btn.dataset.stat;
-    const d = calcDerived(p);
-    const maxMap = {vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco};
-    const step = (stat==="vida" || stat==="foco") ? 5 : 1;
-    const cur = p.character.currentStats || (p.character.currentStats = {vida:0,defesa:0,velocidade:0,foco:0});
-    const sign = (action==="stat_inc") ? +1 : -1;
-    cur[stat] = clamp(Number(cur[stat]||0) + sign*step, 0, maxMap[stat]||0);
-    saveDB(DB);
-    render();
-    return;
-  }
+      // Ajuste manual de Vida/Defesa/Velocidade/Foco (não muda atributos)
+      const stat = btn.dataset.stat;
+      if(!stat) return;
+
+      // Inicializa "stats atuais" com os valores derivados na primeira vez
+      if(!p.character.currentStats || typeof p.character.currentStats!=="object"){
+        p.character.currentStats = {};
+      }
+      if(!p.character.currentStatsInit){
+        const d0 = calcDerived(p);
+        p.character.currentStats.vida = d0.vida;
+        p.character.currentStats.defesa = d0.defesa;
+        p.character.currentStats.velocidade = d0.velocidade;
+        p.character.currentStats.foco = d0.foco;
+        p.character.currentStatsInit = true;
+      }
+
+      const d = calcDerived(p);
+      const min = 0;
+      const max = Number.POSITIVE_INFINITY;
+const rawStep = btn.dataset.step || btn.dataset.delta;
+      const step = Number.isFinite(Number(rawStep))
+        ? Number(rawStep)
+        : (stat==="vida" || stat==="foco" ? 5 : 1);
+
+      const curr = Number(p.character.currentStats?.[stat] ?? 0);
+      const next = clamp(curr + (action==="stat_inc" ? step : -step), min, max);
+
+      p.character.currentStats[stat] = next;
+      saveDB(DB);
+      render();
+      return;
+    }
 
   if(action==="add_ability"){
     const lvl = levelFromXp(p.xp);
@@ -2346,7 +2635,81 @@ document.addEventListener("click", (e)=>{
   }
 });
 
+
+// =========================
+// Bindings (Login / Header)
+// =========================
+(function bindCoreButtons(){
+  const btnLogin = $("btnLogin");
+  if(btnLogin){
+    btnLogin.addEventListener("click", ()=>{
+      const username = String($("loginUser")?.value || "").trim();
+      const password = String($("loginPass")?.value || "");
+      const res = login(username, password);
+      if(!res.ok){ toast(res.msg, false); return; }
+      toast("Login feito.", true);
+      render();
+    });
+  }
+
+  const pass = $("loginPass");
+  if(pass){
+    pass.addEventListener("keydown", (e)=>{
+      if(e.key==="Enter"){ e.preventDefault(); $("btnLogin")?.click(); }
+    });
+  }
+
+  const btnReset = $("btnReset");
+  if(btnReset){
+    btnReset.addEventListener("click", ()=>{
+      const ok = confirm("Resetar dados? Isso apaga tudo salvo neste navegador.");
+      if(!ok) return;
+      localStorage.removeItem(KEY);
+      DB = loadDB();
+      toast("Dados resetados.", true);
+      render();
+    });
+  }
+
+  const btnLogout = $("btnLogout");
+  if(btnLogout){
+    btnLogout.addEventListener("click", ()=>logout());
+  }
+})();
+
 render();
+
+function changeStat(stat, delta){
+  const user = findUserBySession();
+  if(!user) return;
+
+  let p = null;
+  if(user.role === "player"){
+    p = getPlayer(user.playerId);
+  } else {
+    p = DB.players && DB.players.length ? DB.players[0] : null;
+  }
+  if(!p) return;
+
+  if(!p.character.currentStats){
+    const d = calcDerived(p);
+    p.character.currentStats = {
+      vida: d.vida,
+      defesa: d.defesa,
+      velocidade: d.velocidade,
+      foco: d.foco
+    };
+  }
+
+  const cur = Number(p.character.currentStats[stat] || 0);
+  let next = cur + Number(delta || 0);
+  if(next < 0) next = 0;
+
+  p.character.currentStats[stat] = next;
+  saveDB(DB);
+  render();
+}
 </script>
+
 </body>
 </html>
