@@ -3,39 +3,52 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RPG Hub — Guerra do Véu</title>
+  <title>MYR — RPG Hub</title>
   <style>
     :root{
-      --bg:#0b0f14; --card:#121a24; --muted:#8aa0b6; --txt:#e8f0fb; --line:#223042;
-      --btn:#2b6cff; --bad:#ff4d4d; --ok:#32d583;
-      --gold:#f5c24b; --violet:#8b5cf6; --cyan:#22c1f1; --green:#32d583; --red:#ff4d4d;
+      --bg:#05060a;
+      --card:rgba(16,18,26,.92);
+      --muted:#a0a6b8;
+      --txt:#f2f4ff;
+      --line:rgba(255,255,255,.08);
+
+      --btn:#7c3aed;      /* roxo */
+      --btn2:#22c55e;     /* verde */
+      --bad:#ef4444;
+      --ok:#22c55e;
+      --gold:#f59e0b;
     }
     *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    body{margin:0;background:linear-gradient(180deg,#070a0f,#0b0f14);color:var(--txt)}
+    body{margin:0;background:
+      radial-gradient(1200px 700px at 10% -10%, rgba(124,58,237,.22), transparent 60%),
+      radial-gradient(1000px 700px at 110% 10%, rgba(34,197,94,.16), transparent 55%),
+      linear-gradient(180deg,#05060a,#0a0b12 55%,#070712);
+      color:var(--txt)
+    }
     header{
       padding:18px 16px;border-bottom:1px solid var(--line);
-      position:sticky;top:0;background:rgba(11,15,20,.86);backdrop-filter: blur(10px);z-index:5
+      position:sticky;top:0;background:rgba(5,6,10,.72);backdrop-filter: blur(10px);z-index:5
     }
-    h1{margin:0;font-size:18px}
+    h1{margin:0;font-size:18px;letter-spacing:.3px}
     main{max-width:1220px;margin:0 auto;padding:16px;display:grid;gap:16px}
     .grid{display:grid;gap:16px}
     @media (min-width:980px){ .grid{grid-template-columns:1.15fr .85fr} }
-    .card{background:rgba(18,26,36,.96);border:1px solid var(--line);border-radius:18px;padding:16px;backdrop-filter: blur(10px)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;backdrop-filter: blur(10px)}
     .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
     label{font-size:12px;color:var(--muted)}
     input,select,button,textarea{
-      border-radius:14px;border:1px solid var(--line);background:#0c131c;color:var(--txt);
+      border-radius:14px;border:1px solid var(--line);background:rgba(6,8,14,.88);color:var(--txt);
       padding:10px 12px;outline:none
     }
-    input:focus,select:focus,textarea:focus{border-color:#3b82f6}
+    input:focus,select:focus,textarea:focus{border-color:rgba(124,58,237,.75)}
     button{cursor:pointer;background:var(--btn);border:none;font-weight:900}
-    button.secondary{background:#162235;border:1px solid var(--line)}
+    button.secondary{background:rgba(9,10,18,.25);border:1px solid var(--line)}
     button.danger{background:var(--bad)}
     button:disabled{opacity:.55;cursor:not-allowed}
     .muted{color:var(--muted);font-size:13px;line-height:1.35}
     .pill{
       display:inline-flex;align-items:center;gap:8px;
-      padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:#0c131c;
+      padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(6,8,14,.75);
       font-size:12px;color:var(--muted)
     }
     .divider{height:1px;background:var(--line);margin:12px 0}
@@ -47,45 +60,44 @@
     /* Tabs */
     .tabs{display:flex;gap:8px;flex-wrap:wrap}
     .tabBtn{
-      background:#0c131c;border:1px solid var(--line);
+      background:rgba(6,8,14,.75);border:1px solid var(--line);
       padding:10px 12px;border-radius:999px;font-weight:900;color:var(--muted)
     }
     .tabBtn.active{background:var(--btn);color:#fff;border-color:transparent}
-    .tabPanel{margin-top:12px}
 
     /* Overlay / Modal */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.66);padding:18px;overflow:auto;z-index:60}
     .modal{
       max-width:1120px;margin:18px auto;border:1px solid var(--line);
-      border-radius:18px;background:rgba(18,26,36,.96);backdrop-filter: blur(10px);
+      border-radius:18px;background:rgba(10,12,18,.92);backdrop-filter: blur(10px);
       padding:16px
     }
     .modalHeader{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
-    .warn{border:1px solid #5b2c2c;background:#1a0f12;padding:12px;border-radius:14px}
-    .good{border:1px solid #235b3e;background:#0f1a14;padding:12px;border-radius:14px}
+    .warn{border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.08);padding:12px;border-radius:14px}
+    .good{border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.08);padding:12px;border-radius:14px}
 
     /* Selection cards */
     .selectGrid{display:grid;gap:10px}
     @media (min-width:900px){ .selectGrid{grid-template-columns:1fr 1fr} }
     .selectCard{
-      border:1px solid var(--line);background:#0b121a;padding:12px;border-radius:18px;
+      border:1px solid var(--line);background:rgba(6,8,14,.65);padding:12px;border-radius:18px;
       display:flex;gap:12px;align-items:flex-start;justify-content:space-between
     }
     .selectCard .left{min-width:0}
     .selectCard b{display:block;font-size:14px}
-    .tag{display:inline-flex;gap:6px;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:#0c131c;color:var(--muted);font-size:12px}
-    .tag.perfect{background:rgba(245,194,75,.12);border-color:rgba(245,194,75,.55);color:#ffe4a6}
-    .tag.lore{background:rgba(139,92,246,.10);border-color:rgba(139,92,246,.45);color:#ddccff}
-    .selectedGlow{outline:2px solid rgba(43,108,255,.65); box-shadow: 0 0 0 6px rgba(43,108,255,.12);}
+    .tag{display:inline-flex;gap:6px;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(6,8,14,.65);color:var(--muted);font-size:12px}
+    .selectedGlow{outline:2px solid rgba(124,58,237,.65); box-shadow: 0 0 0 6px rgba(124,58,237,.12);}
 
     /* Avatar */
-    .avatarBox{width:150px;height:150px;border-radius:18px;border:1px dashed var(--line);background:#0c131c;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .avatarBox{width:150px;height:150px;border-radius:18px;border:1px dashed var(--line);
+      background:rgba(6,8,14,.65);display:flex;align-items:center;justify-content:center;overflow:hidden}
     .avatarBox img{width:100%;height:100%;object-fit:cover}
 
     /* Meters */
     .meterRow{display:grid;grid-template-columns:1fr 170px 150px;gap:10px;align-items:center}
     @media (max-width:640px){ .meterRow{grid-template-columns:1fr 1fr} .meterRow .ctrl{grid-column:1/-1;justify-content:flex-end} }
-    .bar{height:12px;border-radius:999px;background:#0c131c;border:1px solid var(--line);overflow:hidden}
+    .bar{height:12px;border-radius:999px;background:rgba(6,8,14,.65);border:1px solid var(--line);overflow:hidden}
     .bar > div{height:100%;background:var(--btn);width:0%}
     .ctrl{display:flex;gap:8px;align-items:center}
     .ctrl .num{min-width:28px;text-align:center;font-weight:900}
@@ -93,29 +105,29 @@
     /* Player bars */
     .kpiGrid{display:grid;gap:10px}
     @media (min-width:720px){ .kpiGrid{grid-template-columns:1fr 1fr} }
-    .kpiBox{border:1px solid var(--line);background:#0c131c;border-radius:16px;padding:12px}
+    .kpiBox{border:1px solid var(--line);background:rgba(6,8,14,.65);border-radius:16px;padding:12px}
     .kpiTitle{display:flex;justify-content:space-between;gap:10px;align-items:center}
     .kpiTitle b{font-size:13px}
     .kpiValue{font-size:18px;font-weight:950}
-    .kpiBar{height:12px;border-radius:999px;background:#0b121a;border:1px solid var(--line);overflow:hidden;margin-top:8px}
+    .kpiBar{height:12px;border-radius:999px;background:rgba(6,8,14,.35);border:1px solid var(--line);overflow:hidden;margin-top:8px}
     .kpiBar > div{height:100%;width:0%;background:var(--btn)}
     .xpFill{background:var(--gold)!important}
 
     /* Wheel */
     .wheelWrap{display:grid;gap:14px;justify-items:center}
-    canvas{border:1px solid var(--line);border-radius:18px;background:#0c131c;max-width:100%}
+    canvas{border:1px solid var(--line);border-radius:18px;background:rgba(6,8,14,.65);max-width:100%}
     .pointer{
       width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;
       border-bottom:20px solid var(--btn);filter:drop-shadow(0 3px 6px rgba(0,0,0,.6));
       margin-top:-8px;
-    
+    }
+
     /* Wheel legend */
     .wheelLegend{width:100%;max-width:900px;display:grid;gap:8px}
-    .legendList{border:1px solid var(--line);border-radius:14px;background:#0c131c;padding:10px;max-height:180px;overflow:auto}
+    .legendList{border:1px solid var(--line);border-radius:14px;background:rgba(6,8,14,.65);padding:10px;max-height:180px;overflow:auto}
     .legendItem{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);padding:4px 0;flex-wrap:wrap}
-    .legendBadge{min-width:34px;text-align:center;padding:2px 6px;border-radius:999px;border:1px solid var(--line);font-weight:900;color:#fff;background:#15202d}
+    .legendBadge{min-width:34px;text-align:center;padding:2px 6px;border-radius:999px;border:1px solid var(--line);font-weight:900;color:#fff;background:rgba(124,58,237,.35)}
     @media (max-width:640px){ .legendList{max-height:220px} }
-}
 
     table{width:100%;border-collapse:collapse}
     th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
@@ -126,7 +138,7 @@
 <body>
 <header class="row" style="justify-content:space-between">
   <div class="row">
-    <h1>🎲 RPG Hub — Guerra do Véu</h1>
+    <h1>🜁 MYR</h1>
     <span class="pill" id="sessionPill">Sessão: não logado</span>
   </div>
   <div class="row">
@@ -142,7 +154,7 @@
     <p class="muted" style="margin-top:0">
       Teste: Mestre (<b>mestre</b>/<b>1234</b>) • Player (<b>player1</b>/<b>1234</b>).
     </p>
-    <div class="card" style="padding:14px;background:#0c131c">
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.65)">
       <div class="row">
         <div style="flex:1;min-width:220px">
           <label>Usuário</label>
@@ -176,189 +188,145 @@
 /* =========================
    DB
 ========================= */
-const KEY = "rpg_hub_veuv1";
-
-
+const KEY = "myr_hub_v1";
 const UI = { activeTab: "tabRaces" };
-const ATTR_KEYS = ["ForcaAtletismo","Destreza","Inteligencia","Sabedoria","Carisma"];
+
+const ATTR_KEYS = ["Forca","Destreza","Inteligencia","Vontade","Carisma"];
 const ATTR_LABEL = {
-  ForcaAtletismo: "FORÇA / Atletismo",
+  Forca: "FORÇA",
   Destreza: "DESTREZA",
   Inteligencia: "INTELIGÊNCIA",
-  Sabedoria: "SABEDORIA",
+  Vontade: "VONTADE (MAGIA)",
   Carisma: "CARISMA",
 };
-const SKILL_KEYS = ["Combate","Furtividade","Sobrevivencia","Investigacao","Persuasao","Magia","Rituais","Artesanato"];
+const SKILL_KEYS = ["Combate","Precisao","Resistencia","Investigacao","Persuasao","Arcanismo","Rituais","Oficios"];
 const SKILL_LABEL = {
   Combate:"Combate",
-  Furtividade:"Furtividade",
-  Sobrevivencia:"Sobrevivência",
+  Precisao:"Precisão",
+  Resistencia:"Resistência",
   Investigacao:"Investigação",
   Persuasao:"Persuasão",
-  Magia:"Magia",
+  Arcanismo:"Arcanismo",
   Rituais:"Rituais",
-  Artesanato:"Artesanato",
+  Oficios:"Ofícios",
 };
 
+const ATTR_ROT = ["Forca","Destreza","Inteligencia","Vontade","Carisma"];
+  const SKILL_ROT = ["Combate","Precisao","Resistencia","Investigacao","Persuasao","Arcanismo","Rituais","Oficios"];
+
+
+const $ = (id)=>document.getElementById(id);
+
+function mkAttrsZero(){ const o={}; for(const k of ATTR_KEYS) o[k]=0; return o; }
+function mkSkillsZero(){ const o={}; for(const k of SKILL_KEYS) o[k]=0; return o; }
+
+function escapeHTML(str){
+  return String(str||"")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function nowStr(ts){ return new Date(ts).toLocaleString(); }
+function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+
+function slugify(s){
+  return String(s||"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"_")
+    .replace(/^_+|_+$/g,"");
+}
+function uniqId(base, used){
+  let id = base, i = 2;
+  while(used.has(id)){ id = `${base}_${i++}`; }
+  used.add(id);
+  return id;
+}
+
+function setActiveTab(tabId){
+  UI.activeTab = tabId || UI.activeTab || "tabRaces";
+  document.querySelectorAll(".tabBtn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.tab===UI.activeTab);
+  });
+  document.querySelectorAll(".tabPanel").forEach(p=>{
+    p.classList.toggle("hidden", p.id!==UI.activeTab);
+  });
+}
+
 function defaultDB(){
-  // Raças padrão (as que você curtiu) + 2 PERFEITAS opostas
-  const races = [
-    // padrão
-    {
-      id:"human_veil", tier:"padrao", name:"Humano do Véu",
-      lore:"Adaptados ao segredo. O Véu não apaga suas memórias por completo.",
-      buffs:{ attr:{Carisma:+1}, skill:{Investigacao:+4} },
-      perks:["Versátil (Carisma +1)", "Farol do Véu (Investigação +4)"],
-      note:"Sinal: olhos brilham quando o Véu se aproxima."
-    },
-    {
-      id:"elf_twilight", tier:"padrao", name:"Elfo Crepuscular",
-      lore:"Filhos das rachaduras; enxergam camadas que outros ignoram.",
-      buffs:{ attr:{Inteligencia:+1}, skill:{Furtividade:+4, Investigacao:+4} },
-      perks:["Mente refinada (Inteligência +1)", "Passo silencioso (Furtividade +4)", "Olhar do Crepúsculo (Investigação +4)"],
-      note:"Sinal: a sombra ‘atrasada’ denuncia seu sangue."
-    },
-    {
-      id:"dwarf_rune", tier:"padrao", name:"Anão Rúnico",
-      lore:"Forjadores do oculto. Seus símbolos prendem o impossível em metal.",
-      buffs:{ attr:{ForcaAtletismo:+1}, skill:{Artesanato:+8} },
-      perks:["Vigor (Força/Atletismo +1)", "Mão Rúnica (Artesanato +8)"],
-      note:"Sinal: runas surgem na pele sob tensão."
-    },
-    {
-      id:"dragonborn_veil", tier:"padrao", name:"Draconato do Véu",
-      lore:"A guerra antiga ainda ferve no sangue. Um dragão não esquece.",
-      buffs:{ attr:{ForcaAtletismo:+1, Carisma:+1}, skill:{Combate:+4} },
-      perks:["Força dracônica (Força/Atletismo +1)", "Presença (Carisma +1)", "Treino de caça (Combate +4)"],
-      note:"Sinal: ar esquenta quando você se irrita."
-    },
-    {
-      id:"tiefling_abyss", tier:"padrao", name:"Tiefling Abissal",
-      lore:"Marcados pelo fundo do mundo. Alguns chamam de ‘maldição’, outros de ‘poder’.",
-      buffs:{ attr:{Carisma:+1}, skill:{Magia:+4, Rituais:+4} },
-      perks:["Carisma perigoso (Carisma +1)", "Magia negra (Magia +4)", "Ritos do fundo (Rituais +4)"],
-      note:"Sinal: marcas e sombras mais densas ao redor."
-    },
-    {
-      id:"aasimar_ancient", tier:"padrao", name:"Aasimar da Luz Antiga",
-      lore:"Carregam brilho antigo demais pra este mundo — mas ainda assim, humano.",
-      buffs:{ attr:{Sabedoria:+1}, skill:{Persuasao:+4} },
-      perks:["Guia (Sabedoria +1)", "Voz que acalma (Persuasão +4)"],
-      note:"Sinal: um ‘clarão’ curto em emoções fortes."
-    },
-    {
-      id:"fae_exile", tier:"padrao", name:"Fada Exilada",
-      lore:"O Reino Feérico não perdoa… mas suas rotas continuam abertas.",
-      buffs:{ attr:{Destreza:+1}, skill:{Furtividade:+4} },
-      perks:["Agilidade feérica (Destreza +1)", "Sumiço (Furtividade +4)"],
-      note:"Sinal: brilho de pó feérico quando você corre."
-    },
-    {
-      id:"veurian", tier:"padrao", name:"Véuriano",
-      lore:"Nascidos do próprio Véu. Meio gente, meio ‘falha da realidade’.",
-      buffs:{ attr:{Inteligencia:+1}, skill:{Investigacao:+4, Rituais:+4} },
-      perks:["Mente trincada (Inteligência +1)", "Senso de falha (Investigação +4)", "Selo instintivo (Rituais +4)"],
-      note:"Sinal: por um segundo, você parece vidro rachado."
-    },
-    {
-      id:"sangrado", tier:"padrao", name:"Sangrado",
-      lore:"A guerra corre nas veias. Emoção vira força. Força vira destino.",
-      buffs:{ attr:{ForcaAtletismo:+1}, skill:{Combate:+4, Sobrevivencia:+4} },
-      perks:["Fúria (Força/Atletismo +1)", "Treino brutal (Combate +4)", "Instinto (Sobrevivência +4)"],
-      note:"Sinal: veias vermelhas escuras no esforço."
-    },
-    {
-      id:"oracle_born", tier:"padrao", name:"Oráculo Nascido",
-      lore:"Você vê fragmentos do amanhã — mas nunca o suficiente para dormir em paz.",
-      buffs:{ attr:{Sabedoria:+1}, skill:{Investigacao:+4} },
-      perks:["Visão (Sabedoria +1)", "Caçador de pistas (Investigação +4)"],
-      note:"Custo narrativo: visões em momentos tensos."
-    },
-    {
-      id:"shadowborn", tier:"padrao", name:"Sombrídeo",
-      lore:"Ecos que aprenderam a andar. A sombra não é ausência — é memória.",
-      buffs:{ attr:{Destreza:+1}, skill:{Furtividade:+8} },
-      perks:["Passo sem rastro (Destreza +1)", "Sombra viva (Furtividade +8)"],
-      note:"Sinal: reflexo parece ‘atrasado’ em espelhos."
-    },
-    {
-      id:"eclipse_wing", tier:"padrao", name:"Alado do Eclipse",
-      lore:"Quando luz e sombra brigam, às vezes nasce alguém no meio.",
-      buffs:{ attr:{Carisma:+1, Sabedoria:+1}, skill:{Magia:+4} },
-      perks:["Aura dupla (Carisma +1)", "Equilíbrio (Sabedoria +1)", "Magia de transição (Magia +4)"],
-      note:"Sinal: asas espectrais aparecem por instantes."
-    },
-    {
-      id:"arcane_synthetic", tier:"padrao", name:"Sintético Arcano",
-      lore:"Construído — não nascido. E mesmo assim… você sonha.",
-      buffs:{ attr:{Inteligencia:+1}, skill:{Artesanato:+4, Rituais:+4} },
-      perks:["Lógica (Inteligência +1)", "Montagem (Artesanato +4)", "Circuito rúnico (Rituais +4)"],
-      note:"Sinal: runas fracas sob a pele."
-    },
+  // ✅ Raças (135) e Classes (130) compactadas em string pra não travar arquivo
+  const RACES_RAW = `
+Humanos|Humanos do Norte|Humanos do Deserto|Humanos do Mar|Elfos Altos|Elfos da Lua|Elfos do Sol|Elfos Sombrios|Elfos Antigos|Anões da Montanha|Anões da Forja|Anões Profundos|Anões Rúnicos|Halflings Errantes|Halflings do Campo|Gnomos Arcanos|Gnomos Mecânicos|Meio-Elfos|Meio-Orcs|Meio-Gigantes|Meio-Demônios|Meio-Celestiais|Meio-Dragões|Meio-Feras|Meio-Elementais|Meio-Vampiros|Meio-Fadas|Meio-Espíritos
+|Draconianos|Draconianos Antigos|Kobolds|Kobolds Alquímicos|Naga|Naga Reais|Lagartídeos|Serpentinos|Basilídeos|Filhos do Dragão
+|Feralinos (lobo)|Feralinos (felino)|Feralinos (urso)|Feralinos (corvo)|Feralinos (réptil)|Minotauros|Centauros|Sátiros|Homens-Javali|Homens-Cabra
+|Ifrits|Ondinos|Silfídeos|Terranos|Magmáticos|Glaciais|Tempestários|Cinéreos|Cristalinos|Elementais Encarnados
+|Tieflings|Tieflings Abissais|Vampíricos|Vampiros Puros|Licantropos|Malditos da Lua|Filhos da Sombra|Abissais|Portadores da Ruína
+|Aasimar|Aasimar Caídos|Nephilim|Filhos da Luz|Arautos Celestes|Iluminados|Juramentados|Portadores do Verbo|Solares|Luminares
+|Espectrais|Revenantes|Ecos|Mortos-Vivos Conscientes|Ossíferos|Lamentadores|Ceifados|Guardiões do Túmulo|Mortais Retornados
+|Autômatos Antigos|Construtos Vivos|Homúnculos Evoluídos|Simbiontes|Parasitados|Metamorfos|Mímicos Humanoides|Alterados|Cronomarcados|Portadores de Runas
+|Dryades|Filhos da Árvore|Guardiões do Bosque|Silvestres Antigos|Espíritos da Terra|Espíritos Animais|Verdantes|Raiz-Viva|Musgos Conscientes|Entes Menores
+|Fungóides|Insetoides|Aracnídeos|Aviários|Homens-Peixe|Tritões|Abissomarinhos|Crostáceos|Seres de Coral|Leviatânicos
+|Titânicos|Sangue de Gigante|Colossos Menores|Filhos dos Reis Antigos|Herdeiros da Primeira Era|Portadores do Trono|Descendentes do Deus-Morto|Linhagem Proibida|Sangue Esquecido|Últimos de Sua Raça
+|Avatares Mortais|Guardiões do Fim|Criados do Nada|Observadores|Vozes Encarnadas|Portadores do Silêncio|Herdeiros do Abismo|Arquitetos da Realidade|Os Inomináveis
+`.replace(/\n/g,"").trim();
 
-    // PERFEITAS (raríssimas) — opostas, “nome pesado”
-    {
-      id:"perfect_seraph", tier:"perfeita", name:"SERAFIM ABSOLUTO",
-      lore:"A luz mais antiga atravessou o Véu e escolheu um corpo. Isso não era pra acontecer.",
-      buffs:{ attr:{Sabedoria:+2, Carisma:+2}, skill:{Persuasao:+8, Magia:+8} },
-      perks:["Sabedoria +2", "Carisma +2", "Persuasão +8", "Magia +8", "Presença sagrada (narrativo)"],
-      note:"Por essa raça exige uma troca. (Você abriu mão do controle — o mundo escolheu por você.)"
-    },
-    {
-      id:"perfect_abyss", tier:"perfeita", name:"ARQUIABISMO PRIMORDIAL",
-      lore:"Uma vontade do fundo do mundo aprendeu a respirar aqui. Sua existência é um erro… e um poder.",
-      buffs:{ attr:{ForcaAtletismo:+2, Inteligencia:+2}, skill:{Combate:+8, Rituais:+8} },
-      perks:["Força/Atletismo +2", "Inteligência +2", "Combate +8", "Rituais +8", "Autoridade do Abismo (narrativo)"],
-      note:"Por essa raça exige uma troca. (Você abriu mão do controle — o mundo escolheu por você.)"
-    }
-  ];
+  const CLASSES_RAW = `
+Guerreiro|Bárbaro|Cavaleiro|Gladiador|Mercenário|Sentinela|Duelista|Campeão|General de Guerra|Executor
+|Arqueiro|Atirador|Batedor|Caçador|Caçador de Monstros|Ladino|Assassino|Infiltrador|Acrobata de Combate|Sombra
+|Paladino|Templário|Guardião|Protetor do Juramento|Defensor|Escudeiro Sagrado|Bastião|Porta-Estandarte|Curandeiro de Guerra|Mártir
+|Mago|Arquimago|Feiticeiro|Bruxo|Invocador|Ilusionista|Evocador|Abjurador|Conjurador|Arcanista
+|Necromante|Ocultista|Sombramante|Hexblade|Profanador|Portador da Ruína|Ceifador|Arauto do Abismo|Cultista|Vinculado
+|Clérigo|Sacerdote|Arauto Divino|Exorcista|Inquisidor|Oráculo|Profeta|Iluminado|Portador do Verbo|Juiz Sagrado
+|Druida|Xamã|Guardião do Bosque|Chamador de Feras|Totêmico|Andarilho Selvagem|Vinculado à Terra|Espiritualista Natural|Mestre das Bestas|Druida da Praga
+|Elementalista|Piroconjurador|Criomante|Aeromante|Geomante|Hidromante|Tempestário|Cinereomante|Magmaforjado|Avatar Elemental
+|Cronomante|Distorcedor|Telepata|Psicomante|Oráculo do Tempo|Quebrador de Realidade|Viajante Dimensional|Anomalia Viva|Arquiteto do Possível|Eco Temporal
+|Alquimista|Engenheiro de Guerra|Artífice|Runomante|Tecelão de Encantos|Sabotador|Estrategista|Tático de Campo|Mestre de Armadilhas|Arquiteto Bélico
+|Portador do Caos|Amaldiçoado|Sangrador|Heraldo da Dor|Flagelante|Portador da Loucura|Arauto da Queda|Destruidor|Viciado em Poder|Condutor da Ruína
+|Rei de Batalha|Herdeiro do Trono|Senhor da Guerra|Mestre das Ordens|Arauto do Fim|Guardião do Véu|Quebrador do Véu|Portador da Coroa|Lenda Viva|Escolhido
+|Fragmento|Eco Vivo|Sobrevivente do Fim|Reescritor|Quebra-Regras|Portador do Talvez|Erro do Mundo|Constante|Variável|Anomalia Perfeita
+`.replace(/\n/g,"").trim();
 
-  // Classes: mesmo número de raças (15), com bônus leves em atributos e maiores em perícias (4 em 4)
-  const classes = [
-    { id:"cls1", name:"Cavaleiro do Véu", lore:"Guarda de portais e juramentos.", buffs:{attr:{ForcaAtletismo:+1}, skill:{Combate:+4}} },
-    { id:"cls2", name:"Arcanista Crepuscular", lore:"Feitiços que atravessam rachaduras.", buffs:{attr:{Inteligencia:+1}, skill:{Magia:+4}} },
-    { id:"cls3", name:"Ferreiro Rúnico", lore:"Runa, metal, destino.", buffs:{attr:{Sabedoria:+1}, skill:{Artesanato:+8}} },
-    { id:"cls4", name:"Lança-Dragão", lore:"Caça e combate contra o impossível.", buffs:{attr:{ForcaAtletismo:+1}, skill:{Combate:+8}} },
-    { id:"cls5", name:"Hexer do Abismo", lore:"Pactos, custo, poder.", buffs:{attr:{Carisma:+1}, skill:{Rituais:+4, Magia:+4}} },
-    { id:"cls6", name:"Arauto da Luz Antiga", lore:"Protege, guia, impõe ordem.", buffs:{attr:{Sabedoria:+1}, skill:{Persuasao:+4}} },
-    { id:"cls7", name:"Trapaceiro Feérico", lore:"Sumiço, truque, caminho secreto.", buffs:{attr:{Destreza:+1}, skill:{Furtividade:+8}} },
-    { id:"cls8", name:"Cartógrafo Trincado", lore:"Mapeia falhas do mundo.", buffs:{attr:{Inteligencia:+1}, skill:{Investigacao:+8}} },
-    { id:"cls9", name:"Gladiador Sangrado", lore:"Guerra no peito, vitória no punho.", buffs:{attr:{ForcaAtletismo:+1}, skill:{Combate:+4, Sobrevivencia:+4}} },
-    { id:"cls10", name:"Oráculo de Marfim", lore:"Vê pedaços do amanhã.", buffs:{attr:{Sabedoria:+1}, skill:{Investigacao:+4}} },
-    { id:"cls11", name:"Assassino das Sombras", lore:"Um passo e acabou.", buffs:{attr:{Destreza:+1}, skill:{Furtividade:+4, Combate:+4}} },
-    { id:"cls12", name:"Monge do Eclipse", lore:"Equilíbrio que vira lâmina.", buffs:{attr:{Carisma:+1}, skill:{Magia:+4}} },
-    { id:"cls13", name:"Engenheiro Arcano", lore:"Artefatos, selos, máquinas do Véu.", buffs:{attr:{Inteligencia:+1}, skill:{Artesanato:+4, Rituais:+4}} },
-    { id:"cls14", name:"Guardião Serafínico", lore:"Uma armadura de luz em forma humana.", buffs:{attr:{Sabedoria:+1}, skill:{Persuasao:+8}} },
-    { id:"cls15", name:"Profeta do Fundo", lore:"Ritos que fazem o mundo tremer.", buffs:{attr:{Inteligencia:+1}, skill:{Rituais:+8}} },
-  ];
+  const raceNames = RACES_RAW.split("|").map(s=>s.trim()).filter(Boolean);
+  const classNames = CLASSES_RAW.split("|").map(s=>s.trim()).filter(Boolean);
 
-  // Desvantagens (Zomboid style) -> dão pontos extras
+  const usedRaceIds = new Set();
+  const races = raceNames.map((name, idx)=>{
+    const id = uniqId("race_" + slugify(name), usedRaceIds);
+    const attrKey = ATTR_ROT[idx % ATTR_ROT.length];
+    const skillKey = SKILL_ROT[idx % SKILL_ROT.length];
+    const perkA = `Afinidade: ${ATTR_LABEL[attrKey]}`;
+    const perkB = `Talento: ${SKILL_LABEL[skillKey]} +4`;
+    const perkC = `Marca: um detalhe físico/energia que denuncia a linhagem`;
+    return {
+      id, tier:"padrao", name,
+      lore:"Uma linhagem conhecida em MYR. Você decide a cultura, aparência e história.",
+      buffs:{ attr:{ [attrKey]: +1 }, skill:{ [skillKey]: +4 } },
+      perks:[perkA, perkB, perkC],
+      note:"Dica: crie um tabu, um juramento ou uma tradição dessa raça."
+    };
+  });
+
+  const usedClassIds = new Set();
+  
+  const classes = classNames.map((name, idx)=>{
+    const id = uniqId("cls_" + slugify(name), usedClassIds);
+    const attrKey = ATTR_ROT[idx % ATTR_ROT.length];
+    const skillKey = SKILL_ROT[idx % SKILL_ROT.length];
+    return {
+      id, name,
+      lore:"Disciplina do mundo MYR — adaptável ao seu estilo.",
+      buffs:{ attr:{ [attrKey]: +1 }, skill:{ [skillKey]: +4 } }
+    };
+  });
+
+  const DEFAULT_RACE_ID = races[0]?.id || "race_humanos";
+  const DEFAULT_CLASS_ID = classes[0]?.id || "cls_guerreiro";
+
   const disadvantages = [
     { id:"dv_fobia", name:"Fobia", points:{attr:+1, skillPicks:+1}, desc:"Você escolhe um medo forte. Pode atrapalhar em cenas tensas." },
     { id:"dv_impulsivo", name:"Impulsivo", points:{attr:+1, skillPicks:+1}, desc:"Provocações te puxam. Decisões precipitadas (roleplay)." },
-    { id:"dv_marcado", name:"Marcado pelo Véu", points:{attr:+2, skillPicks:+1}, desc:"Seu ‘sinal’ é mais visível — coisas te notam com facilidade." },
-    { id:"dv_debito", name:"Dívida com a Guilda", points:{attr:+1, skillPicks:+2}, desc:"Um favor perigoso vai ser cobrado (o Mestre decide quando)." },
-    { id:"dv_vozes", name:"Vozes na Cabeça", points:{attr:+2, skillPicks:+2}, desc:"Visões/lapsos em momentos de pressão (narrativo)." },
-    { id:"dv_sem_sorte", name:"Sem Sorte", points:{attr:+1, skillPicks:+1}, desc:"1x por sessão o Mestre pode puxar um azar pequeno." },
-
-    { id:"dv_sono", name:"Sono Inquieto", points:{attr:+1, skillPicks:+1}, desc:"Você dorme mal. Em cenas longas, o Mestre pode impor cansaço leve." },
-    { id:"dv_miope", name:"Míope", points:{attr:+1, skillPicks:+1}, desc:"Sem óculos/lente você sofre desvantagem em testes que dependem de visão à distância." },
-    { id:"dv_preguica", name:"Preguiçoso", points:{attr:+1, skillPicks:+2}, desc:"Tende a evitar esforço. O Mestre pode cobrar um custo narrativo quando você força o corpo." },
-    { id:"dv_ansiedade", name:"Ansiedade", points:{attr:+2, skillPicks:+1}, desc:"Pressão social ou risco aceleram seus pensamentos. Pode travar, gaguejar ou agir no impulso." },
-    { id:"dv_paranoia", name:"Paranoia", points:{attr:+1, skillPicks:+2}, desc:"Você desconfia de tudo. Ótimo pra notar coisas… péssimo pra confiar." },
-    { id:"dv_trauma", name:"Traumatizado", points:{attr:+2, skillPicks:+1}, desc:"Algo do passado volta em gatilhos. O Mestre escolhe quando isso pesa na cena." },
-    { id:"dv_medo_viloes", name:"Medo dos Vilões", points:{attr:+2, skillPicks:+1}, desc:"Quando um vilão importante aparece, você pode hesitar. Superável com roleplay/tempo." },
-
-    { id:"dv_teimoso", name:"Teimoso", points:{attr:+1, skillPicks:+1}, desc:"Muda de ideia com dificuldade. Discussões podem virar testes sociais (roleplay)." },
-    { id:"dv_sanguinario", name:"Sede de Sangue", points:{attr:+1, skillPicks:+2}, desc:"Em combate, você tende a exagerar. Pode gerar problemas depois." },
-    { id:"dv_orgulho", name:"Orgulhoso", points:{attr:+1, skillPicks:+1}, desc:"Você odeia perder. Pode aceitar desafios ruins só pra provar algo." },
-    { id:"dv_distracao", name:"Distraído", points:{attr:+1, skillPicks:+1}, desc:"Você perde detalhes óbvios quando está focado em outra coisa." },
-    { id:"dv_fobia_escuro", name:"Medo do Escuro", points:{attr:+1, skillPicks:+1}, desc:"No escuro total você fica tenso. O Mestre pode impor penalidades leves." },
-    { id:"dv_enjoo", name:"Enjoa Fácil", points:{attr:+1, skillPicks:+1}, desc:"Viagens longas, barcos, montarias… você sofre com enjoo (narrativo)." },
-    { id:"dv_codigo", name:"Código Moral", points:{attr:+1, skillPicks:+1}, desc:"Você tem limites que não cruza. Isso pode te colocar em risco." },
-    { id:"dv_alvo", name:"Alvo Marcado", points:{attr:+2, skillPicks:+1}, desc:"Alguém te caça/observa. Pode aparecer em momentos críticos (narrativo)." },
-    { id:"dv_voto", name:"Voto / Juramento", points:{attr:+1, skillPicks:+2}, desc:"Você jurou algo difícil. Quebrar tem consequência real na história." },
-    { id:"dv_instavel", name:"Instável no Véu", points:{attr:+2, skillPicks:+2}, desc:"Quando o Véu vibra, você vibra junto. Pode causar efeitos estranhos sem querer." },
+    { id:"dv_marcado", name:"Marcado", points:{attr:+2, skillPicks:+1}, desc:"Seu ‘sinal’ é mais visível — coisas te notam com facilidade." },
+    { id:"dv_debito", name:"Dívida", points:{attr:+1, skillPicks:+2}, desc:"Um favor perigoso vai ser cobrado (o Mestre decide quando)." },
+    { id:"dv_vozes", name:"Vozes", points:{attr:+2, skillPicks:+2}, desc:"Visões/lapsos em momentos de pressão (narrativo)." },
   ];
 
   return {
@@ -376,8 +344,8 @@ function defaultDB(){
         character: {
           avatarDataUrl: "",
           charName: "Player 1",
-          preferredRaceId: "human_veil",
-          classId: "cls1",
+          preferredRaceId: DEFAULT_RACE_ID,
+          classId: DEFAULT_CLASS_ID,
           finalRaceId: "",
           attrs: mkAttrsZero(),
           skills: mkSkillsZero(),
@@ -385,8 +353,9 @@ function defaultDB(){
           pools: { attrBase: 10, skillPicksBase: 8 },
           levelSeen: 1,
           levelAttrBonus: 0,
+          levelSkillBonus: 0,
           abilities: [],
-          currentStats: { vida: 0, defesa: 0, velocidade: 0, foco: 0 } // skill picks: cada pick = +4 em uma perícia
+          currentStats: { vida: 0, defesa: 0, velocidade: 0, foco: 0 }
         },
         log: [{ts: Date.now(), text:"Conta criada. Primeiro login libera criação."}]
       }
@@ -398,40 +367,6 @@ function defaultDB(){
   };
 }
 
-/* =========================
-   Helpers
-========================= */
-const $ = (id)=>document.getElementById(id);
-
-function mkAttrsZero(){
-  const o = {};
-  for(const k of ATTR_KEYS) o[k]=0;
-  return o;
-}
-function mkSkillsZero(){
-  const o = {};
-  for(const k of SKILL_KEYS) o[k]=0;
-  return o;
-}
-function escapeHTML(str){
-  return String(str||"")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-function nowStr(ts){ return new Date(ts).toLocaleString(); }
-function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
-
-
-
-function setActiveTab(tabId){
-  UI.activeTab = tabId || UI.activeTab || "tabRaces";
-  document.querySelectorAll(".tabBtn").forEach(b=>{
-    b.classList.toggle("active", b.dataset.tab===UI.activeTab);
-  });
-  document.querySelectorAll(".tabPanel").forEach(p=>{
-    p.classList.toggle("hidden", p.id!==UI.activeTab);
-  });
-}
 function loadDB(){
   const raw = localStorage.getItem(KEY);
   if(!raw){
@@ -450,31 +385,22 @@ function saveDB(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
 
 let DB = loadDB();
 
-/* ===== MIGRAÇÃO (pra não quebrar dados antigos) ===== */
+/* ===== MIGRAÇÃO ===== */
 (function migrateDB(){
   const base = defaultDB();
   let changed = false;
 
   if(!DB || typeof DB !== "object"){ DB = base; changed = true; }
-
   if(!Array.isArray(DB.users) || DB.users.length===0){ DB.users = base.users; changed = true; }
   if(!Array.isArray(DB.players) || DB.players.length===0){ DB.players = base.players; changed = true; }
-
   if(!Array.isArray(DB.races) || DB.races.length===0){ DB.races = base.races; changed = true; }
   if(!Array.isArray(DB.classes) || DB.classes.length===0){ DB.classes = base.classes; changed = true; }
   if(!Array.isArray(DB.disadvantages) || DB.disadvantages.length===0){ DB.disadvantages = base.disadvantages; changed = true; }
-
   if(!DB.session || typeof DB.session !== "object"){ DB.session = { userId:null }; changed = true; }
 
-  // garante campos mínimos por player
   for(const p of DB.players){
     if(!p.character || typeof p.character !== "object"){ p.character = {}; changed = true; }
     const c = p.character;
-  const lvl = levelFromXp(p.xp);
-  const xpStart = (lvl-1)*100;
-  const xpNext = lvl*100;
-  const xpPct = clamp(Math.round((Number(p.xp||0)-xpStart)/100*100),0,100);
-  const abilitySlots = Math.floor(lvl/5);
 
     if(typeof c.bonusesApplied !== "boolean"){ c.bonusesApplied = false; changed = true; }
     if(!c.attrs || typeof c.attrs !== "object"){ c.attrs = mkAttrsZero(); changed = true; }
@@ -483,13 +409,14 @@ let DB = loadDB();
     if(!c.pools || typeof c.pools !== "object"){ c.pools = { attrBase:10, skillPicksBase:8 }; changed = true; }
     if(typeof c.levelSeen !== "number"){ c.levelSeen = 1; changed = true; }
     if(typeof c.levelAttrBonus !== "number"){ c.levelAttrBonus = 0; changed = true; }
+    if(typeof c.levelSkillBonus !== "number"){ c.levelSkillBonus = 0; changed = true; }
     if(!Array.isArray(c.abilities)){ c.abilities = []; changed = true; }
     if(!c.currentStats || typeof c.currentStats !== "object"){
       c.currentStats = { vida:0, defesa:0, velocidade:0, foco:0 }; changed = true;
     }
 
-    if(!c.preferredRaceId){ c.preferredRaceId = "human_veil"; changed = true; }
-    if(!c.classId){ c.classId = "cls1"; changed = true; }
+    if(!c.preferredRaceId){ c.preferredRaceId = base.players[0].character.preferredRaceId; changed = true; }
+    if(!c.classId){ c.classId = base.players[0].character.classId; changed = true; }
     if(typeof c.charName !== "string"){ c.charName = p.username || "Player"; changed = true; }
     if(typeof c.finalRaceId !== "string"){ c.finalRaceId = ""; changed = true; }
 
@@ -498,7 +425,7 @@ let DB = loadDB();
     if(typeof p.characterCreated !== "boolean"){ p.characterCreated = false; changed = true; }
     if(!Number.isFinite(Number(p.xp))) { p.xp = 0; changed = true; }
   }
-  // garantir que usuários "player" tenham playerId (evita tela vazia após login)
+
   for(const u of DB.users){
     if(u && u.role==="player" && !u.playerId){
       const p = DB.players.find(pp=>pp.username===u.username);
@@ -506,10 +433,8 @@ let DB = loadDB();
     }
   }
 
-
   if(changed) saveDB(DB);
 })();
-
 
 function findUserBySession(){
   const uid = DB.session.userId;
@@ -563,7 +488,7 @@ function totalAttrPoints(player){
 }
 function totalSkillPicks(player){
   const base = player.character.pools?.skillPicksBase ?? 8;
-  return base + disadvBonus(player).skillPicks + (Number(player.levelSkillBonus||0));
+  return base + disadvBonus(player).skillPicks + Number(player.character.levelSkillBonus||0);
 }
 function spentAttrPoints(player){
   let sum=0;
@@ -571,19 +496,17 @@ function spentAttrPoints(player){
   return sum;
 }
 function spentSkillPicks(player){
-  // cada pick = +4
   let picks=0;
   for(const k of SKILL_KEYS) picks += Math.floor(Number(player.character.skills?.[k]||0)/4);
   return picks;
 }
-
 
 /* =========================
    XP / Level (100 XP por level)
 ========================= */
 function levelFromXp(xp){
   const v = Math.max(0, Number(xp||0));
-  return Math.floor(v/100) + 1; // 0-99 => lvl1, 100-199 => lvl2 ...
+  return Math.floor(v/100) + 1;
 }
 function ensureLevelState(player){
   const c = player.character;
@@ -603,15 +526,13 @@ function applyXpDelta(player, delta, reason){
   const oldLevel = Math.max(1, Number(player.character.levelSeen||1));
 
   if(newLevel > oldLevel){
-    // A cada 5 níveis, ganha +1 pick de Perícia (equivale a +4 em uma perícia)
     let skillGain = 0;
     for(let l = oldLevel + 1; l <= newLevel; l++){
       if(l % 5 === 0) skillGain++;
     }
-
     const diff = newLevel - oldLevel;
-    player.character.levelAttrBonus = Number(player.character.levelAttrBonus||0) + diff*3; // +3 pontos por level
-        if(skillGain>0){
+    player.character.levelAttrBonus = Number(player.character.levelAttrBonus||0) + diff*3;
+    if(skillGain>0){
       player.character.levelSkillBonus = Number(player.character.levelSkillBonus||0) + skillGain;
       player.log.unshift({ts:Date.now(), text:`+${skillGain} pick(s) de Perícia (níveis múltiplos de 5).`});
     }
@@ -624,127 +545,6 @@ function applyXpDelta(player, delta, reason){
   }
   saveDB(DB);
 }
-
-/* =========================
-   Wheel (sem mostrar chances)
-   - Resultado pode ser: raça preferida, outra padrão, ou uma perfeita rara
-========================= */
-function buildWheelSegments(preferredRaceId){
-  // Segments: todas padrão + 2 perfeitas
-  const perfect = DB.races.filter(r=>r.tier==="perfeita");
-  const standard = DB.races.filter(r=>r.tier!=="perfeita");
-  const preferred = standard.find(r=>r.id===preferredRaceId) || standard[0];
-
-  // Pesos (não exibidos):
-  // - Perfeitas: raras (bem baixo)
-  // - Preferida: mais alta
-  // - Outras: normal
-  const segs = [];
-  const perfectWeightEach = 1;       // raríssimo (não exposto)
-  const preferredWeight = 9;         // aumenta chance da escolhida
-  const otherWeight = 3;             // outras podem cair
-
-  for(const r of standard){
-    segs.push({ race:r, w: (r.id===preferred.id ? preferredWeight : otherWeight) });
-  }
-  for(const r of perfect){
-    segs.push({ race:r, w: perfectWeightEach });
-  }
-
-  // converte pesos em ângulos
-  const total = segs.reduce((s,x)=>s+x.w,0);
-  let acc=0;
-  const segments = segs.map(s=>{
-    const start = acc/total*Math.PI*2;
-    acc += s.w;
-    const end = acc/total*Math.PI*2;
-    return { race:s.race, start, end, w:s.w };
-  });
-  return segments;
-}
-function weightedPick(segments){
-  const total = segments.reduce((s,x)=>s+x.w,0);
-  let roll = Math.random()*total;
-  for(const seg of segments){
-    roll -= seg.w;
-    if(roll<=0) return seg;
-  }
-  return segments[segments.length-1];
-}
-function segmentAngleToStopOn(seg){
-  const mid=(seg.start+seg.end)/2;
-  return (-Math.PI/2) - mid;
-}
-function drawWheel(ctx, segments, rotation=0){
-  const {width:w,height:h} = ctx.canvas;
-  ctx.clearRect(0,0,w,h);
-  const cx=w/2, cy=h/2;
-  const radius=Math.min(w,h)*0.45;
-
-  ctx.save();
-  ctx.translate(cx,cy);
-  ctx.rotate(rotation);
-
-  for(let i=0;i<segments.length;i++){
-    const seg=segments[i];
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.arc(0,0,radius, seg.start, seg.end);
-    ctx.closePath();
-
-    const isPerfect = seg.race.tier==="perfeita";
-    ctx.fillStyle = isPerfect ? "rgba(245,194,75,.25)" : (i%2===0 ? "#1b2533" : "#15202d");
-    ctx.fill();
-
-    ctx.strokeStyle="#223042";
-    ctx.lineWidth=2;
-    ctx.stroke();
-
-    // número da fatia (bem legível)
-    const mid=(seg.start+seg.end)/2;
-    ctx.save();
-    ctx.rotate(mid);
-    ctx.translate(radius*0.62,0);
-    ctx.rotate(Math.PI/2);
-
-    ctx.fillStyle="#e8f0fb";
-    ctx.font="950 14px system-ui";
-    const label = String(i+1);
-    ctx.fillText(label, -ctx.measureText(label).width/2, 0);
-
-    ctx.restore();
-  }
-
-  // centro
-  ctx.beginPath();
-  ctx.arc(0,0,radius*0.18,0,Math.PI*2);
-  ctx.fillStyle="#0c131c";
-  ctx.fill();
-  ctx.strokeStyle="#223042";
-  ctx.lineWidth=2;
-  ctx.stroke();
-
-  ctx.fillStyle="#8aa0b6";
-  ctx.font="950 12px system-ui";
-  const t="GIRAR";
-  ctx.fillText(t, -ctx.measureText(t).width/2, 4);
-
-  ctx.restore();
-}
-
-
-
-function renderWheelLegend(segments){
-  const list = $("wheelLegendList");
-  if(!list) return;
-  list.innerHTML = segments.map((seg,i)=>{
-    const badge = `<span class="legendBadge">${i+1}</span>`;
-    const name = `<span>${escapeHTML(seg.race.name)}</span>`;
-    const perfect = seg.race.tier==="perfeita" ? `<span class="tag perfect" style="padding:2px 8px">PERFEITA</span>` : "";
-    return `<div class="legendItem">${badge}${name}${perfect}</div>`;
-  }).join("");
-}
-
 
 /* =========================
    Bonuses apply
@@ -772,21 +572,23 @@ function applyBonusesToSheet(player, race, cls){
 function calcDerived(player){
   const a = player.character.attrs;
 
-  const STR = Number(a.ForcaAtletismo||0);
+  const STR = Number(a.Forca||0);
   const DEX = Number(a.Destreza||0);
   const INT = Number(a.Inteligencia||0);
-  const WIS = Number(a.Sabedoria||0);
+  const WIL = Number(a.Vontade||0);
   const CHA = Number(a.Carisma||0);
 
-  const vida = 60 + STR*12 + WIS*6;
-  const defesa = 10 + DEX*2 + WIS*2 + STR*1;
-  const velocidade = 10 + DEX*3 + Math.floor(STR*0.5);
-  const foco = 25 + INT*8 + WIS*6 + Math.floor(CHA*2);
+  // Barras base (simples e fáceis de balancear depois)
+  const vida = 60 + STR*12 + WIL*6;
+  const defesa = 10 + DEX*3 + WIL*2 + Math.floor(STR*0.5);
+  const velocidade = 10 + DEX*3 + Math.floor(STR*0.7);
+  const foco = 25 + INT*7 + WIL*9 + Math.floor(CHA*2);
 
-  const maxVida = 220;
-  const maxDef = 60;
-  const maxVel = 60;
-  const maxFoco = 220;
+  // Para a barra (%) ficar bonita no dashboard
+  const maxVida = 260;
+  const maxDef = 80;
+  const maxVel = 80;
+  const maxFoco = 260;
 
   return {
     vida, defesa, velocidade, foco,
@@ -808,7 +610,6 @@ function bindDashboardStatButtons(){
     const btn = ev.target.closest('button[data-stat][data-step]');
     if(!btn) return;
 
-    // only inside the KPI cards area (vida/defesa/velocidade/foco)
     const kpiBox = btn.closest(".kpiBox");
     if(!kpiBox) return;
 
@@ -854,6 +655,7 @@ function bindDashboardStatButtons(){
 function masterCreatePlayerLogin(displayName, username, password){
   if(DB.users.some(u=>u.username===username)) return {ok:false, msg:"Esse usuário já existe."};
 
+  const base = defaultDB();
   const playerId = "p" + Math.random().toString(16).slice(2,8);
   const userId = "u_" + Math.random().toString(16).slice(2,8);
 
@@ -866,17 +668,18 @@ function masterCreatePlayerLogin(displayName, username, password){
     character: {
       avatarDataUrl: "",
       charName: displayName,
-      preferredRaceId: "human_veil",
-      classId: "cls1",
+      preferredRaceId: base.players[0].character.preferredRaceId,
+      classId: base.players[0].character.classId,
       finalRaceId: "",
       attrs: mkAttrsZero(),
       skills: mkSkillsZero(),
       disadvantages: [],
       pools: { attrBase: 10, skillPicksBase: 8 },
-          levelSeen: 1,
-          levelAttrBonus: 0,
-          abilities: [],
-          currentStats: { vida: 0, defesa: 0, velocidade: 0, foco: 0 }
+      levelSeen: 1,
+      levelAttrBonus: 0,
+      levelSkillBonus: 0,
+      abilities: [],
+      currentStats: { vida: 0, defesa: 0, velocidade: 0, foco: 0 }
     },
     log: [{ts:Date.now(), text:"Conta criada pelo Mestre. Primeiro login libera criação."}]
   });
@@ -889,13 +692,14 @@ function masterCreatePlayerLogin(displayName, username, password){
 function masterResetCharacter(playerId){
   const p = getPlayer(playerId);
   if(!p) return;
+  const base = defaultDB();
   p.characterCreated = false;
   p.character.finalRaceId = "";
   p.character.attrs = mkAttrsZero();
   p.character.skills = mkSkillsZero();
   p.character.disadvantages = [];
-  p.character.preferredRaceId = "human_veil";
-  p.character.classId = "cls1";
+  p.character.preferredRaceId = base.players[0].character.preferredRaceId;
+  p.character.classId = base.players[0].character.classId;
   p.log.unshift({ts:Date.now(), text:"Mestre resetou o personagem (recriação liberada)."});
   saveDB(DB);
 }
@@ -904,15 +708,6 @@ function masterDeletePlayer(playerId){
   if(!p) return;
   DB.users = DB.users.filter(u=>u.playerId!==playerId);
   DB.players = DB.players.filter(pp=>pp.id!==playerId);
-  saveDB(DB);
-}
-function masterGiveXP(playerId, amount, reason){
-  const p = getPlayer(playerId);
-  if(!p) return;
-  const a = Number(amount);
-  if(!Number.isFinite(a)) return;
-  p.xp = Math.max(0, p.xp + a);
-  p.log.unshift({ts:Date.now(), text:`XP ${a>=0?"+":""}${a} — ${reason||"sem motivo"}`});
   saveDB(DB);
 }
 function masterGiveItem(playerId, itemName){
@@ -924,40 +719,12 @@ function masterGiveItem(playerId, itemName){
   p.log.unshift({ts:Date.now(), text:`Item recebido: ${name}`});
   saveDB(DB);
 }
-function masterRemoveItem(playerId, itemId){
+function masterGiveXP(playerId, amount, reason){
   const p = getPlayer(playerId);
   if(!p) return;
-  const it = p.inventory.find(x=>x.id===itemId);
-  p.inventory = p.inventory.filter(x=>x.id!==itemId);
-  p.log.unshift({ts:Date.now(), text:`Item removido: ${it?.name||"—"}`});
-  saveDB(DB);
-}
-
-
-function bindStatButtons(){
-  // remove handlers antigos reaplicando por atributo
-  document.querySelectorAll('button[],button[]').forEach(btn=>{
-    btn.onclick = (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      const action = btn.dataset.action;
-      const statId = btn.dataset.stat;
-      const delta = Number(btn.dataset.delta||0);
-      const user = findUserBySession();
-      if(!user) return;
-      const isPlayer = user.role==="player";
-      const p = isPlayer ? getPlayer(user.playerId) : getPlayer($("masterSelectPlayer")?.value);
-      if(!p) return;
-      const c = p.character;
-      c.currentStats = c.currentStats || { vida:0, defesa:0, velocidade:0, foco:0 };
-      const key = statId;
-      const cur = Number(c.currentStats[key]||0);
-      const next = clamp(cur + (action==="stat_dec" ? -delta : delta), 0, 1000000);
-      c.currentStats[key] = next;
-      saveDB(DB);
-      render();
-    };
-  });
+  const a = Number(amount);
+  if(!Number.isFinite(a)) return;
+  applyXpDelta(p, a, reason||"Mestre");
 }
 
 /* =========================
@@ -978,7 +745,6 @@ function render(){
 
   if(user.role==="master") renderMaster();
   else {
-    // Alguns navegadores podem ficar com DB antigo sem playerId. Tentamos recuperar.
     let pid = user.playerId || (DB.players.find(p=>p.username===user.username)?.id);
     if(!pid && DB.players.length===1) pid = DB.players[0].id;
     if(pid && user.playerId!==pid){ user.playerId = pid; saveDB(DB); }
@@ -996,16 +762,14 @@ function renderMaster(){
   const main = $("mainPanel");
   main.innerHTML = `
     <h2 style="margin:0 0 6px 0;font-size:16px">Painel do Mestre</h2>
-    <p class="muted" style="margin-top:0">
-      Você cria logins, dá XP/itens, reseta e deleta personagens. No primeiro login, o player faz a criação.
-    </p>
+    <p class="muted" style="margin-top:0">Crie logins, dê XP/itens e gerencie players.</p>
 
     <div class="divider"></div>
 
     <h3 style="margin:0 0 8px 0;font-size:14px">Criar login de player</h3>
     <div class="row">
       <div style="flex:1;min-width:220px">
-        <label>Nome do personagem (pode mudar depois)</label>
+        <label>Nome do personagem</label>
         <input id="m_newName" placeholder="ex: Kael, Nyra, Amon...">
       </div>
       <div style="flex:1;min-width:200px">
@@ -1054,19 +818,15 @@ function renderMaster(){
     </div>
 
     <div class="row" style="margin-top:10px">
-      <button id="m_btnReset" class="secondary">Resetar personagem (recriar)</button>
+      <button id="m_btnResetChar" class="secondary">Resetar personagem</button>
       <button id="m_btnDelete" class="danger">Deletar player</button>
-      <button id="m_btnView" class="secondary">Ver ficha</button>
     </div>
   `;
 
-  
-  // mantém a aba atual após qualquer mudança (atributos/perícias)
-  setActiveTab(UI.activeTab);
-const side = $("sidePanel");
+  const side = $("sidePanel");
   side.innerHTML = `
     <h2 style="margin:0 0 6px 0;font-size:16px">Players</h2>
-    <p class="muted" style="margin-top:0">Status de criação + raça final.</p>
+    <p class="muted" style="margin-top:0">Status de criação.</p>
     <div id="roster"></div>
   `;
 
@@ -1090,44 +850,29 @@ const side = $("sidePanel");
     const res = masterCreatePlayerLogin(name, user, pass);
     msg.textContent = res.msg;
     msg.className = "muted mini " + (res.ok ? "ok" : "bad");
-    DB = loadDB();
-    render();
+    DB = loadDB(); render();
   };
 
   $("m_btnXP").onclick = ()=>{
     const pid = sel.value;
     masterGiveXP(pid, $("m_xpAmt").value, $("m_xpReason").value.trim());
-    DB = loadDB();
-    render();
+    DB = loadDB(); render();
   };
 
   $("m_btnItem").onclick = ()=>{
     const pid = sel.value;
     masterGiveItem(pid, $("m_itemName").value);
-    DB = loadDB();
-    render();
+    DB = loadDB(); render();
   };
 
-  $("m_btnReset").onclick = ()=>{
+  $("m_btnResetChar").onclick = ()=>{
     const pid = sel.value;
-    if(confirm("Resetar personagem? (o player vai criar tudo de novo)")){
-      masterResetCharacter(pid);
-      DB = loadDB();
-      render();
-    }
+    if(confirm("Resetar personagem?")){ masterResetCharacter(pid); DB = loadDB(); render(); }
   };
 
   $("m_btnDelete").onclick = ()=>{
     const pid = sel.value;
-    if(confirm("Deletar esse player e o login dele?")){
-      masterDeletePlayer(pid);
-      DB = loadDB();
-      render();
-    }
-  };
-
-  $("m_btnView").onclick = ()=>{
-    openPlayerModal(sel.value);
+    if(confirm("Deletar esse player e o login dele?")){ masterDeletePlayer(pid); DB = loadDB(); render(); }
   };
 
   renderRoster();
@@ -1143,120 +888,20 @@ function renderRoster(){
     div.className = "card";
     div.style.padding="12px";
     div.style.marginBottom="10px";
-    div.style.background="#0c131c";
+    div.style.background="rgba(6,8,14,.55)";
     div.innerHTML = `
       <div class="row" style="justify-content:space-between">
         <div>
           <div style="font-weight:950">${escapeHTML(p.character.charName||p.username)}</div>
           <div class="muted mini">Criado: ${p.characterCreated ? "sim" : "não"} • Raça: ${escapeHTML(race)} • XP: ${p.xp}</div>
         </div>
-        <button class="secondary" data-open="${p.id}">Abrir</button>
       </div>
     `;
     wrap.appendChild(div);
-    div.querySelector("button").onclick = ()=>openPlayerModal(p.id);
   });
 }
 
-function openPlayerModal(pid){
-  const p = getPlayer(pid);
-  if(!p) return;
-
-  const race = p.character.finalRaceId ? getRace(p.character.finalRaceId) : null;
-  const cls = getClass(p.character.classId);
-
-  const derived = p.characterCreated ? calcDerived(p) : null;
-
-  const html = `
-    <div class="overlay" id="ov">
-      <div class="modal">
-        <div class="modalHeader">
-          <div>
-            <div style="font-size:16px;font-weight:950">${escapeHTML(p.character.charName||p.username)}</div>
-            <div class="muted mini">@${escapeHTML(p.username)} • XP ${p.xp} • Criado: ${p.characterCreated ? "sim" : "não"}</div>
-          </div>
-          <button class="danger" id="close">Fechar</button>
-        </div>
-        <div class="divider"></div>
-
-        <div class="grid" style="grid-template-columns:1fr;gap:12px">
-          <div class="card" style="background:#0c131c">
-            <div class="row" style="justify-content:space-between">
-              <b>Raça</b>
-              ${race?.tier==="perfeita" ? `<span class="tag perfect">PERFEITA</span>` : `<span class="tag">padrão</span>`}
-            </div>
-            <div class="muted mini" style="margin-top:6px">${escapeHTML(race?.name||"—")}</div>
-            <div class="muted mini" style="margin-top:6px">${escapeHTML(race?.note||"")}</div>
-          </div>
-
-          <div class="card" style="background:#0c131c">
-            <div class="row" style="justify-content:space-between"><b>Classe</b><span class="tag lore">Guerra do Véu</span></div>
-            <div class="muted mini" style="margin-top:6px">${escapeHTML(cls?.name||"—")}</div>
-            <div class="muted mini" style="margin-top:6px">${escapeHTML(cls?.lore||"")}</div>
-          </div>
-
-          <div class="card" style="background:#0c131c">
-            <b>Atributos</b>
-            <div class="divider"></div>
-            ${ATTR_KEYS.map(k=>`
-              <div class="row" style="justify-content:space-between">
-                <span>${ATTR_LABEL[k]}</span><b>${Number(p.character.attrs[k]||0)}</b>
-              </div>
-            `).join("")}
-          </div>
-
-          <div class="card" style="background:#0c131c">
-            <b>Perícias</b>
-            <div class="divider"></div>
-            ${SKILL_KEYS.map(k=>`
-              <div class="row" style="justify-content:space-between">
-                <span>${SKILL_LABEL[k]}</span><b>${Number(p.character.skills[k]||0)}</b>
-              </div>
-            `).join("")}
-          </div>
-
-          ${derived ? `
-            <div class="card" style="background:#0c131c">
-              <b>Barras</b>
-              <div class="divider"></div>
-              <div class="row" style="gap:10px;flex-wrap:wrap">
-                <span class="pill">Vida: <b>${derived.vida}</b></span>
-                <span class="pill">Defesa: <b>${derived.defesa}</b></span>
-                <span class="pill">Velocidade: <b>${derived.velocidade}</b></span>
-                <span class="pill">Foco do Véu: <b>${derived.foco}</b></span>
-              </div>
-            </div>
-          ` : ``}
-
-          <div class="card" style="background:#0c131c">
-            <b>Inventário</b>
-            <div class="divider"></div>
-            <div class="muted mini">${(p.inventory||[]).slice(0,12).map(it=>`• ${escapeHTML(it.name)}`).join("<br>") || "—"}</div>
-          </div>
-
-          <div class="card" style="background:#0c131c">
-            <b>Log</b>
-            <div class="divider"></div>
-            <div class="muted mini" style="max-height:220px;overflow:auto">
-              ${(p.log||[]).slice(0,15).map(l=>`• [${nowStr(l.ts)}] ${escapeHTML(l.text)}`).join("<br>")}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  const ov = document.createElement("div");
-  ov.innerHTML = html;
-  document.body.appendChild(ov.firstElementChild);
-  document.getElementById("close").onclick = ()=>document.getElementById("ov").remove();
-  document.getElementById("ov").addEventListener("click",(e)=>{ if(e.target.id==="ov") e.target.remove(); });
-}
-
-/* =========================
-   Player UI
-========================= */
 function renderPlayer(playerId){
-  // Robust resolve: some saves may have user.playerId vazio; tentamos achar pelo username também
   let p = getPlayer(playerId);
   const main = $("mainPanel");
   const side = $("sidePanel");
@@ -1265,8 +910,6 @@ function renderPlayer(playerId){
     const u = findUserBySession();
     const uname = String(u?.username||"").trim().toLowerCase();
     p = DB.players.find(pp=>String(pp.username||"").trim().toLowerCase()===uname) || null;
-
-    // se achou, tenta re-sincronizar o user.playerId pra não quebrar de novo
     if(p && u){
       const uu = DB.users.find(x=>x.id===u.id);
       if(uu && uu.role==="player" && !uu.playerId) uu.playerId = p.id;
@@ -1275,150 +918,81 @@ function renderPlayer(playerId){
   }
 
   if(!p){
-    main.innerHTML = `
-      <h2 style="margin:0 0 6px 0;font-size:16px">Player</h2>
-      <div class="warn">Não consegui encontrar seu personagem no banco (playerId ausente). Clique em <b>Resetar dados</b> e faça login de novo.</div>
-    `;
-    side.innerHTML = `
-      <h3 style="margin:0 0 8px 0;font-size:14px">Diagnóstico</h3>
-      <div class="muted">Sessão está logada, mas não existe um registro de player correspondente.</div>
-    `;
+    main.innerHTML = `<div class="warn">Não achei seu personagem. Clique em <b>Resetar dados</b> e faça login de novo.</div>`;
+    side.innerHTML = "";
     return;
   }
 
   if(!p.characterCreated){
     renderCharacterCreator(p);
     side.innerHTML = `
-      <h2 style="margin:0 0 6px 0;font-size:16px">Guerra do Véu</h2>
-      <p class="muted" style="margin-top:0">
-        Monte seu personagem nas abas. Você pode revisar tudo no resumo antes de finalizar.
-      </p>
+      <h2 style="margin:0 0 6px 0;font-size:16px">MYR</h2>
+      <p class="muted" style="margin-top:0">Monte seu personagem nas abas. Depois finalize.</p>
       <div class="good">
         <b class="ok">Dica</b>
-        <div class="muted mini">
-          Desvantagens dão pontos extras. Ajuste atributos e perícias do jeito que preferir.
-        </div>
+        <div class="muted mini">Desvantagens dão pontos extras. Sem drama: só escolher e jogar.</div>
       </div>
     `;
     return;
   }
 
+  ensureLevelState(p);
   const c = p.character || {};
-  // XP/Level: lvl 1 = 0-99xp, lvl 2 = 100-199xp, etc (100xp por nível)
   const lvl = levelFromXp(Number(p.xp||0));
   const xpStart = (lvl-1)*100;
   const xpNext = lvl*100;
   const xpPct = clamp(Math.round((Number(p.xp||0)-xpStart)/100*100), 0, 100);
-  const abilitySlots = Math.floor(lvl/5);
-  const race = getRace(p.character.finalRaceId);
-  const cls = getClass(p.character.classId);
+
+  const race = getRace(c.finalRaceId);
+  const cls = getClass(c.classId);
   const d = calcDerived(p);
-  // stats atuais do dashboard (persistem no player)
-  ensureLevelState(p);
-  let __statsChanged = false;
 
-  // referência (base) do derivado anterior para manter vínculo quando a ficha muda (level/atributos/perícias/bônus)
-  const last = p.character.lastDerivedStats && typeof p.character.lastDerivedStats === "object"
-    ? p.character.lastDerivedStats
-    : null;
-
-  if(!p.character.currentStats){
-    // começa cheio com os valores derivados da ficha
-    p.character.currentStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco };
-    __statsChanged = true;
-  } else {
-    const cur0 = p.character.currentStats;
-
-    // se faltar/virar inválido, volta pro derivado atual como base
-    if(!Number.isFinite(Number(cur0.vida))) cur0.vida = d.vida;
-    if(!Number.isFinite(Number(cur0.defesa))) cur0.defesa = d.defesa;
-    if(!Number.isFinite(Number(cur0.velocidade))) cur0.velocidade = d.velocidade;
-    if(!Number.isFinite(Number(cur0.foco))) cur0.foco = d.foco;
-
-    // nunca deixa negativo
-    cur0.vida = Math.max(0, Number(cur0.vida));
-    cur0.defesa = Math.max(0, Number(cur0.defesa));
-    cur0.velocidade = Math.max(0, Number(cur0.velocidade));
-    cur0.foco = Math.max(0, Number(cur0.foco));
-    __statsChanged = true;
-
-    // Se o derivado mudou (ex: upou nível e gastou pontos), ajusta o atual junto pra manter o "vínculo"
-    if(last){
-      const keys = ["vida","defesa","velocidade","foco"];
-      for(const k of keys){
-        const oldMax = Number(last[k]||0);
-        const newMax = Number(d[k]||0);
-        if(Number.isFinite(oldMax) && Number.isFinite(newMax)){
-          const delta = newMax - oldMax;
-          if(delta !== 0){
-            cur0[k] = clamp(Number(cur0[k]) + delta, 0, newMax);
-            __statsChanged = true;
-          } else {
-            cur0[k] = clamp(Number(cur0[k]), 0, newMax);
-            __statsChanged = true;
-          }
-        }
-      }
-    } else {
-      // sem histórico: só garante que não passa do derivado atual
-      cur0.vida = clamp(cur0.vida, 0, d.vida);
-      cur0.defesa = clamp(cur0.defesa, 0, d.defesa);
-      cur0.velocidade = clamp(cur0.velocidade, 0, d.velocidade);
-      cur0.foco = clamp(cur0.foco, 0, d.foco);
-      __statsChanged = true;
-    }
+  if(!c.currentStats || typeof c.currentStats!=="object"){
+    c.currentStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco };
+    saveDB(DB);
   }
+  const cur = c.currentStats;
 
-  // atualiza a referência do derivado para próximas mudanças
-  p.character.lastDerivedStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco };
-
-  if(__statsChanged){ saveDB(DB); DB = loadDB(); }
-
-  const cur = p.character.currentStats;
-
-main.innerHTML = `
+  main.innerHTML = `
     <h2 style="margin:0 0 6px 0;font-size:16px">Ficha do Player</h2>
 
     <div class="row" style="justify-content:space-between;align-items:flex-start">
       <div class="row" style="gap:14px">
-        <div class="avatarBox" id="avatarPreviewBox">
-          ${p.character.avatarDataUrl ? `<img src="${p.character.avatarDataUrl}" alt="avatar">` : `<span class="muted mini">sem imagem</span>`}
+        <div class="avatarBox">
+          ${c.avatarDataUrl ? `<img src="${c.avatarDataUrl}" alt="avatar">` : `<span class="muted mini">sem imagem</span>`}
         </div>
         <div>
-          <div style="font-size:18px;font-weight:950">${escapeHTML(p.character.charName||p.username)}</div>
-          <div class="muted mini">
-            Classe: <b>${escapeHTML(cls?.name||"—")}</b> • Raça: <b>${escapeHTML(race?.name||"—")}</b>
-          </div>
-          ${race?.tier==="perfeita" ? `<div class="tag perfect" style="margin-top:8px">Por essa raça exige uma troca</div>` : ``}
-          <div class="muted mini" style="margin-top:8px">${escapeHTML(race?.note||"")}</div>
+          <div style="font-size:18px;font-weight:950">${escapeHTML(c.charName||p.username)}</div>
+          <div class="muted mini">Classe: <b>${escapeHTML(cls?.name||"—")}</b> • Raça: <b>${escapeHTML(race?.name||"—")}</b></div>
 
           <div class="row" style="margin-top:10px">
-            <label style="min-width:220px">Alterar imagem (liberado)</label>
+            <label style="min-width:220px">Alterar imagem</label>
             <input id="avatarChange" type="file" accept="image/*">
           </div>
         </div>
       </div>
 
       <div style="width:100%">
-  <div class="row" style="justify-content:space-between">
-    <span class="pill">Level: <b>${lvl}</b> • XP: <b>${p.xp}</b> / ${xpNext}</span>
-    <span class="pill">Atributos bônus do Level: <b>${Number(c.levelAttrBonus||0)}</b></span>
-  </div>
-  <div class="kpiBar" style="margin-top:10px"><div class="xpFill" style="width:${xpPct}%"></div></div>
-  <div class="row" style="margin-top:10px">
-    <div style="flex:1;min-width:180px">
-      <label class="mini">Adicionar/Remover XP (players podem)</label>
-      <input id="xpDelta" type="number" value="50" />
-    </div>
-    <div style="flex:2;min-width:220px">
-      <label class="mini">Motivo (opcional)</label>
-      <input id="xpReason" placeholder="ex: missão, combate, roleplay"/>
-    </div>
-    <div style="min-width:160px;align-self:end">
-      <button class="secondary" data-action="apply_xp">Aplicar XP</button>
-    </div>
-  </div>
-</div>
+        <div class="row" style="justify-content:space-between">
+          <span class="pill">Level: <b>${lvl}</b> • XP: <b>${p.xp}</b> / ${xpNext}</span>
+          <span class="pill">Bônus de level: <b>${Number(c.levelAttrBonus||0)}</b> attr • <b>${Number(c.levelSkillBonus||0)}</b> pick</span>
+        </div>
+        <div class="kpiBar" style="margin-top:10px"><div class="xpFill" style="width:${xpPct}%"></div></div>
+
+        <div class="row" style="margin-top:10px">
+          <div style="flex:1;min-width:180px">
+            <label class="mini">Adicionar/Remover XP</label>
+            <input id="xpDelta" type="number" value="50" />
+          </div>
+          <div style="flex:2;min-width:220px">
+            <label class="mini">Motivo (opcional)</label>
+            <input id="xpReason" placeholder="ex: missão, combate, roleplay"/>
+          </div>
+          <div style="min-width:160px;align-self:end">
+            <button class="secondary" data-action="apply_xp">Aplicar XP</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="divider"></div>
@@ -1427,186 +1001,52 @@ main.innerHTML = `
       ${renderKpi("Vida","vida", cur.vida, d.vida)}
       ${renderKpi("Defesa","defesa", cur.defesa, d.defesa)}
       ${renderKpi("Velocidade","velocidade", cur.velocidade, d.velocidade)}
-      ${renderKpi("Foco do Véu","foco", cur.foco, d.foco)}
+      ${renderKpi("Foco","foco", cur.foco, d.foco)}
     </div>
 
     <div class="divider"></div>
 
-    <div class="card" style="padding:14px;background:#0c131c">
-      <h3 style="margin:0 0 6px 0;font-size:14px">Habilidades (a cada 5 níveis)</h3>
-      <p class="muted" style="margin:0 0 10px 0">
-        Você libera <b>${abilitySlots}</b> espaço(s) de habilidade (lvl 5, 10, 15...). 
-        Ideia: você cria habilidades “livres” com bom senso e o Mestre valida na mesa.
-      </p>
-      <div class="row" style="justify-content:space-between">
-        <span class="pill">Usadas: <b>${(c.abilities||[]).length}</b> / ${abilitySlots}</span>
-        <span class="pill">Dica: escreva curto e claro</span>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="row">
-        <div style="flex:1;min-width:200px">
-          <label class="mini">Nome da habilidade</label>
-          <input id="abName" placeholder="ex: Corte do Véu"/>
-        </div>
-        <div style="flex:2;min-width:240px">
-          <label class="mini">Descrição / efeito (curta)</label>
-          <input id="abDesc" placeholder="ex: 1x por combate, você..."/>
-        </div>
-        <div style="min-width:160px;align-self:end">
-          <button class="secondary" data-action="add_ability" ${(c.abilities||[]).length >= abilitySlots ? "disabled" : ""}>Adicionar</button>
-        </div>
-      </div>
-
-      <div style="margin-top:12px">
-        ${(c.abilities||[]).length===0 ? `<p class="muted">Nenhuma habilidade criada ainda.</p>` : `
-          <table>
-            <thead><tr><th>Nome</th><th>Descrição</th><th class="right">Ações</th></tr></thead>
-            <tbody>
-              ${(c.abilities||[]).map(ab=>`
-                <tr>
-                  <td><b>${escapeHTML(ab.name)}</b><div class="muted mini">${new Date(ab.ts).toLocaleString()}</div></td>
-                  <td class="muted">${escapeHTML(ab.desc)}</td>
-                  <td class="right"><button class="danger mini" data-action="del_ability" data-ab="${ab.id}">Remover</button></td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        `}
-      </div>
-    </div>
-
     <div class="grid" style="grid-template-columns:1fr;gap:12px">
-
-      <div class="card" style="background:#0c131c">
-        <div class="row" style="justify-content:space-between">
-          <b>Buffs da Raça</b>
-          ${race?.tier==="perfeita" ? `<span class="tag perfect">PERFEITA</span>` : `<span class="tag">padrão</span>`}
-        </div>
-        <div class="divider"></div>
-        <div class="muted mini">${(race?.perks||[]).map(x=>`• ${escapeHTML(x)}`).join("<br>") || "—"}</div>
-      </div>
-
-      <div class="card" style="background:#0c131c">
+      <div class="card" style="padding:14px;background:rgba(6,8,14,.55)">
         <b>Buffs da Classe</b>
         <div class="divider"></div>
-        <div class="muted mini">
-          • ${escapeHTML(cls?.lore||"—")}<br>
-          ${formatBuffs(cls?.buffs)}
-        </div>
+        <div class="muted mini">• ${escapeHTML(cls?.lore||"—")}<br>${formatBuffs(cls?.buffs)}</div>
       </div>
     </div>
   `;
 
-    // Painel lateral (gastar pontos + resumo rápido)
-    const disadvNames = (c.disadvantages||[]).map(id=>getDisadv(id)?.name).filter(Boolean);
-    const raceObj = getRace(c.finalRaceId||c.preferredRaceId);
-    const racePerks = raceObj?.perks || [];
-    const invList = (p.inventory||[]).slice(0,10).map(it=>`<div class="muted mini">• ${escapeHTML(it.name)}</div>`).join("") || `<span class="muted mini">Sem itens.</span>`;
-    const logList = (p.log||[]).slice(0,8).map(l=>`<div class="muted mini">• ${escapeHTML(l.text)} <span style="opacity:.6">(${nowStr(l.ts)})</span></div>`).join("") || `<span class="muted mini">Sem logs.</span>`;
+  side.innerHTML = `
+    <h2 style="margin:0 0 6px 0;font-size:16px">📌 Resumo</h2>
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
+      <div class="row" style="justify-content:space-between"><b>Base (Ref.)</b><span class="pill">LVL ${lvl}</span></div>
+      <div class="divider"></div>
+      <div class="muted mini">Vida ref.: <b>${d.vida}</b></div>
+      <div class="muted mini">Defesa ref.: <b>${d.defesa}</b></div>
+      <div class="muted mini">Velocidade ref.: <b>${d.velocidade}</b></div>
+      <div class="muted mini">Foco ref.: <b>${d.foco}</b></div>
+    </div>
 
-    side.innerHTML = `
-      <h2 style="margin:0 0 6px 0;font-size:16px">📌 Pontos & Resumo</h2>
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.55)">
+      <b>Inventário</b>
+      <div class="divider"></div>
+      ${(p.inventory||[]).slice(0,10).map(it=>`<div class="muted mini">• ${escapeHTML(it.name)}</div>`).join("") || `<span class="muted mini">Sem itens.</span>`}
+    </div>
+  `;
 
-      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
-        <div class="row" style="justify-content:space-between">
-          <b>Nível atual</b>
-          <span class="pill">LVL ${lvl}</span>
-        </div>
-        <div class="row" style="justify-content:space-between;margin-top:8px">
-          <span class="muted mini">Atributos disponíveis</span>
-          <span class="pill">+${Number(p.character.levelAttrBonus||0)}</span>
-        </div>
-        <div class="row" style="justify-content:space-between;margin-top:8px">
-          <span class="muted mini">Picks de perícia disponíveis</span>
-          <span class="pill">+${Number(p.character.levelSkillBonus||0)}</span>
-        </div>
-      </div>
-
-      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
-        <div class="row" style="justify-content:space-between">
-          <b>Gastar pontos de Atributo</b>
-          <span class="pill">Disp.: ${Number(p.character.levelAttrBonus||0)}</span>
-        </div>
-        <p class="muted mini" style="margin:8px 0 0 0">Só dá para <b>adicionar</b> (não dá pra reduzir o que já está definido).</p>
-        <div class="divider"></div>
-        ${ATTR_KEYS.map(k=>`
-          <div class="selectCard" style="padding:10px">
-            <div class="left">
-              <b>${ATTR_LABEL[k]}</b>
-              <span class="muted mini">Atual: ${Number(c.attrs?.[k]||0)}</span>
-            </div>
-            <button class="secondary" data-action="lvl_attr_inc" data-key="${k}" type="button">+1</button>
-          </div>
-        `).join("")}
-      </div>
-
-      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
-        <div class="row" style="justify-content:space-between">
-          <b>Gastar pick de Perícia</b>
-          <span class="pill">Disp.: ${Number(p.character.levelSkillBonus||0)}</span>
-        </div>
-        <p class="muted mini" style="margin:8px 0 0 0">Cada pick adiciona <b>+4</b> na perícia.</p>
-        <div class="divider"></div>
-        ${SKILL_KEYS.map(k=>`
-          <div class="selectCard" style="padding:10px">
-            <div class="left">
-              <b>${SKILL_LABEL[k]}</b>
-              <span class="muted mini">Atual: ${Number(c.skills?.[k]||0)}</span>
-            </div>
-            <button class="secondary" data-action="lvl_skill_inc" data-key="${k}" type="button">+4</button>
-          </div>
-        `).join("")}
-      </div>
-
-      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
-        <b>Perks da Raça</b>
-        <div class="divider"></div>
-        ${(racePerks.length? racePerks.map(x=>`<div class="muted mini">• ${escapeHTML(x)}</div>`).join("") : `<span class="muted mini">—</span>`)}
-      </div>
-
-      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
-        <b>Desvantagens escolhidas</b>
-        <div class="divider"></div>
-        ${(disadvNames.length? disadvNames.map(x=>`<div class="muted mini">• ${escapeHTML(x)}</div>`).join("") : `<span class="muted mini">Nenhuma</span>`)}
-      </div>
-
-      <div class="card" style="padding:14px;background:#0c131c;margin-bottom:12px">
-        <b>Inventário</b>
-        <div class="divider"></div>
-        ${invList}
-      </div>
-
-      <div class="card" style="padding:14px;background:#0c131c">
-        <b>Logs recentes</b>
-        <div class="divider"></div>
-        ${logList}
-      </div>
-    `;
-
-  // ativa botões de VIDA/DEF/VEL/FOCO
-  bindDashboardStatButtons(playerId);
-
-
-
-
-  
-  // (removido) side.innerHTML extra que sobrescrevia o painel de nível/XP
-
+  bindDashboardStatButtons();
 
   const inp = $("avatarChange");
-  inp.onchange = async ()=>{
-    const file = inp.files?.[0];
-    if(!file) return;
-    const url = await fileToDataUrl(file);
-    const p2 = getPlayer(playerId);
-    p2.character.avatarDataUrl = url;
-    p2.log.unshift({ts:Date.now(), text:"Imagem do personagem atualizada."});
-    saveDB(DB);
-    DB = loadDB();
-    render();
-  };
+  if(inp){
+    inp.onchange = async ()=>{
+      const file = inp.files?.[0];
+      if(!file) return;
+      const url = await fileToDataUrl(file);
+      const p2 = getPlayer(playerId);
+      p2.character.avatarDataUrl = url;
+      p2.log.unshift({ts:Date.now(), text:"Imagem do personagem atualizada."});
+      saveDB(DB); DB = loadDB(); render();
+    };
+  }
 }
 
 function renderKpi(title, id, value, max){
@@ -1620,9 +1060,8 @@ function renderKpi(title, id, value, max){
         <b>${title}</b>
         <span class="pill mini">Ref.: ${safeMax}</span>
       </div>
-
       <div class="row" style="justify-content:space-between;margin-top:6px">
-        <div class="kpiValue"><span id="${id}Val">${safeVal}</span></div>
+        <div class="kpiValue">${safeVal}</div>
         <div class="row" style="gap:6px">
           <button type="button" class="secondary mini" data-stat="${id}" data-step="5">-5</button>
           <button type="button" class="secondary mini" data-stat="${id}" data-step="1">-1</button>
@@ -1630,13 +1069,13 @@ function renderKpi(title, id, value, max){
           <button type="button" class="secondary mini" data-stat="${id}" data-step="5">+5</button>
         </div>
       </div>
-
       <div class="kpiBar" title="${safeVal} / ${safeMax}">
-        <div id="${id}Fill" style="width:${pct}%"></div>
+        <div style="width:${pct}%"></div>
       </div>
     </div>
   `;
 }
+
 function formatBuffs(buffs){
   if(!buffs) return "";
   const parts = [];
@@ -1652,7 +1091,7 @@ function formatBuffs(buffs){
       if(v) parts.push(`• ${lbl} ${v>0?"+":""}${v}`);
     }
   }
-  return parts.length ? parts.join("<br>") : "";
+  return parts.length ? parts.join("<br>") : "—";
 }
 
 /* =========================
@@ -1666,34 +1105,29 @@ function renderCharacterCreator(player){
   if(!c.skills) c.skills = mkSkillsZero();
   if(!c.disadvantages) c.disadvantages = [];
   if(!c.pools) c.pools = { attrBase:10, skillPicksBase:8 };
-  if(!c.preferredRaceId) c.preferredRaceId = "human_veil";
-  if(!c.classId) c.classId = "cls1";
 
   const attrTotal = totalAttrPoints(player);
   const attrSpent = spentAttrPoints(player);
   const attrLeft = attrTotal - attrSpent;
 
-  const skillPicksTotal = totalSkillPicks(player);
-  const skillPicksSpent = spentSkillPicks(player);
-  const skillPicksLeft = skillPicksTotal - skillPicksSpent;
+  const skillTotal = totalSkillPicks(player);
+  const skillSpent = spentSkillPicks(player);
+  const skillLeft = skillTotal - skillSpent;
 
   main.innerHTML = `
-    <h2 style="margin:0 0 6px 0;font-size:16px">Criação de personagem (primeiro login)</h2>
-    <p class="muted" style="margin-top:0">
-      Escolha raça e classe, distribua atributos e perícias, e se quiser pegue desvantagens para ganhar pontos.
-      No final, finalize a criação.
-    </p>
+    <h2 style="margin:0 0 6px 0;font-size:16px">Criação de personagem</h2>
+    <p class="muted" style="margin-top:0">Escolha raça e classe, distribua pontos e finalize.</p>
 
     <div class="row" style="justify-content:space-between">
       <span class="pill">Atributos: <b>${attrLeft}</b> restantes</span>
-      <span class="pill">Perícias: <b>${skillPicksLeft}</b> seleções restantes (cada seleção = +4)</span>
+      <span class="pill">Perícias: <b>${skillLeft}</b> seleções restantes (cada seleção = +4)</span>
       <span class="pill">Desvantagens: <b>${(c.disadvantages||[]).length}</b></span>
     </div>
 
     <div class="divider"></div>
 
     <div class="row" style="align-items:flex-start">
-      <div class="avatarBox" id="avatarPreview">
+      <div class="avatarBox">
         ${c.avatarDataUrl ? `<img src="${c.avatarDataUrl}" alt="avatar">` : `<span class="muted mini">Adicionar imagem</span>`}
       </div>
       <div style="flex:1;min-width:240px">
@@ -1717,6 +1151,7 @@ function renderCharacterCreator(player){
       <button class="tabBtn" data-tab="tabClasses">Classes</button>
       <button class="tabBtn" data-tab="tabAttrs">Atributos</button>
       <button class="tabBtn" data-tab="tabSkills">Perícias</button>
+      <button class="tabBtn" data-tab="tabPower">Skills</button>
       <button class="tabBtn" data-tab="tabDisadv">Desvantagens</button>
     </div>
 
@@ -1724,16 +1159,16 @@ function renderCharacterCreator(player){
     <div class="tabPanel" id="tabClasses"></div>
     <div class="tabPanel" id="tabAttrs"></div>
     <div class="tabPanel" id="tabSkills"></div>
+    <div class="tabPanel" id="tabPower"></div>
     <div class="tabPanel" id="tabDisadv"></div>
 
     <div class="divider"></div>
 
     <div class="row" style="justify-content:flex-end">
-      <button class="secondary" id="btnOpenSummary">Ver resumo</button>
-      <button id="btnFinalizeCreation" ${attrLeft<0 || skillPicksLeft<0 ? "disabled":""}>Finalizar criação</button>
+      <button id="btnFinalizeCreation" ${attrLeft<0 || skillLeft<0 ? "disabled":""}>Finalizar</button>
     </div>
 
-    ${(attrLeft<0 || skillPicksLeft<0) ? `<div class="warn" style="margin-top:12px"><b class="bad">Você passou do limite de pontos.</b> Ajuste antes de finalizar.</div>` : ``}
+    ${(attrLeft<0 || skillLeft<0) ? `<div class="warn" style="margin-top:12px"><b class="bad">Você passou do limite de pontos.</b> Ajuste antes de finalizar.</div>` : ``}
   `;
 
   document.querySelectorAll(".tabBtn").forEach(btn=>{
@@ -1744,6 +1179,7 @@ function renderCharacterCreator(player){
   renderClassTab(player.id);
   renderAttrTab(player.id);
   renderSkillTab(player.id);
+  renderPowerTab(player.id);
   renderDisadvTab(player.id);
 
   $("avatarInput").onchange = async ()=>{
@@ -1762,50 +1198,62 @@ function renderCharacterCreator(player){
     saveDB(DB);
   };
 
-  $("btnOpenSummary").onclick = ()=>openCreationSummary(player.id, false);
   $("btnFinalizeCreation").onclick = ()=>{
     const p2 = getPlayer(player.id);
     if(spentAttrPoints(p2) > totalAttrPoints(p2)){ alert("Atributos acima do limite."); return; }
     if(spentSkillPicks(p2) > totalSkillPicks(p2)){ alert("Perícias acima do limite."); return; }
     finalizeCreation(player.id);
   };
-  // mantém a aba atual depois de qualquer alteração
-  setActiveTab(UI.activeTab);
 
+  setActiveTab(UI.activeTab);
 }
 
 function renderRaceTab(playerId){
   const p = getPlayer(playerId);
   if(!p) return;
-  const chosen = p.character.preferredRaceId || "human_veil";
+  const chosen = p.character.preferredRaceId || DB.races[0]?.id;
 
-  // Raças (inclui PERFEITAS como opção normal)
-  const list = DB.races.slice();
-
-  const html = `
-    <h3 style="margin:0 0 8px 0;font-size:14px">Raças</h3>
+  const tab = $("tabRaces");
+  tab.innerHTML = `
+    <h3 style="margin:0 0 8px 0;font-size:14px">Raças (${DB.races.length})</h3>
     <p class="muted" style="margin-top:0">
-      Escolha sua raça. As <b style="color:var(--gold)">PERFEITAS</b> são extremamente fortes e raras no mundo — use com responsabilidade no roleplay.
+      Escolha uma raça. Elas dão um empurrãozinho (atributo +1 e uma perícia +4) e bastante <b>lore</b> pra roleplay.
     </p>
+
     <div class="selectGrid">
-      ${list.map(r=>{
-        const isPerfect = r.tier==="perfeita";
+      ${DB.races.map(r=>{
         const isSel = r.id===chosen;
         return `
-          <div class="selectCard ${isSel?'selectedGlow':''}" data-racecard="${escapeHTML(r.id)}">
-            <div class="left">
-              <b>${escapeHTML(r.name)}</b>
-              <div class="row" style="margin:6px 0 6px 0;gap:8px">
-                <span class="tag ${isPerfect?'perfect':''}">${isPerfect?'★ PERFEITA':'Padrão'}</span>
-                <span class="tag lore">Lore</span>
+          <div class="selectCard ${isSel?'selectedGlow':''}" data-racecard="${escapeHTML(r.id)}" style="gap:14px;align-items:flex-start">
+            <div class="left" style="min-width:0">
+              <div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start">
+                <b style="font-size:15px">${escapeHTML(r.name)}</b>
+                <span class="tag">${r.tier==="perfeita" ? "★ Perfeita" : "Padrão"}</span>
               </div>
-              <div class="muted">${escapeHTML(r.lore||'')}</div>
-              ${Array.isArray(r.perks) ? `<div class="divider"></div>
-                 <div class="muted mini"><b style="color:#e8f0fb">Perks:</b> ${r.perks.map(escapeHTML).join(" • ")}</div>` : ``}
-              ${r.note ? `<div class="muted mini" style="margin-top:6px"><b style="color:#e8f0fb">Sinal:</b> ${escapeHTML(r.note)}</div>` : ``}
+
+              ${r.lore ? `<div class="muted" style="margin-top:8px;line-height:1.45">${escapeHTML(r.lore)}</div>` : ``}
+
+              <div class="divider"></div>
+
+              <div class="muted mini" style="line-height:1.5">
+                <b style="color:var(--txt)">Buffs:</b><br>
+                ${formatBuffs(r.buffs) || "—"}
+              </div>
+
+              ${Array.isArray(r.perks) && r.perks.length ? `
+                <div class="divider"></div>
+                <div class="muted mini" style="line-height:1.5">
+                  <b style="color:var(--txt)">Traços (roleplay):</b><br>
+                  ${r.perks.map(x=>`• ${escapeHTML(x)}`).join("<br>")}
+                </div>
+              `:``}
+
+              ${r.note ? `<div class="muted mini" style="margin-top:10px;line-height:1.45"><b style="color:var(--txt)">Detalhe:</b> ${escapeHTML(r.note)}</div>`:``}
             </div>
-            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;min-width:120px">
               <button class="${isSel?'secondary':''}" data-racebtn="${escapeHTML(r.id)}">${isSel?'Selecionada':'Escolher'}</button>
+              <span class="muted mini" style="text-align:right;max-width:140px">Clique no card ou no botão</span>
             </div>
           </div>
         `;
@@ -1813,11 +1261,6 @@ function renderRaceTab(playerId){
     </div>
   `;
 
-  const tab = $("tabRaces");
-  if(!tab) return;
-  tab.innerHTML = html;
-
-  // Delegação (evita duplicar listeners a cada render)
   tab.onclick = (ev)=>{
     const btn = ev.target.closest("[data-racebtn]");
     const card = ev.target.closest("[data-racecard]");
@@ -1827,14 +1270,7 @@ function renderRaceTab(playerId){
     const p2 = getPlayer(playerId);
     if(!p2) return;
     p2.character.preferredRaceId = rid;
-
-    // Se o personagem já foi finalizado, também atualiza a raça final (pra manter consistência)
-    if(p2.characterCreated){
-      p2.character.finalRaceId = rid;
-    }
-
     saveDB(DB);
-    // Re-render mantendo a aba atual
     render();
   };
 }
@@ -1842,15 +1278,15 @@ function renderRaceTab(playerId){
 function renderClassTab(playerId){
   const p = getPlayer(playerId);
   const tab = $("tabClasses");
-  const picked = p.character.classId;
+  const picked = p.character.classId || DB.classes[0]?.id;
 
   tab.innerHTML = `
     <div class="row" style="justify-content:space-between">
       <div>
-        <b>Escolha sua classe</b>
-        <div class="muted mini">Classe dá bônus leves em atributos e fortes em perícias.</div>
+        <b>Classes (${DB.classes.length})</b>
+        <div class="muted mini">Cada classe dá +1 em um atributo e +4 em uma perícia (automático).</div>
       </div>
-      <span class="tag lore">Guerra do Véu</span>
+      <span class="tag">MYR</span>
     </div>
     <div class="divider"></div>
 
@@ -1865,13 +1301,9 @@ function renderClassTab(playerId){
                 <span class="tag">classe</span>
               </div>
               <div class="muted mini" style="margin-top:6px">${escapeHTML(c.lore)}</div>
-              <div class="muted mini" style="margin-top:8px">
-                <b>Buffs:</b><br>${formatBuffs(c.buffs)}
-              </div>
+              <div class="muted mini" style="margin-top:8px"><b>Buffs:</b><br>${formatBuffs(c.buffs)}</div>
             </div>
-            <div>
-              <input type="radio" name="classPick" value="${c.id}" ${sel?"checked":""}>
-            </div>
+            <div><input type="radio" name="classPick" value="${c.id}" ${sel?"checked":""}></div>
           </div>
         `;
       }).join("")}
@@ -1900,7 +1332,7 @@ function renderAttrTab(playerId){
     <div class="row" style="justify-content:space-between">
       <div>
         <b>Distribuir Atributos</b>
-        <div class="muted mini">Você tem <b>${total}</b> pontos. Desvantagens aumentam esse total.</div>
+        <div class="muted mini">Você tem <b>${total}</b> pontos.</div>
       </div>
       <span class="pill">Restantes: <b>${left}</b></span>
     </div>
@@ -1937,9 +1369,8 @@ function renderAttrTab(playerId){
       p2.character.attrs[k] = Number(p2.character.attrs[k]||0)+1;
       saveDB(DB); DB = loadDB();
       renderCharacterCreator(getPlayer(playerId));
-      UI.activeTab = curTab;
-      setActiveTab(curTab);
-};
+      UI.activeTab = curTab; setActiveTab(curTab);
+    };
   });
   tab.querySelectorAll("button[data-dec]").forEach(b=>{
     b.onclick = ()=>{
@@ -1949,9 +1380,8 @@ function renderAttrTab(playerId){
       p2.character.attrs[k] = Math.max(0, Number(p2.character.attrs[k]||0)-1);
       saveDB(DB); DB = loadDB();
       renderCharacterCreator(getPlayer(playerId));
-      UI.activeTab = curTab;
-      setActiveTab(curTab);
-};
+      UI.activeTab = curTab; setActiveTab(curTab);
+    };
   });
 }
 
@@ -1967,7 +1397,7 @@ function renderSkillTab(playerId){
     <div class="row" style="justify-content:space-between">
       <div>
         <b>Distribuir Perícias</b>
-        <div class="muted mini">Cada seleção adiciona <b>+4</b> em uma perícia. Sem limite por perícia, só no total.</div>
+        <div class="muted mini">Cada seleção adiciona <b>+4</b> em uma perícia.</div>
       </div>
       <span class="pill">Seleções restantes: <b>${left}</b></span>
     </div>
@@ -2005,9 +1435,8 @@ function renderSkillTab(playerId){
       p2.character.skills[k] = Number(p2.character.skills[k]||0) + 4;
       saveDB(DB); DB = loadDB();
       renderCharacterCreator(getPlayer(playerId));
-      UI.activeTab = curTab;
-      setActiveTab(curTab);
-};
+      UI.activeTab = curTab; setActiveTab(curTab);
+    };
   });
   tab.querySelectorAll("button[data-sdec]").forEach(b=>{
     b.onclick = ()=>{
@@ -2017,11 +1446,36 @@ function renderSkillTab(playerId){
       p2.character.skills[k] = Math.max(0, Number(p2.character.skills[k]||0) - 4);
       saveDB(DB); DB = loadDB();
       renderCharacterCreator(getPlayer(playerId));
-      UI.activeTab = curTab;
-      setActiveTab(curTab);
-};
+      UI.activeTab = curTab; setActiveTab(curTab);
+    };
   });
 }
+
+
+function renderPowerTab(playerId){
+  const p = getPlayer(playerId);
+  const tab = $("tabPower");
+  if(!tab) return;
+
+  tab.innerHTML = `
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <b>Skills</b>
+        <div class="muted mini">Aba reservada. Aqui vão ficar as skills especiais do seu sistema (você vai me explicar depois).</div>
+      </div>
+      <span class="tag lore">MYR</span>
+    </div>
+    <div class="divider"></div>
+
+    <div class="good">
+      <b class="ok">Em breve</b>
+      <div class="muted mini" style="margin-top:6px">
+        Quando você decidir como funciona (cooldowns, custo de foco, rank, etc), eu monto essa tela com botões, limites e salvando no DB.
+      </div>
+    </div>
+  `;
+}
+
 
 function renderDisadvTab(playerId){
   const p = getPlayer(playerId);
@@ -2035,7 +1489,7 @@ function renderDisadvTab(playerId){
         <b>Desvantagens</b>
         <div class="muted mini">Você ganha pontos extras, mas assume consequências no roleplay.</div>
       </div>
-      <span class="pill">Bônus: <b>+${b.attr}</b> atributos • <b>+${b.skillPicks}</b> seleções de perícia</span>
+      <span class="pill">Bônus: <b>+${b.attr}</b> attr • <b>+${b.skillPicks}</b> picks</span>
     </div>
     <div class="divider"></div>
 
@@ -2051,9 +1505,7 @@ function renderDisadvTab(playerId){
               </div>
               <div class="muted mini" style="margin-top:6px">${escapeHTML(d.desc)}</div>
             </div>
-            <div>
-              <input type="checkbox" data-dv="${d.id}" ${sel?"checked":""}>
-            </div>
+            <div><input type="checkbox" data-dv="${d.id}" ${sel?"checked":""}></div>
           </label>
         `;
       }).join("")}
@@ -2074,329 +1526,32 @@ function renderDisadvTab(playerId){
   });
 }
 
-/* =========================
-   Confirm -> Wheel -> Finalize
-========================= */
-function openCreationSummary(playerId, isPreview=false){
-  const player = getPlayer(playerId);
-  if(!player) return;
-  ensureLevelState(player);
-
-  const prefRace = getRace(player.character.preferredRaceId);
-  const cls = getClass(player.character.classId);
-
-  const attrs = player.character.attrs;
-  const skills = player.character.skills;
-
-  const attrSpent = spentAttrPoints(player);
-  const attrTotal = totalAttrPoints(player);
-  const skillSpent = spentSkillPicks(player);
-  const skillTotal = totalSkillPicks(player);
-
-  const raceTag = prefRace?.tier==="perfeita"
-    ? `<span class="tag perfect">🌟 Perfeita</span>`
-    : `<span class="tag lore">Padrão</span>`;
-
-  let html = `
-    <div class="overlay" id="modalOverlay">
-      <div class="modal">
-        <div class="modalHeader">
-          <div>
-            <h2 style="margin:0;font-size:16px">${isPreview ? "Resumo (prévia)" : "Confirmar criação"}</h2>
-            <div class="muted mini">Raça escolhida: <b>${escapeHTML(prefRace?.name||"—")}</b> ${raceTag}</div>
-            <div class="muted mini">Classe: <b>${escapeHTML(cls?.name||"—")}</b></div>
-          </div>
-          <div class="row">
-            <button class="secondary" id="btnCloseModal">Fechar</button>
-            <button id="btnModalFinalize" style="min-width:170px">Finalizar</button>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="kpiGrid">
-          <div class="kpiBox">
-            <div class="kpiTitle"><b>Atributos</b><span class="muted mini">${attrSpent}/${attrTotal} pts</span></div>
-            <table>
-              <thead><tr><th>Nome</th><th class="right">Valor</th></tr></thead>
-              <tbody>
-                ${ATTR_KEYS.map(k=>`<tr><td>${escapeHTML(ATTR_LABEL[k])}</td><td class="right"><b>${Number(attrs[k]||0)}</b></td></tr>`).join("")}
-              </tbody>
-            </table>
-          </div>
-
-          <div class="kpiBox">
-            <div class="kpiTitle"><b>Perícias</b><span class="muted mini">${skillSpent}/${skillTotal} picks</span></div>
-            <table>
-              <thead><tr><th>Nome</th><th class="right">Valor</th></tr></thead>
-              <tbody>
-                ${SKILL_KEYS.map(k=>`<tr><td>${escapeHTML(SKILL_LABEL[k])}</td><td class="right"><b>${Number(skills[k]||0)}</b></td></tr>`).join("")}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="${(attrSpent>attrTotal || skillSpent>skillTotal) ? "warn":"good"}">
-          ${(attrSpent>attrTotal || skillSpent>skillTotal)
-            ? `<b class="bad">Você gastou pontos demais.</b> Ajuste antes de finalizar.`
-            : `<b class="ok">Tudo certo!</b> Você pode finalizar a criação.`}
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.body.insertAdjacentHTML("beforeend", html);
-
-  const close = ()=>{
-    const o = $("modalOverlay");
-    if(o) o.remove();
-  };
-
-  $("btnCloseModal").onclick = close;
-
-  const btnFinalize = $("btnModalFinalize");
-  if(btnFinalize){
-    btnFinalize.onclick = ()=>{
-      if(spentAttrPoints(player) > totalAttrPoints(player) || spentSkillPicks(player) > totalSkillPicks(player)){
-        toast("Ajuste os pontos antes de finalizar.", false);
-        return;
-      }
-
-      player.character.finalRaceId = player.character.preferredRaceId;
-
-      if(!player.character.bonusesApplied){
-        applyBonusesToSheet(player, getRace(player.character.finalRaceId), getClass(player.character.classId));
-      }
-
-      player.characterCreated = true;
-      player.log.unshift({ts:Date.now(), text:`Personagem finalizado — Raça: ${getRace(player.character.finalRaceId)?.name||"—"} | Classe: ${getClass(player.character.classId)?.name||"—"}`});
-      saveDB(DB);
-
-      close();
-      render();
-      toast("Criação finalizada! Abrindo o resumo…", true);
-    };
-  }
-}
-
 function finalizeCreation(playerId){
   const p = getPlayer(playerId);
   if(!p) return;
 
-  // valida pontos
   if(spentAttrPoints(p) > totalAttrPoints(p)){ alert("Atributos acima do limite."); return; }
   if(spentSkillPicks(p) > totalSkillPicks(p)){ alert("Perícias acima do limite."); return; }
 
-  // precisa ter raça e classe escolhidas
-  const race = getRace(p.character.preferredRaceId) || getRace(p.character.finalRaceId) || DB.races?.[0];
+  const race = getRace(p.character.preferredRaceId) || DB.races?.[0];
   const cls  = getClass(p.character.classId) || DB.classes?.[0];
   if(!race || !cls){ alert("Escolha uma raça e uma classe."); return; }
 
-  // aplica bônus só 1x
   if(!p.character.bonusesApplied){
     applyBonusesToSheet(p, race, cls);
+    p.character.bonusesApplied = true;
   }
 
-  // fixa raça final (se ainda não fixou)
-  if(!p.character.finalRaceId) p.character.finalRaceId = race.id;
-
-  // marca como criado
+  p.character.finalRaceId = race.id;
   p.characterCreated = true;
-  
-  // Ao finalizar, define os stats base (Ref.) e enche os stats atuais com o derivado da ficha
-  ensureLevelState(p);
+
   const d0 = calcDerived(p);
-  p.character.lastDerivedStats = { vida:d0.vida, defesa:d0.defesa, velocidade:d0.velocidade, foco:d0.foco };
   p.character.currentStats = { vida:d0.vida, defesa:d0.defesa, velocidade:d0.velocidade, foco:d0.foco };
-p.log.unshift({ts:Date.now(), text:"Personagem finalizado."});
+
+  p.log.unshift({ts:Date.now(), text:`Personagem finalizado — Raça: ${race.name} | Classe: ${cls.name}`});
   saveDB(DB);
-
-  // renderiza a ficha final
-  UI.activeTab = "tabDashboard";
-  try{
-    render();
-  }catch(err){
-    console.error("Erro ao renderizar ficha final, recarregando…", err);
-    location.reload();
-  }
+  render();
   toast("Personagem finalizado! ✅", true);
-}
-
-function openWheelModal(playerId){
-  const p = getPlayer(playerId);
-  const preferred = p.character.preferredRaceId;
-
-  const segments = buildWheelSegments(preferred);
-
-  renderWheelLegend(segments);
-
-  const html = `
-    <div class="overlay" id="ovWheel">
-      <div class="modal">
-        <div class="modalHeader">
-          <div>
-            <div style="font-size:16px;font-weight:950">Roleta das Raças</div>
-            <div class="muted mini">Clique em <b>Girar</b> quando estiver pronto.</div>
-          </div>
-          <button class="danger" id="closeWheel">Fechar</button>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="wheelWrap">
-          <div class="pointer"></div>
-          <canvas id="wheelCanvas" width="560" height="560"></canvas>
-
-          <div class="wheelLegend">
-            <div class="muted mini">Legenda (número → raça)</div>
-            <div class="legendList" id="wheelLegendList"></div>
-          </div>
-
-          <div class="row">
-            <button id="btnSpin">Girar</button>
-            <button class="secondary" id="btnBack">Voltar</button>
-          </div>
-
-          <div id="wheelResult" class="card hidden" style="background:#0c131c;max-width:900px;width:100%"></div>
-        </div>
-      </div>
-    </div>
-  `;
-  const ov = document.createElement("div");
-  ov.innerHTML = html;
-  document.body.appendChild(ov.firstElementChild);
-
-  $("closeWheel").onclick = ()=>$("ovWheel").remove();
-  $("btnBack").onclick = ()=>{ $("ovWheel").remove(); render(); };
-
-  const canvas = $("wheelCanvas");
-  const ctx = canvas.getContext("2d");
-  let rotation=0;
-  let spinning=false;
-
-  drawWheel(ctx, segments, rotation);
-
-  $("btnSpin").onclick = async ()=>{
-    if(spinning) return;
-    spinning=true;
-
-    const winner = weightedPick(segments);
-
-    const baseStop = segmentAngleToStopOn(winner);
-    const extraSpins = (Math.PI*2) * (6 + Math.floor(Math.random()*3));
-    const startRotation = rotation;
-    const finalRotation = baseStop + extraSpins;
-
-    const duration = 2600 + Math.floor(Math.random()*500);
-    const t0 = performance.now();
-
-    function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
-
-    await new Promise(resolve=>{
-      function step(t){
-        const p = clamp((t - t0)/duration, 0, 1);
-        const e = easeOutCubic(p);
-        rotation = startRotation + (finalRotation - startRotation) * e;
-        drawWheel(ctx, segments, rotation);
-        if(p<1) requestAnimationFrame(step);
-        else resolve();
-      }
-      requestAnimationFrame(step);
-    });
-
-    const player = getPlayer(playerId);
-    const finalRace = winner.race;
-    const cls = getClass(player.character.classId);
-
-    player.character.finalRaceId = finalRace.id;
-
-    applyBonusesToSheet(player, finalRace, cls);
-
-    player.characterCreated = true;
-    player.log.unshift({ts:Date.now(), text:`Criação concluída. Raça final: ${finalRace.name}.`});
-
-    saveDB(DB); DB = loadDB();
-    showWheelResult(playerId, finalRace);
-
-    spinning=false;
-  };
-}
-
-function showWheelResult(playerId, race){
-  const p = getPlayer(playerId);
-  const cls = getClass(p.character.classId);
-
-  const result = $("wheelResult");
-  result.classList.remove("hidden");
-
-  const tag = race.tier==="perfeita"
-    ? `<span class="tag perfect">PERFEITA</span>`
-    : `<span class="tag">padrão</span>`;
-
-  const d = calcDerived(p);
-  // stats atuais (ajustáveis pelo player)
-  const cur = p.character.currentStats || {vida:0,defesa:0,velocidade:0,foco:0};
-  if(!p.character.currentStats) p.character.currentStats = cur;
-
-  // ao FINALIZAR (ou se o DB estiver zerado), sincroniza com o máximo
-  if(p.characterCreated && (!cur.vida && !cur.defesa && !cur.velocidade && !cur.foco)){
-    cur.vida = d.vida;
-    cur.defesa = d.defesa;
-    cur.velocidade = d.velocidade;
-    cur.foco = d.foco;
-    saveDB(DB);
-  }
-
-  // nunca passa do máximo
-  cur.vida = clamp(Number(cur.vida||0), 0, d.vida);
-  cur.defesa = clamp(Number(cur.defesa||0), 0, d.defesa);
-  cur.velocidade = clamp(Number(cur.velocidade||0), 0, d.velocidade);
-  cur.foco = clamp(Number(cur.foco||0), 0, d.foco);
-
-  result.innerHTML = `
-    <div class="row" style="justify-content:space-between">
-      <div>
-        <div style="font-size:16px;font-weight:950">Resultado: ${escapeHTML(race.name)} ${tag}</div>
-        ${race.tier==="perfeita" ? `<div class="tag perfect" style="margin-top:8px">Por essa raça exige uma troca</div>` : ``}
-        <div class="muted mini" style="margin-top:8px">${escapeHTML(race.note||"")}</div>
-      </div>
-      <button id="finishNow" class="secondary">Ir para ficha</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="grid" style="grid-template-columns:1fr;gap:12px">
-      <div class="card" style="background:#0b121a">
-        <b>Buffs da raça</b>
-        <div class="divider"></div>
-        <div class="muted mini">${formatBuffs(race.buffs)}<br><br>${(race.perks||[]).map(x=>`• ${escapeHTML(x)}`).join("<br>")}</div>
-      </div>
-
-      <div class="card" style="background:#0b121a">
-        <b>Classe escolhida</b>
-        <div class="divider"></div>
-        <div class="muted mini"><b>${escapeHTML(cls?.name||"—")}</b><br>${escapeHTML(cls?.lore||"")}<br><br>${formatBuffs(cls?.buffs)}</div>
-      </div>
-
-      <div class="card" style="background:#0b121a">
-        <b>Barras (já calculadas)</b>
-        <div class="divider"></div>
-        <div class="row" style="gap:10px;flex-wrap:wrap">
-          <span class="pill">Vida: <b>${d.vida}</b></span>
-          <span class="pill">Defesa: <b>${d.defesa}</b></span>
-          <span class="pill">Velocidade: <b>${d.velocidade}</b></span>
-          <span class="pill">Foco do Véu: <b>${d.foco}</b></span>
-        </div>
-      </div>
-    </div>
-  `;
-
-  $("finishNow").onclick = ()=>{
-    $("ovWheel").remove();
-    render();
-  };
 }
 
 function fileToDataUrl(file){
@@ -2429,59 +1584,16 @@ $("btnReset").onclick = ()=>{
   }
 };
 
-/* =========================
-   Render init
-========================= */
-function render(){
-  const user = findUserBySession();
-
-  $("btnLogout").classList.toggle("hidden", !user);
-  $("loginCard").classList.toggle("hidden", !!user);
-  $("appRoot").classList.toggle("hidden", !user);
-
-  $("sessionPill").textContent = user
-    ? `Sessão: ${user.role==="master" ? "Mestre" : "Player"} (${user.username})`
-    : "Sessão: não logado";
-
-  if(!user) return;
-
-  if(user.role==="master") renderMaster();
-  else {
-    // Alguns navegadores podem ficar com DB antigo sem playerId. Tentamos recuperar.
-    let pid = user.playerId || (DB.players.find(p=>p.username===user.username)?.id);
-    if(!pid && DB.players.length===1) pid = DB.players[0].id;
-    if(pid && user.playerId!==pid){ user.playerId = pid; saveDB(DB); }
-    if(!pid){
-      const main = $("mainPanel"); const side = $("sidePanel");
-      if(main) main.innerHTML = `<div class="warn"><b>Erro:</b> não achei seu Player no banco local. Clique em <b>Resetar dados</b> e tente novamente.</div>`;
-      if(side) side.innerHTML = "";
-      return;
-    }
-    renderPlayer(pid);
-  }
-}
-
-
-/* =========================
-   
-/* =========================
-   Safety: prevent form submit / page reload on buttons
-   (evita bug de voltar para aba Raças / resetar UI)
-========================= */
+// Safety: prevent submit
 document.addEventListener("submit", (e)=>{ e.preventDefault(); }, true);
-
-// Garante que todo <button> seja tratado como type="button"
 document.addEventListener("click", (e)=>{
   const b = e.target.closest && e.target.closest("button");
   if(!b) return;
   if(!b.hasAttribute("type")) b.setAttribute("type","button");
-  // alguns browsers deixam como submit; força button
   if(String(b.getAttribute("type")).toLowerCase()==="submit") b.setAttribute("type","button");
 }, true);
 
-/* =========================
-   Delegation (ações extras do Player)
-========================= */
+/* Delegation */
 document.addEventListener("click", (e)=>{
   const btn = e.target.closest("[data-action]");
   if(!btn) return;
@@ -2501,32 +1613,7 @@ document.addEventListener("click", (e)=>{
   if(!p) return;
   ensureLevelState(p);
 
-  
-if(action==="lvl_attr_inc"){
-  const p = getPlayer(user.playerId);
-  if(!p) return;
-  if(Number(p.character.levelAttrBonus||0) <= 0){ toast("Sem pontos de atributo disponíveis.", false); return; }
-  const k = btn.dataset.key;
-  if(!ATTR_KEYS.includes(k)) return;
-  p.character.attrs[k] = Number(p.character.attrs?.[k]||0) + 1;
-  p.character.levelAttrBonus = Number(p.character.levelAttrBonus||0) - 1;
-  p.log.unshift({ts:Date.now(), text:`Ponto de atributo gasto: ${ATTR_LABEL[k]} +1`});
-  saveDB(DB); render(); return;
-}
-
-if(action==="lvl_skill_inc"){
-  const p = getPlayer(user.playerId);
-  if(!p) return;
-  if(Number(p.character.levelSkillBonus||0) <= 0){ toast("Sem picks de perícia disponíveis.", false); return; }
-  const k = btn.dataset.key;
-  if(!SKILL_KEYS.includes(k)) return;
-  p.character.skills[k] = Number(p.character.skills?.[k]||0) + 4;
-  p.character.levelSkillBonus = Number(p.character.levelSkillBonus||0) - 1;
-  p.log.unshift({ts:Date.now(), text:`Pick de perícia gasto: ${SKILL_LABEL[k]} +4`});
-  saveDB(DB); render(); return;
-}
-
-if(action==="apply_xp"){
+  if(action==="apply_xp"){
     const delta = Number($("xpDelta")?.value || 0);
     const reason = String($("xpReason")?.value || "").trim();
     applyXpDelta(p, delta, reason);
@@ -2534,152 +1621,9 @@ if(action==="apply_xp"){
     render();
     return;
   }
-
-  if(action==="stat_inc" || action==="stat_dec"){
-      // Ajuste manual de Vida/Defesa/Velocidade/Foco (não muda atributos)
-      const stat = btn.dataset.stat;
-      if(!stat) return;
-
-      // Inicializa "stats atuais" com os valores derivados na primeira vez
-      if(!p.character.currentStats || typeof p.character.currentStats!=="object"){
-        p.character.currentStats = {};
-      }
-      if(!p.character.currentStatsInit){
-        const d0 = calcDerived(p);
-        p.character.currentStats.vida = d0.vida;
-        p.character.currentStats.defesa = d0.defesa;
-        p.character.currentStats.velocidade = d0.velocidade;
-        p.character.currentStats.foco = d0.foco;
-        p.character.currentStatsInit = true;
-      }
-
-      const d = calcDerived(p);
-      const STAT_MAX = { vida: 1000000, defesa: 1000000, velocidade: 1000000, foco: 1000000 };
-      const min = 0;
-      const max = Number.isFinite(STAT_MAX[stat]) ? STAT_MAX[stat] : 9999;
-
-      const rawStep = btn.dataset.step || btn.dataset.delta;
-      const step = Number.isFinite(Number(rawStep))
-        ? Number(rawStep)
-        : (stat==="vida" || stat==="foco" ? 5 : 1);
-
-      const curr = Number(p.character.currentStats?.[stat] ?? 0);
-      const next = clamp(curr + (action==="stat_inc" ? step : -step), min, max);
-
-      p.character.currentStats[stat] = next;
-      saveDB(DB);
-      render();
-      return;
-    }
-
-  if(action==="add_ability"){
-    const lvl = levelFromXp(p.xp);
-    const slots = Math.floor(lvl/5);
-    const arr = p.character.abilities || (p.character.abilities = []);
-    if(arr.length >= slots){
-      toast("Você precisa de lvl 5/10/15... para liberar mais slots.", false);
-      return;
-    }
-    const name = String($("abName")?.value || "").trim();
-    const desc = String($("abDesc")?.value || "").trim();
-    if(!name || !desc){
-      toast("Preencha nome e descrição da habilidade.", false);
-      return;
-    }
-    arr.unshift({ id:"ab_"+Math.random().toString(16).slice(2,8), name, desc, ts:Date.now() });
-    p.log.unshift({ts:Date.now(), text:`Habilidade criada: ${name}`});
-    saveDB(DB);
-    render();
-    return;
-  }
-
-  if(action==="del_ability"){
-    const id = btn.dataset.ab;
-    const arr = p.character.abilities || [];
-    const ab = arr.find(x=>x.id===id);
-    p.character.abilities = arr.filter(x=>x.id!==id);
-    p.log.unshift({ts:Date.now(), text:`Habilidade removida: ${ab?.name||"—"}`});
-    saveDB(DB);
-    render();
-    return;
-  }
 });
 
-
-// =========================
-// Bindings (Login / Header)
-// =========================
-(function bindCoreButtons(){
-  const btnLogin = $("btnLogin");
-  if(btnLogin){
-    btnLogin.addEventListener("click", ()=>{
-      const username = String($("loginUser")?.value || "").trim();
-      const password = String($("loginPass")?.value || "");
-      const res = login(username, password);
-      if(!res.ok){ toast(res.msg, false); return; }
-      toast("Login feito.", true);
-      render();
-    });
-  }
-
-  const pass = $("loginPass");
-  if(pass){
-    pass.addEventListener("keydown", (e)=>{
-      if(e.key==="Enter"){ e.preventDefault(); $("btnLogin")?.click(); }
-    });
-  }
-
-  const btnReset = $("btnReset");
-  if(btnReset){
-    btnReset.addEventListener("click", ()=>{
-      const ok = confirm("Resetar dados? Isso apaga tudo salvo neste navegador.");
-      if(!ok) return;
-      localStorage.removeItem(KEY);
-      DB = loadDB();
-      toast("Dados resetados.", true);
-      render();
-    });
-  }
-
-  const btnLogout = $("btnLogout");
-  if(btnLogout){
-    btnLogout.addEventListener("click", ()=>logout());
-  }
-})();
-
 render();
-
-function changeStat(stat, delta){
-  const user = findUserBySession();
-  if(!user) return;
-
-  let p = null;
-  if(user.role === "player"){
-    p = getPlayer(user.playerId);
-  } else {
-    p = DB.players && DB.players.length ? DB.players[0] : null;
-  }
-  if(!p) return;
-
-  if(!p.character.currentStats){
-    const d = calcDerived(p);
-    p.character.currentStats = {
-      vida: d.vida,
-      defesa: d.defesa,
-      velocidade: d.velocidade,
-      foco: d.foco
-    };
-  }
-
-  const cur = Number(p.character.currentStats[stat] || 0);
-  let next = cur + Number(delta || 0);
-  if(next < 0) next = 0;
-
-  p.character.currentStats[stat] = next;
-  saveDB(DB);
-  render();
-}
 </script>
-
 </body>
 </html>
