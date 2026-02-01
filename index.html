@@ -355,7 +355,7 @@ Guerreiro|Bárbaro|Cavaleiro|Gladiador|Mercenário|Sentinela|Duelista|Campeão|G
           levelAttrBonus: 0,
           levelSkillBonus: 0,
           abilities: [],
-          currentStats: { vida: 0, defesa: 0, velocidade: 0, foco: 0 }
+          currentStats: { vida: 0, defesa: 0, velocidade: 0, mana: 0 }
         },
         log: [{ts: Date.now(), text:"Conta criada. Primeiro login libera criação."}]
       }
@@ -412,7 +412,7 @@ let DB = loadDB();
     if(typeof c.levelSkillBonus !== "number"){ c.levelSkillBonus = 0; changed = true; }
     if(!Array.isArray(c.abilities)){ c.abilities = []; changed = true; }
     if(!c.currentStats || typeof c.currentStats !== "object"){
-      c.currentStats = { vida:0, defesa:0, velocidade:0, foco:0 }; changed = true;
+      c.currentStats = { vida:0, defesa:0, velocidade:0, mana:0 }; changed = true;
     }
 
     if(!c.preferredRaceId){ c.preferredRaceId = base.players[0].character.preferredRaceId; changed = true; }
@@ -440,6 +440,18 @@ function findUserBySession(){
   const uid = DB.session.userId;
   if(!uid) return null;
   return DB.users.find(u=>u.id===uid) || null;
+}
+
+
+function getSessionPlayerId(){
+  const u = findUserBySession();
+  return u && u.playerId ? u.playerId : null;
+}
+
+function getSessionPlayer(){
+  const pid = getSessionPlayerId();
+  if(!pid) return null;
+  return (DB.players || []).find(p => p.id === pid) || null;
 }
 function getPlayer(pid){ return DB.players.find(p=>p.id===pid); }
 function getRace(rid){ return DB.races.find(r=>r.id===rid) || null; }
@@ -514,7 +526,7 @@ function ensureLevelState(player){
   if(typeof c.levelAttrBonus !== "number") c.levelAttrBonus = 0;
   if(typeof c.levelSkillBonus !== "number") c.levelSkillBonus = 0;
   if(!Array.isArray(c.abilities)) c.abilities = [];
-  if(!c.currentStats || typeof c.currentStats !== "object") c.currentStats = { vida:0, defesa:0, velocidade:0, foco:0 };
+  if(!c.currentStats || typeof c.currentStats !== "object") c.currentStats = { vida:0, defesa:0, velocidade:0, mana:0 };
 }
 function applyXpDelta(player, delta, reason){
   const d = Number(delta);
@@ -531,12 +543,17 @@ function applyXpDelta(player, delta, reason){
       if(l % 5 === 0) skillGain++;
     }
     const diff = newLevel - oldLevel;
-    player.character.levelAttrBonus = Number(player.character.levelAttrBonus||0) + diff*3;
+    // Atributos por level: +3 sempre. A cada 5 níveis, +2 extra (fica +5 naquele level).
+    let attrExtra = 0;
+    for(let l = oldLevel + 1; l <= newLevel; l++){
+      if(l % 5 === 0) attrExtra += 2;
+    }
+    player.character.levelAttrBonus = Number(player.character.levelAttrBonus||0) + diff*2 + attrExtra;
     if(skillGain>0){
       player.character.levelSkillBonus = Number(player.character.levelSkillBonus||0) + skillGain;
       player.log.unshift({ts:Date.now(), text:`+${skillGain} pick(s) de Perícia (níveis múltiplos de 5).`});
     }
-    player.log.unshift({ts:Date.now(), text:`Up! Level ${oldLevel} → ${newLevel} (+${diff*3} pontos de Atributo)`});
+    player.log.unshift({ts:Date.now(), text:`Up! Level ${oldLevel} → ${newLevel} (+${diff*2} pontos de Atributo)`});
   }
   player.character.levelSeen = newLevel;
 
@@ -582,20 +599,20 @@ function calcDerived(player){
   const vida = 60 + STR*12 + WIL*6;
   const defesa = 10 + DEX*3 + WIL*2 + Math.floor(STR*0.5);
   const velocidade = 10 + DEX*3 + Math.floor(STR*0.7);
-  const foco = 25 + INT*7 + WIL*9 + Math.floor(CHA*2);
+  const mana = 25 + INT*7 + WIL*9 + Math.floor(CHA*2);
 
   // Para a barra (%) ficar bonita no dashboard
   const maxVida = 260;
   const maxDef = 80;
   const maxVel = 80;
-  const maxFoco = 260;
+  const maxMana = 260;
 
   return {
-    vida, defesa, velocidade, foco,
+    vida, defesa, velocidade, mana,
     pctVida: clamp(Math.round(vida/maxVida*100), 0, 100),
     pctDef: clamp(Math.round(defesa/maxDef*100), 0, 100),
     pctVel: clamp(Math.round(velocidade/maxVel*100), 0, 100),
-    pctFoco: clamp(Math.round(foco/maxFoco*100), 0, 100),
+    pctMana: clamp(Math.round(mana/maxMana*100), 0, 100),
   };
 }
 
@@ -679,7 +696,7 @@ function masterCreatePlayerLogin(displayName, username, password){
       levelAttrBonus: 0,
       levelSkillBonus: 0,
       abilities: [],
-      currentStats: { vida: 0, defesa: 0, velocidade: 0, foco: 0 }
+      currentStats: { vida: 0, defesa: 0, velocidade: 0, mana: 0 }
     },
     log: [{ts:Date.now(), text:"Conta criada pelo Mestre. Primeiro login libera criação."}]
   });
@@ -901,7 +918,7 @@ function renderRoster(){
   });
 }
 
-function renderPlayer(playerId){
+function renderPlayer(playerId, action=null){
   let p = getPlayer(playerId);
   const main = $("mainPanel");
   const side = $("sidePanel");
@@ -937,6 +954,12 @@ function renderPlayer(playerId){
   }
 
   ensureLevelState(p);
+
+  if(action==="open_tree"){
+    openSkillTreeModal(p.id);
+    return;
+  }
+
   const c = p.character || {};
   const lvl = levelFromXp(Number(p.xp||0));
   const xpStart = (lvl-1)*100;
@@ -948,7 +971,7 @@ function renderPlayer(playerId){
   const d = calcDerived(p);
 
   if(!c.currentStats || typeof c.currentStats!=="object"){
-    c.currentStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, foco:d.foco };
+    c.currentStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, mana:d.mana };
     saveDB(DB);
   }
   const cur = c.currentStats;
@@ -1001,7 +1024,7 @@ function renderPlayer(playerId){
       ${renderKpi("Vida","vida", cur.vida, d.vida)}
       ${renderKpi("Defesa","defesa", cur.defesa, d.defesa)}
       ${renderKpi("Velocidade","velocidade", cur.velocidade, d.velocidade)}
-      ${renderKpi("Foco","foco", cur.foco, d.foco)}
+      ${renderKpi("Mana","mana", cur.mana, d.mana)}
     </div>
 
     <div class="divider"></div>
@@ -1016,24 +1039,101 @@ function renderPlayer(playerId){
   `;
 
   side.innerHTML = `
-    <h2 style="margin:0 0 6px 0;font-size:16px">📌 Resumo</h2>
+    <h2 style="margin:0 0 6px 0;font-size:16px">📌 Resumo & Upgrades</h2>
+
     <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
-      <div class="row" style="justify-content:space-between"><b>Base (Ref.)</b><span class="pill">LVL ${lvl}</span></div>
-      <div class="divider"></div>
-      <div class="muted mini">Vida ref.: <b>${d.vida}</b></div>
-      <div class="muted mini">Defesa ref.: <b>${d.defesa}</b></div>
-      <div class="muted mini">Velocidade ref.: <b>${d.velocidade}</b></div>
-      <div class="muted mini">Foco ref.: <b>${d.foco}</b></div>
+      <div class="row" style="justify-content:space-between">
+        <b>Nível atual</b>
+        <span class="pill">LVL ${lvl}</span>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:8px">
+        <span class="muted mini">Pontos de Atributo para gastar</span>
+        <span class="pill"><b>${Number(c.levelAttrBonus||0)}</b></span>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:8px">
+        <span class="muted mini">Picks de Perícia (a cada 5 lvls)</span>
+        <span class="pill"><b>${Number(c.levelSkillBonus||0)}</b></span>
+      </div>
+      <div class="muted mini" style="margin-top:10px">• Cada level dá <b>+2</b> pontos de atributo.<br>• A cada <b>5 níveis</b>, você ganha <b>+1</b> pick de perícia (+4).</div>
     </div>
 
-    <div class="card" style="padding:14px;background:rgba(6,8,14,.55)">
+	    <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
+	      <div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start">
+	        <div>
+	          <b>Skills</b>
+	          <div class="muted mini" style="margin-top:6px">Abra a árvore para gastar Mana, travas por raça/classe e requisitos.</div>
+	        </div>
+	        <button class="primary mini" data-action="open_tree" style="white-space:nowrap" id="btnOpenTree">Abrir árvore</button>
+	      </div>
+	    </div>
+
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
+      <b>Gastar pontos de Atributo</b>
+      <div class="muted mini" style="margin-top:6px">Isso afeta Vida / Defesa / Velocidade / Mana automaticamente.</div>
+      <div class="divider"></div>
+      ${ATTR_KEYS.map(k=>`
+        <div class="selectCard" style="padding:10px">
+          <div class="left">
+            <b>${ATTR_LABEL[k]}</b>
+            <span class="muted mini">Atual: ${Number(c.attrs?.[k]||0)}</span>
+          </div>
+          <button class="secondary mini" data-action="lvl_attr_inc" data-key="${k}" ${Number(c.levelAttrBonus||0)<=0 ? "disabled":""}>+1</button>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
+      <b>Gastar pick de Perícia</b>
+      <div class="muted mini" style="margin-top:6px">Cada pick adiciona <b>+4</b> em uma perícia.</div>
+      <div class="divider"></div>
+      ${SKILL_KEYS.map(k=>`
+        <div class="selectCard" style="padding:10px">
+          <div class="left">
+            <b>${SKILL_LABEL[k]}</b>
+            <span class="muted mini">Atual: ${Number(c.skills?.[k]||0)}</span>
+          </div>
+          <button class="secondary mini" data-action="lvl_skill_inc" data-key="${k}" ${Number(c.levelSkillBonus||0)<=0 ? "disabled":""}>+4</button>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
+      <b>Barras (Ref.)</b>
+      <div class="divider"></div>
+      <div class="row" style="gap:10px;flex-wrap:wrap">
+        <span class="pill">Vida: <b>${d.vida}</b></span>
+        <span class="pill">Defesa: <b>${d.defesa}</b></span>
+        <span class="pill">Velocidade: <b>${d.velocidade}</b></span>
+        <span class="pill">Mana: <b>${d.mana}</b></span>
+      </div>
+      <div class="muted mini" style="margin-top:8px">As barras acima são o máximo (Ref.). Os botões no painel principal ajustam o valor atual durante a sessão.</div>
+    </div>
+
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
+      <b>Atributos</b>
+      <div class="divider"></div>
+      ${ATTR_KEYS.map(k=>`<div class="row" style="justify-content:space-between"><span class="muted mini">${ATTR_LABEL[k]}</span><b>${Number(c.attrs?.[k]||0)}</b></div>`).join("")}
+    </div>
+
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
+      <b>Perícias</b>
+      <div class="divider"></div>
+      ${SKILL_KEYS.map(k=>`<div class="row" style="justify-content:space-between"><span class="muted mini">${SKILL_LABEL[k]}</span><b>${Number(c.skills?.[k]||0)}</b></div>`).join("")}
+    </div>
+
+    <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
       <b>Inventário</b>
       <div class="divider"></div>
       ${(p.inventory||[]).slice(0,10).map(it=>`<div class="muted mini">• ${escapeHTML(it.name)}</div>`).join("") || `<span class="muted mini">Sem itens.</span>`}
     </div>
   `;
 
+  // Skill Tree UI está no topo do painel (logo após o resumo),
+  // para não ficar "lá em baixo".
+
+
   bindDashboardStatButtons();
+  updateKpiBars();
 
   const inp = $("avatarChange");
   if(inp){
@@ -1046,6 +1146,34 @@ function renderPlayer(playerId){
       p2.log.unshift({ts:Date.now(), text:"Imagem do personagem atualizada."});
       saveDB(DB); DB = loadDB(); render();
     };
+  }
+
+    // bind skill tree button (in Skills tab)
+    const _btnTree = document.getElementById('btnOpenTree');
+    if (_btnTree) _btnTree.onclick = () => openSkillTreeModal();
+}
+
+function updateKpiBars(){
+  const map = [
+    ["vida","Vida"],["defesa","Defesa"],["velocidade","Velocidade"],["mana","Mana"]
+  ];
+  const toNum = (t)=> {
+    const s = String(t ?? "").replace(/[^0-9.-]+/g,"");
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
+  };
+  for(const [key,label] of map){
+    const fill = document.getElementById(key+"Fill");
+    const refEl = document.getElementById(key+"Ref");
+    const valEl = document.getElementById(key+"Val");
+    if(!fill || !refEl || !valEl) continue;
+
+    const cur = toNum(valEl.textContent);
+    const ref = toNum(refEl.textContent);
+
+    const pct = ref>0 ? Math.max(0, Math.min(100, (cur/ref)*100)) : 0;
+    fill.style.width = pct.toFixed(2)+"%";
+    fill.parentElement.title = cur+" / "+ref;
   }
 }
 
@@ -1061,7 +1189,7 @@ function renderKpi(title, id, value, max){
         <span class="pill mini">Ref.: ${safeMax}</span>
       </div>
       <div class="row" style="justify-content:space-between;margin-top:6px">
-        <div class="kpiValue">${safeVal}</div>
+        <div class="kpiValue" id="${id}Val">${safeVal}</div>
         <div class="row" style="gap:6px">
           <button type="button" class="secondary mini" data-stat="${id}" data-step="5">-5</button>
           <button type="button" class="secondary mini" data-stat="${id}" data-step="1">-1</button>
@@ -1070,7 +1198,7 @@ function renderKpi(title, id, value, max){
         </div>
       </div>
       <div class="kpiBar" title="${safeVal} / ${safeMax}">
-        <div style="width:${pct}%"></div>
+        <div id="${id}Fill" style="width:${pct}%"></div>
       </div>
     </div>
   `;
@@ -1470,7 +1598,7 @@ function renderPowerTab(playerId){
     <div class="good">
       <b class="ok">Em breve</b>
       <div class="muted mini" style="margin-top:6px">
-        Quando você decidir como funciona (cooldowns, custo de foco, rank, etc), eu monto essa tela com botões, limites e salvando no DB.
+        Quando você decidir como funciona (cooldowns, custo de mana, rank, etc), eu monto essa tela com botões, limites e salvando no DB.
       </div>
     </div>
   `;
@@ -1546,13 +1674,15 @@ function finalizeCreation(playerId){
   p.characterCreated = true;
 
   const d0 = calcDerived(p);
-  p.character.currentStats = { vida:d0.vida, defesa:d0.defesa, velocidade:d0.velocidade, foco:d0.foco };
+  p.character.currentStats = { vida:d0.vida, defesa:d0.defesa, velocidade:d0.velocidade, mana:d0.mana };
 
   p.log.unshift({ts:Date.now(), text:`Personagem finalizado — Raça: ${race.name} | Classe: ${cls.name}`});
   saveDB(DB);
   render();
   toast("Personagem finalizado! ✅", true);
 }
+
+
 
 function fileToDataUrl(file){
   return new Promise((resolve,reject)=>{
@@ -1613,6 +1743,30 @@ document.addEventListener("click", (e)=>{
   if(!p) return;
   ensureLevelState(p);
 
+  if(action==="lvl_attr_inc"){
+    if(!p.characterCreated) return;
+    const key = btn.dataset.key;
+    if(!key) return;
+    if(Number(p.character.levelAttrBonus||0) <= 0) return;
+    p.character.levelAttrBonus = Number(p.character.levelAttrBonus||0) - 1;
+    p.character.attrs[key] = Number(p.character.attrs?.[key]||0) + 1;
+    saveDB(DB);
+    render();
+    return;
+  }
+
+  if(action==="lvl_skill_inc"){
+    if(!p.characterCreated) return;
+    const key = btn.dataset.key;
+    if(!key) return;
+    if(Number(p.character.levelSkillBonus||0) <= 0) return;
+    p.character.levelSkillBonus = Number(p.character.levelSkillBonus||0) - 1;
+    p.character.skills[key] = Number(p.character.skills?.[key]||0) + 4;
+    saveDB(DB);
+    render();
+    return;
+  }
+
   if(action==="apply_xp"){
     const delta = Number($("xpDelta")?.value || 0);
     const reason = String($("xpReason")?.value || "").trim();
@@ -1623,7 +1777,459 @@ document.addEventListener("click", (e)=>{
   }
 });
 
+
+/* =========================
+   Skill Tree (MYR)
+   - salva por personagem em localStorage
+   - nós arrastáveis + links de pré-requisito
+========================= */
+function ensureSkillTree(player){
+  if(!player.character) player.character = {};
+  if(!player.character.skillTree || typeof player.character.skillTree !== "object"){
+    player.character.skillTree = { nodes: [], links: [] };
+  }
+  if(!Array.isArray(player.character.skillTree.nodes)) player.character.skillTree.nodes = [];
+  if(!Array.isArray(player.character.skillTree.links)) player.character.skillTree.links = [];
+  return player.character.skillTree;
+}
+
+function injectSkillTreeStyles(){
+  if(document.getElementById("stStyles")) return;
+  const st = document.createElement("style");
+  st.id = "stStyles";
+  st.textContent = `
+    .stWrap{display:grid;grid-template-columns:1fr 320px;gap:12px}
+    @media (max-width:900px){ .stWrap{grid-template-columns:1fr} }
+    .stToolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .stBoard{
+      position:relative; height:64vh; min-height:420px;
+      border:1px solid var(--line); border-radius:18px; background:#0c131c; overflow:hidden;
+    }
+    .stSvg{position:absolute;inset:0;pointer-events:none}
+    .stNode{
+      position:absolute; min-width:170px; max-width:220px;
+      border:1px solid var(--line); border-radius:16px; padding:10px;
+      background:rgba(18,26,36,.96); backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      cursor:grab; user-select:none;
+    }
+    .stNode:active{cursor:grabbing}
+    .stNode b{display:block;font-size:13px}
+    .stNode .mini{font-size:12px;color:var(--muted);line-height:1.2}
+    .stNode.sel{outline:2px solid rgba(43,108,255,.65); box-shadow: 0 0 0 6px rgba(43,108,255,.12);}
+    .stPill{display:inline-flex;gap:6px;align-items:center;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:#0b121a;color:var(--muted);font-size:12px}
+    .stSide .card{background:#0c131c}
+    .stSide input,.stSide textarea,.stSide select{width:100%}
+    .stSide textarea{min-height:90px;resize:vertical}
+  `;
+  document.head.appendChild(st);
+}
+
+function openSkillTreeModal(playerId){
+  injectSkillTreeStyles();
+
+  DB = loadDB();
+  const p = getPlayer(playerId);
+  if(!p) return;
+
+  const tree = ensureSkillTree(p);
+
+  // state local do modal
+  const state = {
+    mode: "move", // move | link
+    selectedId: null,
+    linkFrom: null,
+  };
+
+  const html = `
+    <div class="overlay" id="ovSkillTree">
+      <div class="modal">
+        <div class="modalHeader">
+          <div>
+            <div style="font-size:16px;font-weight:950">🌿 Árvore de Skills — ${escapeHTML(p.character.charName||p.username)}</div>
+            <div class="muted mini">Modo <b id="stModeLabel">MOVER</b> • arraste nós, crie pré-requisitos, edite sem poluir a ficha.</div>
+          </div>
+          <div class="row">
+            <button class="secondary" id="stExport">Exportar JSON</button>
+            <button class="secondary" id="stImport">Importar JSON</button>
+            <button class="danger" id="stClose">Fechar</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="stToolbar">
+          <button id="stAdd">+ Nova skill</button>
+          <button class="secondary" id="stMode">Alternar: mover/link</button>
+          <span class="pill">Nós: <b id="stCount">0</b> • Links: <b id="stLinkCount">0</b></span>
+          <span class="muted mini" id="stHint"></span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="stWrap">
+          <div class="stBoard" id="stBoard">
+            <svg class="stSvg" id="stSvg"></svg>
+            <div id="stNodes"></div>
+          </div>
+
+          <div class="stSide" id="stSide">
+            <div class="card">
+              <b>Editor</b>
+              <div class="divider"></div>
+              <div class="muted mini" id="stEmpty">Clique numa skill para editar.</div>
+
+              <div id="stForm" class="hidden">
+                <label class="mini">Nome</label>
+                <input id="stName" placeholder="Ex: Corte do Véu">
+
+                <div class="row" style="margin-top:10px">
+                  <div style="flex:1;min-width:120px">
+                    <label class="mini">Nível</label>
+                    <input id="stLevel" type="number" min="1" value="1">
+                  </div>
+                  <div style="flex:1;min-width:120px">
+                    <label class="mini">Mana</label>
+                    <input id="stMana" type="number" min="0" value="5">
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                  <div style="flex:1;min-width:140px">
+                    <label class="mini">Tipo</label>
+                    <select id="stType">
+                      <option value="ativa">Ativa</option>
+                      <option value="passiva">Passiva</option>
+                      <option value="reacao">Reação</option>
+                    </select>
+                  </div>
+                  <div style="flex:1;min-width:140px">
+                    <label class="mini">Status</label>
+                    <select id="stState">
+                      <option value="bloqueada">Bloqueada</option>
+                      <option value="liberada">Liberada</option>
+                      <option value="comprada">Comprada</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="margin-top:10px">
+                  <label class="mini">Descrição</label>
+                  <textarea id="stDesc" placeholder="Efeito curto e claro..."></textarea>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                  <button class="secondary" id="stDel">Remover</button>
+                  <button id="stSave">Salvar</button>
+                </div>
+
+                <div class="divider"></div>
+                <div class="muted mini">
+                  Dica: no futuro dá pra travar skills por <b>Raça</b> e <b>Classe</b> automaticamente.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+
+  const close = ()=>{
+    document.getElementById("ovSkillTree")?.remove();
+    // salva DB quando fechar
+    saveDB(DB);
+  };
+
+  document.getElementById("stClose").onclick = close;
+  document.getElementById("ovSkillTree").addEventListener("click",(e)=>{ if(e.target.id==="ovSkillTree") close(); });
+
+  const board = document.getElementById("stBoard");
+  const svg = document.getElementById("stSvg");
+  const nodesWrap = document.getElementById("stNodes");
+
+  function persist(){
+    // re-carrega p e salva na DB atual para não perder por referência
+    const p2 = getPlayer(playerId);
+    if(!p2) return;
+    ensureSkillTree(p2).nodes = tree.nodes;
+    ensureSkillTree(p2).links = tree.links;
+    saveDB(DB);
+  }
+
+  function updateCounters(){
+    document.getElementById("stCount").textContent = String(tree.nodes.length);
+    document.getElementById("stLinkCount").textContent = String(tree.links.length);
+  }
+
+  function setMode(next){
+    state.mode = next;
+    document.getElementById("stModeLabel").textContent = next==="move" ? "MOVER" : "LINK";
+    document.getElementById("stHint").textContent =
+      next==="move"
+        ? "Arraste as skills para organizar."
+        : "Clique na skill A e depois na skill B para criar pré-requisito.";
+    state.linkFrom = null;
+  }
+
+  function nodeCenter(n){
+    // tenta ler o tamanho real do node renderizado
+    const el = nodesWrap.querySelector(`[data-node="${n.id}"]`);
+    const w = el ? el.offsetWidth : 180;
+    const h = el ? el.offsetHeight : 90;
+    return { x: n.x + w/2, y: n.y + h/2 };
+  }
+
+  function drawLinks(){
+    const bb = board.getBoundingClientRect();
+    svg.setAttribute("viewBox", `0 0 ${bb.width} ${bb.height}`);
+    svg.setAttribute("width", bb.width);
+    svg.setAttribute("height", bb.height);
+
+    const lines = [];
+    for(const lk of tree.links){
+      const a = tree.nodes.find(x=>x.id===lk.from);
+      const b = tree.nodes.find(x=>x.id===lk.to);
+      if(!a || !b) continue;
+      const p1 = nodeCenter(a);
+      const p2 = nodeCenter(b);
+      lines.push(`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(43,108,255,.75)" stroke-width="3" />`);
+      lines.push(`<circle cx="${p2.x}" cy="${p2.y}" r="5" fill="rgba(43,108,255,.85)"/>`);
+    }
+    svg.innerHTML = lines.join("");
+  }
+
+  function renderNodes(){
+    nodesWrap.innerHTML = tree.nodes.map(n=>{
+      const sel = n.id===state.selectedId ? "sel" : "";
+      const mana = Number(n.mana||0);
+      const lvl = Number(n.level||1);
+      const t = escapeHTML(n.type||"ativa");
+      const st = escapeHTML(n.state||"bloqueada");
+      return `
+        <div class="stNode ${sel}" data-node="${n.id}" style="left:${n.x}px;top:${n.y}px">
+          <b>${escapeHTML(n.name||"Nova Skill")}</b>
+          <div class="mini">${escapeHTML(n.desc||"")}</div>
+          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+            <span class="stPill">Lvl ${lvl}</span>
+            <span class="stPill">${mana} Mana</span>
+            <span class="stPill">${t}</span>
+            <span class="stPill">${st}</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+    updateCounters();
+    drawLinks();
+  }
+
+  function openEditor(n){
+    state.selectedId = n?.id || null;
+
+    const empty = document.getElementById("stEmpty");
+    const form = document.getElementById("stForm");
+    if(!n){
+      empty.classList.remove("hidden");
+      form.classList.add("hidden");
+      renderNodes();
+      return;
+    }
+
+    empty.classList.add("hidden");
+    form.classList.remove("hidden");
+
+    document.getElementById("stName").value = n.name||"";
+    document.getElementById("stLevel").value = n.level||1;
+    document.getElementById("stMana").value = n.mana||0;
+    document.getElementById("stType").value = n.type||"ativa";
+    document.getElementById("stState").value = n.state||"bloqueada";
+    document.getElementById("stDesc").value = n.desc||"";
+
+    renderNodes();
+  }
+
+  // add
+  document.getElementById("stAdd").onclick = ()=>{
+    const bb = board.getBoundingClientRect();
+    const node = {
+      id: "sk_" + Math.random().toString(16).slice(2,8),
+      x: Math.max(12, Math.round(bb.width*0.12)),
+      y: Math.max(12, Math.round(bb.height*0.12)),
+      name: "Nova Skill",
+      desc: "Descreva o efeito...",
+      level: 1,
+      mana: 5,
+      type: "ativa",
+      state: "bloqueada",
+    };
+    tree.nodes.push(node);
+    persist();
+    openEditor(node);
+  };
+
+  // mode toggle
+  document.getElementById("stMode").onclick = ()=>{
+    setMode(state.mode==="move" ? "link" : "move");
+  };
+
+  // export / import
+  document.getElementById("stExport").onclick = ()=>{
+    const json = JSON.stringify(tree, null, 2);
+    navigator.clipboard?.writeText(json).then(()=>{
+      toast("JSON copiado! (Ctrl+V onde quiser)", true);
+    }).catch(()=>{
+      prompt("Copie o JSON:", json);
+    });
+  };
+  document.getElementById("stImport").onclick = ()=>{
+    const raw = prompt("Cole o JSON da árvore aqui:");
+    if(!raw) return;
+    try{
+      const obj = JSON.parse(raw);
+      if(!obj || typeof obj!=="object") throw new Error("json inválido");
+      if(!Array.isArray(obj.nodes) || !Array.isArray(obj.links)) throw new Error("faltando nodes/links");
+      tree.nodes = obj.nodes;
+      tree.links = obj.links;
+      persist();
+      openEditor(null);
+      renderNodes();
+      toast("Árvore importada!", true);
+    }catch(err){
+      toast("JSON inválido. Não importei.", false);
+    }
+  };
+
+  // editor buttons
+  document.getElementById("stSave").onclick = ()=>{
+    const n = tree.nodes.find(x=>x.id===state.selectedId);
+    if(!n) return;
+
+    n.name = String(document.getElementById("stName").value||"").trim() || "Skill";
+    n.level = Math.max(1, Number(document.getElementById("stLevel").value||1));
+    n.mana = Math.max(0, Number(document.getElementById("stMana").value||0));
+    n.type = document.getElementById("stType").value;
+    n.state = document.getElementById("stState").value;
+    n.desc = String(document.getElementById("stDesc").value||"").trim();
+
+    persist();
+    renderNodes();
+    toast("Skill salva.", true);
+  };
+
+  document.getElementById("stDel").onclick = ()=>{
+    const id = state.selectedId;
+    if(!id) return;
+    if(!confirm("Remover essa skill? (vai remover links também)")) return;
+
+    tree.nodes = tree.nodes.filter(x=>x.id!==id);
+    tree.links = tree.links.filter(l=>l.from!==id && l.to!==id);
+    state.selectedId = null;
+    state.linkFrom = null;
+
+    persist();
+    openEditor(null);
+    renderNodes();
+    toast("Skill removida.", true);
+  };
+
+  // interaction: click nodes, drag, link
+  let drag = null;
+
+  function pickNodeEl(target){
+    return target.closest && target.closest(".stNode");
+  }
+
+  nodesWrap.addEventListener("mousedown", (e)=>{
+    const el = pickNodeEl(e.target);
+    if(!el) return;
+
+    const id = el.dataset.node;
+    const n = tree.nodes.find(x=>x.id===id);
+    if(!n) return;
+
+    // select
+    if(state.mode==="link"){
+      if(!state.linkFrom){
+        state.linkFrom = id;
+        state.selectedId = id;
+        renderNodes();
+        toast("Escolha a skill de DESTINO.", true);
+      }else{
+        const from = state.linkFrom;
+        const to = id;
+        if(from===to){ state.linkFrom = null; toast("Cancelado.", false); return; }
+        const exists = tree.links.some(l=>l.from===from && l.to===to);
+        if(!exists) tree.links.push({from, to});
+        state.linkFrom = null;
+        persist();
+        renderNodes();
+        toast("Pré-requisito criado.", true);
+      }
+      openEditor(n);
+      return;
+    }
+
+    // move mode -> start drag
+    state.selectedId = id;
+    openEditor(n);
+
+    const rect = board.getBoundingClientRect();
+    drag = {
+      id,
+      startX: e.clientX,
+      startY: e.clientY,
+      nodeX: n.x,
+      nodeY: n.y,
+      rectW: rect.width,
+      rectH: rect.height,
+    };
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e)=>{
+    if(!drag || state.mode!=="move") return;
+    const n = tree.nodes.find(x=>x.id===drag.id);
+    if(!n) return;
+
+    const dx = e.clientX - drag.startX;
+    const dy = e.clientY - drag.startY;
+
+    n.x = clamp(drag.nodeX + dx, 8, drag.rectW - 240);
+    n.y = clamp(drag.nodeY + dy, 8, drag.rectH - 120);
+
+    renderNodes();
+  });
+
+  window.addEventListener("mouseup", ()=>{
+    if(!drag) return;
+    persist();
+    drag = null;
+  });
+
+  // first render
+  setMode("move");
+  openEditor(null);
+  renderNodes();
+}
+
+
 render();
+
+// --- Hard-bind botão da árvore (fallback) ---
+try{
+  window.openSkillTreeModal = openSkillTreeModal;
+  const _btn = document.getElementById("btnOpenTree");
+  if(_btn){
+    _btn.addEventListener("click",(e)=>{
+      e.preventDefault();
+      const p = getSessionPlayer();
+      if(p?.id) openSkillTreeModal(p.id);
+    });
+  }
+}catch(_e){}
 </script>
 </body>
 </html>
