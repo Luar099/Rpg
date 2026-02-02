@@ -1221,7 +1221,7 @@ function renderPlayer(playerId, action=null){
 
     // bind skill tree button (in Skills tab)
     const _btnTree = document.getElementById('btnOpenTree');
-    if (_btnTree) _btnTree.onclick = () => openSkillTreeModal();
+    if (_btnTree) _btnTree.onclick = () => openSkillTreeModal(p.id);
 }
 
 function updateKpiBars(){
@@ -1944,6 +1944,14 @@ document.addEventListener("click", (e)=>{
     toast("XP aplicado!", true);
     render();
     return;
+
+  if(action==="open_tree"){
+    // abre a árvore de skills do player logado
+    if(!p || !p.id) return;
+    openSkillTreeModal(p.id);
+    return;
+  }
+
   }
 });
 
