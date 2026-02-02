@@ -211,6 +211,13 @@ const SKILL_LABEL = {
   Oficios:"Ofícios",
 };
 
+// Desvantagens: pontos por gravidade (leve/média/grave)
+const DISADV_TIER_POINTS = {
+  leve:  { attr: 1, skillPicks: 1 },
+  media: { attr: 2, skillPicks: 2 },
+  grave: { attr: 4, skillPicks: 4 },
+};
+
 const ATTR_ROT = ["Forca","Destreza","Inteligencia","Vontade","Carisma"];
   const SKILL_ROT = ["Combate","Precisao","Resistencia","Investigacao","Persuasao","Arcanismo","Rituais","Oficios"];
 
@@ -322,12 +329,50 @@ Guerreiro|Bárbaro|Cavaleiro|Gladiador|Mercenário|Sentinela|Duelista|Campeão|G
   const DEFAULT_CLASS_ID = classes[0]?.id || "cls_guerreiro";
 
   const disadvantages = [
-    { id:"dv_fobia", name:"Fobia", points:{attr:+1, skillPicks:+1}, desc:"Você escolhe um medo forte. Pode atrapalhar em cenas tensas." },
-    { id:"dv_impulsivo", name:"Impulsivo", points:{attr:+1, skillPicks:+1}, desc:"Provocações te puxam. Decisões precipitadas (roleplay)." },
-    { id:"dv_marcado", name:"Marcado", points:{attr:+2, skillPicks:+1}, desc:"Seu ‘sinal’ é mais visível — coisas te notam com facilidade." },
-    { id:"dv_debito", name:"Dívida", points:{attr:+1, skillPicks:+2}, desc:"Um favor perigoso vai ser cobrado (o Mestre decide quando)." },
-    { id:"dv_vozes", name:"Vozes", points:{attr:+2, skillPicks:+2}, desc:"Visões/lapsos em momentos de pressão (narrativo)." },
-  ];
+  // 🟢 LEVES (até 5) — +1 ponto de atributo
+  { id:"dv_teimoso", name:"Teimoso", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Dificuldade em ceder; pode travar negociações." },
+  { id:"dv_impulsivo", name:"Impulsivo", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Age antes de pensar; se complica com facilidade." },
+  { id:"dv_ansiedade_leve", name:"Ansiedade leve", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Sob pressão, você hesita ou se atrapalha." },
+  { id:"dv_medo_leve", name:"Medo leve (escolher)", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Escolha um medo; causa penalidade situacional quando aparece." },
+  { id:"dv_sono_inquieto", name:"Sono inquieto", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Acorda mal às vezes; a 1ª cena do dia pode sofrer." },
+  { id:"dv_enjoa_facil", name:"Enjoa fácil", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Viagens longas/cheiros fortes te atrapalham." },
+  { id:"dv_orgulhoso", name:"Orgulhoso", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Dificuldade em pedir ajuda ou admitir erro." },
+  { id:"dv_curiosidade_perigosa", name:"Curiosidade perigosa", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Você mexe no que não deve." },
+  { id:"dv_desatento", name:"Desatento", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Perde detalhes e sinais óbvios." },
+  { id:"dv_supersticioso", name:"Supersticioso", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Sinais/presságios influenciam suas escolhas." },
+  { id:"dv_fala_demais", name:"Fala demais", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Vaza informação sem querer." },
+  { id:"dv_desconfiado", name:"Desconfiado", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Dificuldade em confiar e cooperar." },
+  { id:"dv_ma_fama_local", name:"Má fama local", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"NPCs da região começam menos amigáveis." },
+  { id:"dv_avareza", name:"Avareza", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Reluta em gastar recursos/dinheiro." },
+  { id:"dv_inseg_emoc", name:"Insegurança emocional", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Críticas e rejeição te afetam." },
+
+  // 🟡 MÉDIAS (até 3) — +2 pontos de atributo
+  { id:"dv_trauma_passado", name:"Trauma do passado", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Gatilhos do passado atrapalham em momentos-chave." },
+  { id:"dv_divida_ativa", name:"Dívida ativa", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Alguém cobra; o Mestre puxa isso pro jogo." },
+  { id:"dv_juramento_limitante", name:"Juramento limitante", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Você tem regras que não pode quebrar." },
+  { id:"dv_codigo_moral_rigido", name:"Código moral rígido", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Algumas soluções ficam fora de cogitação." },
+  { id:"dv_fobia_intensa", name:"Fobia intensa", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Perto do gatilho, você entra em pânico." },
+  { id:"dv_paranoia", name:"Paranoia", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Sempre espera traição; pode sabotar alianças." },
+  { id:"dv_dependencia", name:"Dependência", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Álcool/magia/drogas: sem isso você fica pior." },
+  { id:"dv_marca_visivel", name:"Marca visível", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Você é reconhecido e lembrado." },
+  { id:"dv_perseguido", name:"Perseguido", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Alguém te caça (ou quer te capturar)." },
+  { id:"dv_instab_emoc", name:"Instabilidade emocional", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Oscilações atrapalham sob estresse." },
+  { id:"dv_falta_controle_magico", name:"Falta de controle mágico", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Em falhas, a magia pode sair errada." },
+  { id:"dv_culpa_constante", name:"Culpa constante", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Peso moral te trava em decisões difíceis." },
+
+  // 🔴 GRAVES (até 2) — +4 pontos de atributo (sempre vira PLOT)
+  { id:"dv_maldicao_ativa", name:"Maldição ativa", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Uma maldição te acompanha e sempre volta." },
+  { id:"dv_pacto_forcado", name:"Pacto forçado", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Uma entidade te cobra; você não escolheu isso." },
+  { id:"dv_condenacao_morte", name:"Condenação de morte", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Há um preço na sua cabeça." },
+  { id:"dv_marca_rastreavel", name:"Marca sobrenatural rastreável", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Forças te rastreiam com facilidade." },
+  { id:"dv_entidade_observando", name:"Entidade observando", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Algo te encara — e interfere." },
+  { id:"dv_destino_selado", name:"Destino selado", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Uma profecia te persegue." },
+  { id:"dv_vida_emprestada", name:"Vida emprestada", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Você está vivo ‘por tempo’." },
+  { id:"dv_sangue_amaldicoado", name:"Sangue amaldiçoado", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Sua linhagem traz consequências." },
+  { id:"dv_loucura_progressiva", name:"Loucura progressiva", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Piora com o tempo; o Mestre escala." },
+  { id:"dv_juramento_sangue", name:"Juramento de sangue", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Quebrar cobra um preço imediato." },
+];
+
 
   return {
     users: [
@@ -367,6 +412,19 @@ Guerreiro|Bárbaro|Cavaleiro|Gladiador|Mercenário|Sentinela|Duelista|Campeão|G
   };
 }
 
+const DISADV_LIMITS = { leve:5, media:3, grave:2 };
+
+function disadvCounts(player){
+  const out = { leve:0, media:0, grave:0, total:0 };
+  for(const id of (player.character.disadvantages||[])){
+    const d = getDisadv(id);
+    const t = d?.tier || "media";
+    if(out[t] != null) out[t] += 1;
+    out.total += 1;
+  }
+  return out;
+}
+
 function loadDB(){
   const raw = localStorage.getItem(KEY);
   if(!raw){
@@ -395,7 +453,7 @@ let DB = loadDB();
   if(!Array.isArray(DB.players) || DB.players.length===0){ DB.players = base.players; changed = true; }
   if(!Array.isArray(DB.races) || DB.races.length===0){ DB.races = base.races; changed = true; }
   if(!Array.isArray(DB.classes) || DB.classes.length===0){ DB.classes = base.classes; changed = true; }
-  if(!Array.isArray(DB.disadvantages) || DB.disadvantages.length===0){ DB.disadvantages = base.disadvantages; changed = true; }
+  if(!Array.isArray(DB.disadvantages) || DB.disadvantages.length===0 || !DB.disadvantages.some(d=>d && typeof d.tier==="string")){ DB.disadvantages = base.disadvantages; changed = true; }
   if(!DB.session || typeof DB.session !== "object"){ DB.session = { userId:null }; changed = true; }
 
   for(const p of DB.players){
@@ -490,7 +548,12 @@ function disadvBonus(player){
   let attr=0, skillPicks=0;
   for(const id of (player.character.disadvantages||[])){
     const d = getDisadv(id);
-    if(d){ attr += (d.points?.attr||0); skillPicks += (d.points?.skillPicks||0); }
+    if(!d) continue;
+
+    // Se tiver tier, usa o padrão do sistema; senão, cai no points do item.
+    const pack = (d.tier && DISADV_TIER_POINTS[d.tier]) ? DISADV_TIER_POINTS[d.tier] : (d.points || {});
+    attr += Number(pack.attr || 0);
+    skillPicks += Number(pack.skillPicks || 0);
   }
   return {attr, skillPicks};
 }
@@ -1121,7 +1184,15 @@ function renderPlayer(playerId, action=null){
       ${SKILL_KEYS.map(k=>`<div class="row" style="justify-content:space-between"><span class="muted mini">${SKILL_LABEL[k]}</span><b>${Number(c.skills?.[k]||0)}</b></div>`).join("")}
     </div>
 
+    
     <div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
+      <b>Desvantagens</b>
+      <div class="muted mini" style="margin-top:6px">O que você escolheu na criação (com a gravidade e os bônus).</div>
+      <div class="divider"></div>
+      ${renderChosenDisadvantages(p)}
+    </div>
+
+<div class="card" style="padding:14px;background:rgba(6,8,14,.55);margin-bottom:12px">
       <b>Inventário</b>
       <div class="divider"></div>
       ${(p.inventory||[]).slice(0,10).map(it=>`<div class="muted mini">• ${escapeHTML(it.name)}</div>`).join("") || `<span class="muted mini">Sem itens.</span>`}
@@ -1220,6 +1291,37 @@ function formatBuffs(buffs){
     }
   }
   return parts.length ? parts.join("<br>") : "—";
+}
+
+function tierLabel(tier){
+  if(tier==="grave") return "🔴 Grave";
+  if(tier==="media") return "🟡 Média";
+  return "🟢 Leve";
+}
+function tierTag(tier){
+  const txt = tierLabel(tier);
+  // usa a mesma estética de "pill"
+  return `<span class="pill mini">${txt}</span>`;
+}
+function renderChosenDisadvantages(player){
+  const ids = player?.character?.disadvantages || [];
+  const list = ids.map(id=>getDisadv(id)).filter(Boolean);
+  if(!list.length){
+    return `<span class="muted mini">Nenhuma desvantagem escolhida.</span>`;
+  }
+  return list.map(d=>{
+    const t = d.tier || "leve";
+    return `<div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start">
+      <div class="left" style="min-width:0">
+        <b style="font-size:13px">${escapeHTML(d.name)}</b>
+        <div class="muted mini" style="margin-top:4px;line-height:1.35">${escapeHTML(d.desc||"")}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        ${tierTag(t)}
+        <span class="pill mini">+${DISADV_TIER_POINTS[t]?.attr||0} Attr • +${DISADV_TIER_POINTS[t]?.skillPicks||0} Pick</span>
+      </div>
+    </div><div class="divider"></div>`;
+  }).join("").replace(/<div class="divider"><\/div>\s*$/,"");
 }
 
 /* =========================
@@ -1608,51 +1710,119 @@ function renderPowerTab(playerId){
 function renderDisadvTab(playerId){
   const p = getPlayer(playerId);
   const tab = $("tabDisadv");
+  if(!p || !tab) return;
+
   const picked = new Set(p.character.disadvantages||[]);
   const b = disadvBonus(p);
+  const cts = disadvCounts(p);
+
+  const groups = {
+    leve: { title:"🟢 Leves", subtitle:"até 5", note:"+1 ponto", items: [] },
+    media:{ title:"🟡 Médias", subtitle:"até 3", note:"+2 pontos", items: [] },
+    grave:{ title:"🔴 Graves / Trágicas", subtitle:"até 2", note:"+4 pontos (vira PLOT)", items: [] },
+  };
+
+  for(const d of (DB.disadvantages||[])){
+    const t = d.tier || "media";
+    if(groups[t]) groups[t].items.push(d);
+  }
+
+  const renderGroup = (tier)=>{
+    const g = groups[tier];
+    const limit = DISADV_LIMITS[tier];
+    const used = cts[tier] || 0;
+
+    return `
+      <div class="card" style="padding:14px;background:rgba(6,8,14,.45)">
+        <div class="row" style="justify-content:space-between;gap:10px">
+          <div>
+            <b>${g.title}</b>
+            <div class="muted mini">${g.subtitle} • ${g.note}</div>
+          </div>
+          <span class="pill">Escolhidas: <b>${used}</b> / ${limit}</span>
+        </div>
+        <div class="divider"></div>
+
+        <div class="selectGrid">
+          ${g.items.map(d=>{
+            const sel = picked.has(d.id);
+            const lock = !sel && used >= limit;
+            const tag = (tier==="leve")
+              ? `+1 ponto`
+              : (tier==="media" ? `+2 pontos` : `+4 pontos`);
+            return `
+              <label class="selectCard ${sel ? "selectedGlow":""}" style="cursor:${lock?'not-allowed':'pointer'};opacity:${lock ? .65 : 1}">
+                <div class="left">
+                  <div class="row" style="justify-content:space-between;gap:10px">
+                    <b>${escapeHTML(d.name)}</b>
+                    <span class="tag">${tag}</span>
+                  </div>
+                  <div class="muted mini" style="margin-top:6px">${escapeHTML(d.desc||"")}</div>
+                </div>
+                <div>
+                  <input type="checkbox" data-dv="${escapeHTML(d.id)}" ${sel?"checked":""} ${lock?"disabled":""}>
+                </div>
+              </label>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    `;
+  };
 
   tab.innerHTML = `
     <div class="row" style="justify-content:space-between">
       <div>
         <b>Desvantagens</b>
-        <div class="muted mini">Você ganha pontos extras, mas assume consequências no roleplay.</div>
+        <div class="muted mini">Travas automáticas: <b>5</b> leves, <b>3</b> médias, <b>2</b> graves.</div>
       </div>
       <span class="pill">Bônus: <b>+${b.attr}</b> attr • <b>+${b.skillPicks}</b> picks</span>
     </div>
+
     <div class="divider"></div>
 
-    <div class="selectGrid">
-      ${DB.disadvantages.map(d=>{
-        const sel = picked.has(d.id);
-        return `
-          <label class="selectCard ${sel ? "selectedGlow":""}" style="cursor:pointer">
-            <div class="left">
-              <div class="row" style="justify-content:space-between;gap:10px">
-                <b>${escapeHTML(d.name)}</b>
-                <span class="tag">+${d.points.attr} attr • +${d.points.skillPicks} picks</span>
-              </div>
-              <div class="muted mini" style="margin-top:6px">${escapeHTML(d.desc)}</div>
-            </div>
-            <div><input type="checkbox" data-dv="${d.id}" ${sel?"checked":""}></div>
-          </label>
-        `;
-      }).join("")}
+    <div style="display:grid;gap:12px">
+      ${renderGroup("leve")}
+      ${renderGroup("media")}
+      ${renderGroup("grave")}
     </div>
   `;
 
   tab.querySelectorAll("input[type=checkbox][data-dv]").forEach(chk=>{
     chk.onchange = ()=>{
       const id = chk.dataset.dv;
+      const curTab = UI.activeTab;
+
       const p2 = getPlayer(playerId);
+      const d = getDisadv(id);
+      const tier = d?.tier || "media";
+      const limit = DISADV_LIMITS[tier];
+
       const set = new Set(p2.character.disadvantages||[]);
-      if(chk.checked) set.add(id); else set.delete(id);
+      const beforeCounts = disadvCounts(p2);
+
+      if(chk.checked){
+        // trava: não deixa passar do limite por tier
+        if((beforeCounts[tier]||0) >= limit){
+          chk.checked = false;
+          toast(`Limite atingido: ${limit} no grupo ${tier}.`, false);
+          return;
+        }
+        set.add(id);
+      } else {
+        set.delete(id);
+      }
+
       p2.character.disadvantages = Array.from(set);
       saveDB(DB); DB = loadDB();
+
       renderDisadvTab(playerId);
       renderCharacterCreator(getPlayer(playerId));
+      UI.activeTab = curTab; setActiveTab(curTab);
     };
   });
 }
+
 
 function finalizeCreation(playerId){
   const p = getPlayer(playerId);
