@@ -1,2266 +1,481 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MYR • Portal do Aventureiro (Beta)</title>
+  <title>MYR — Login (Beta Fix)</title>
   <style>
     :root{
-      --bg0:#0b0a07;
-      --bg1:#14110b;
-      --panel:rgba(15,12,8,.62);
+      --bg:#05060a;
+      --card:rgba(16,18,26,.92);
+      --muted:#a0a6b8;
+      --txt:#f2f4ff;
       --line:rgba(255,255,255,.10);
-      --ink:#1a160f;
-      --txt:#f2efe6;
-      --muted:rgba(242,239,230,.72);
 
-      --paper:#e7d8b8;
-      --paper2:#d8c39a;
-      --wax:#8b1e2d;
-      --gold:#c9a24a;
-      --steel:#7b7f86;
-
-      --shadow: 0 18px 50px rgba(0,0,0,.55);
-      --r:18px;
-
-      --good:#20d07a;
+      --btn:#7c3aed;
+      --btn2:#22c55e;
       --bad:#ef4444;
-
-      --rare:#3b82f6;
-      --epic:#a855f7;
-      --legend:#f59e0b;
-
-      --navH: 64px;
+      --ok:#22c55e;
+      --gold:#f59e0b;
+      --paper:#eadfbe;
+      --paper2:#e1d4ad;
+      --ink:#2c2317;
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
     body{
       margin:0;
-      color:var(--txt);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      min-height:100vh;
       background:
-        radial-gradient(1100px 700px at 20% 15%, rgba(201,162,74,.12), transparent 55%),
-        radial-gradient(900px 600px at 85% 20%, rgba(139,30,45,.10), transparent 60%),
-        radial-gradient(1200px 900px at 50% 90%, rgba(255,255,255,.06), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
-      overflow-x:hidden;
-    }
-
-    body::before{
-      content:"";
-      position:fixed; inset:0;
-      background: repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px);
-      mix-blend-mode: overlay;
-      opacity:.07;
-      pointer-events:none;
-    }
-
-    /* Layout */
-    header{
-      position:sticky; top:0; z-index:10;
-      background: rgba(8,6,4,.64);
-      backdrop-filter: blur(10px);
-      border-bottom:1px solid var(--line);
-    }
-    .topbar{
-      max-width:1200px;
-      margin:0 auto;
-      padding: 12px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .brand{
-      display:flex; align-items:baseline; gap:10px;
-      letter-spacing:.8px;
-      white-space:nowrap;
-    }
-    .brand b{ font-size:20px; }
-    .brand span{ color: var(--muted); font-size:12px; }
-
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 7px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.22);
-      color: var(--muted);
-      font-size:12px;
-    }
-    .dot{
-      width:8px; height:8px; border-radius:999px;
-      background: rgba(201,162,74,.9);
-      box-shadow: 0 0 0 6px rgba(201,162,74,.15);
-    }
-
-    .btn{
-      appearance:none;
-      border:1px solid transparent;
-      border-radius: 14px;
-      padding: 10px 12px;
-      cursor:pointer;
-      color: var(--txt);
-      background: linear-gradient(180deg, rgba(201,162,74,1), rgba(150,112,45,1));
-      font-weight: 900;
-      letter-spacing:.2px;
-      box-shadow: 0 14px 22px rgba(0,0,0,.25);
-      transition: transform .12s ease, filter .12s ease, background .12s ease;
-      user-select:none;
-    }
-    .btn:active{ transform: translateY(1px) scale(.99); }
-    .btn.ghost{
-      background: rgba(0,0,0,.18);
-      border-color: rgba(255,255,255,.12);
-      box-shadow:none;
-      color: rgba(242,239,230,.86);
-    }
-    .btn.bad{ background: linear-gradient(180deg, rgba(239,68,68,1), rgba(153,27,27,1)); }
-    .btn:disabled{ opacity:.55; cursor:not-allowed; }
-
-    main{
-      max-width:1200px;
-      margin:0 auto;
-      padding: 14px 14px calc(var(--navH) + 18px);
-    }
-
-    .grid{
-      display:grid;
-      gap:14px;
-    }
-    @media (min-width:980px){
-      .grid{
-        grid-template-columns: 1.25fr .75fr;
-        align-items:start;
-      }
-    }
-
-    .card{
-      background: var(--panel);
-      border:1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
-    .card .inner{ padding: 14px; }
-    .card h2{
-      margin:0 0 6px;
-      font-size: 16px;
-      letter-spacing:.2px;
-    }
-    .muted{ color: var(--muted); font-size:13px; line-height:1.35; }
-    .divider{ height:1px; background: var(--line); margin: 12px 0; }
-
-    /* Bottom nav (mobile) */
-    .bottomNav{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      height: var(--navH);
-      background: rgba(8,6,4,.72);
-      backdrop-filter: blur(12px);
-      border-top:1px solid var(--line);
-      display:flex;
-      justify-content:space-around;
-      gap:6px;
-      padding: 8px 8px 10px;
-      z-index: 20;
-    }
-    .navBtn{
-      flex:1;
-      border-radius: 16px;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.18);
-      color: rgba(242,239,230,.70);
-      font-weight: 900;
-      font-size: 11px;
-      padding: 8px 6px;
-      cursor:pointer;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:4px;
-      user-select:none;
-    }
-    .navBtn.active{
-      background: rgba(201,162,74,.18);
-      border-color: rgba(201,162,74,.35);
-      color: rgba(242,239,230,.92);
-      box-shadow: 0 0 0 6px rgba(201,162,74,.10);
-    }
-    @media (min-width:980px){
-      .bottomNav{ display:none; }
-      main{ padding-bottom: 18px; }
-    }
-
-    /* Tabs (desktop + inside) */
-    .tabs{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .tabBtn{
-      border-radius: 999px;
-      padding: 9px 12px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.20);
-      color: rgba(242,239,230,.75);
-      font-weight: 900;
-      cursor:pointer;
-      font-size:12px;
-      user-select:none;
-    }
-    .tabBtn.active{
-      background: rgba(201,162,74,.20);
-      border-color: rgba(201,162,74,.35);
-      color: rgba(242,239,230,.92);
-    }
-
-    /* Inputs */
-    label{ font-size:12px; color: rgba(242,239,230,.72); }
-    input, select, textarea{
-      width:100%;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      color: var(--txt);
-      outline:none;
-    }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(201,162,74,.55);
-      box-shadow: 0 0 0 4px rgba(201,162,74,.12);
-    }
-    textarea{ min-height: 140px; resize: vertical; }
-
-    /* Small cards lists */
-    .list{ display:grid; gap:10px; }
-    .itemCard{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      border-radius: 18px;
-      padding: 12px;
-      display:flex;
-      gap:12px;
-      justify-content:space-between;
-      align-items:flex-start;
-    }
-    .itemCard b{ display:block; font-size:13px; }
-    .tag{
-      display:inline-flex; align-items:center; gap:6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      color: rgba(242,239,230,.72);
-      font-size: 12px;
-      white-space:nowrap;
-    }
-    .rarity{ font-weight: 950; }
-    .rar-comum{ color: rgba(242,239,230,.80); }
-    .rar-incomum{ color: var(--good); }
-    .rar-raro{ color: var(--rare); }
-    .rar-epico{ color: var(--epic); }
-    .rar-lendario{ color: var(--legend); }
-
-    .kpiGrid{ display:grid; gap:10px; }
-    @media (min-width:720px){ .kpiGrid{ grid-template-columns: 1fr 1fr; } }
-    .kpi{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      border-radius: 18px;
-      padding: 12px;
-    }
-    .kpiHead{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
-    .kpiVal{ font-size: 18px; font-weight: 950; }
-    .bar{
-      height: 12px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.16);
-      overflow:hidden;
-      margin-top: 8px;
-    }
-    .bar > div{ height:100%; width: 0%; background: rgba(201,162,74,.85); }
-
-    /* Backpack animation */
-    .backpack{
-      width: 34px; height:34px;
-      border-radius: 12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      display:grid; place-items:center;
-      box-shadow: 0 10px 16px rgba(0,0,0,.20);
-      position:relative;
-      overflow:hidden;
-      animation: bob 2.4s ease-in-out infinite;
-    }
-    @keyframes bob{
-      0%{ transform: translateY(0px); }
-      50%{ transform: translateY(-3px); }
-      100%{ transform: translateY(0px); }
-    }
-    .backpack::after{
-      content:"";
-      position:absolute; inset:-40px;
-      background: radial-gradient(circle at 30% 30%, rgba(201,162,74,.18), transparent 55%);
-      transform: rotate(12deg);
-      animation: glow 2.8s ease-in-out infinite alternate;
-    }
-    @keyframes glow{
-      from{ opacity:.45; }
-      to{ opacity:.85; }
-    }
-
-    /* Overlay modal */
-    .overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.70);
-      padding: 16px;
-      overflow:auto;
-      z-index: 80;
-    }
-    .modal{
-      max-width: 980px;
-      margin: 14px auto;
-      border-radius: 24px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(10,8,5,.72);
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .modal .inner{ padding: 14px; }
-    .modalHead{ display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:flex-start; }
-
-    /* Login intro (pigeon + scroll) */
-    .intro{
-      min-height: 520px;
+        radial-gradient(1200px 700px at 10% -10%, rgba(124,58,237,.22), transparent 60%),
+        radial-gradient(1000px 700px at 110% 10%, rgba(34,197,94,.16), transparent 55%),
+        linear-gradient(180deg,#05060a,#0a0b12 55%,#070712);
+      color:var(--txt);
       display:grid;
       place-items:center;
-      position:relative;
-      overflow:hidden;
-    }
-    .sky{
-      position:absolute; inset:0;
-      background:
-        radial-gradient(900px 500px at 40% 10%, rgba(255,255,255,.06), transparent 60%),
-        radial-gradient(1000px 650px at 70% 20%, rgba(201,162,74,.06), transparent 65%),
-        radial-gradient(850px 650px at 50% 120%, rgba(0,0,0,.45), transparent 55%);
-      pointer-events:none;
-    }
-    .pigeon{
-      position:absolute;
-      left:-220px;
-      top: 84px;
-      width: 210px;
-      filter: drop-shadow(0 18px 18px rgba(0,0,0,.45));
-      animation: fly-in 2.2s cubic-bezier(.2,.9,.2,1) forwards;
-      transform-origin: 60% 50%;
-    }
-    .wing{
-      transform-origin: 66% 42%;
-      animation: flap .35s ease-in-out infinite alternate;
-    }
-    @keyframes flap{
-      from{ transform: rotate(-10deg) scaleY(1); }
-      to  { transform: rotate(16deg) scaleY(.92); }
-    }
-    @keyframes fly-in{
-      0%   { transform: translateX(0) translateY(0) scale(.95) rotate(-3deg); opacity:0; }
-      30%  { opacity:1; }
-      100% { transform: translateX(min(520px, 52vw)) translateY(10px) scale(1) rotate(0deg); opacity:1; }
+      padding:18px;
     }
 
-    .scroll{
-      position:absolute;
-      width: min(520px, 92%);
-      left: 50%;
-      top: 200px;
-      transform: translateX(-50%);
-      opacity:0;
+    .stage{
+      width:min(980px, 100%);
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:rgba(10,12,18,.65);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 45px rgba(0,0,0,.55);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      min-height: 540px;
+    }
+    @media (max-width:900px){
+      .stage{grid-template-columns:1fr; min-height:auto}
+    }
+
+    .scene{
+      position:relative;
+      min-height: 520px;
+      background: radial-gradient(900px 520px at 40% 0%, rgba(0,0,0,.12), rgba(0,0,0,.55));
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+    @media (max-width:900px){
+      .scene{min-height:360px}
+    }
+
+    /* vignette */
+    .scene:before{
+      content:"";
+      position:absolute;inset:-20%;
+      background: radial-gradient(circle at 50% 45%, transparent 0 45%, rgba(0,0,0,.55) 70%);
       pointer-events:none;
     }
-    .scroll.carried{
-      opacity:1;
-      transform: translateX(-50%) translateY(-60px) scale(.92);
-      animation: carried 2.2s cubic-bezier(.2,.9,.2,1) forwards;
+
+    /* Simple pigeon */
+    .pigeon{
+      position:absolute;
+      top:70px;
+      left:20%;
+      width:92px;
+      height:92px;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.6));
+      transform: translateX(0) translateY(0);
+      animation: fly 2.1s ease-in-out infinite;
+      z-index:3;
     }
-    @keyframes carried{
-      from{ transform: translateX(-50%) translateY(-60px) scale(.92); }
-      to  { transform: translateX(-50%) translateY(-40px) scale(.92); }
+    @keyframes fly{
+      0%,100%{ transform: translateX(0) translateY(0) rotate(-2deg) }
+      50%{ transform: translateX(18px) translateY(-10px) rotate(2deg) }
     }
-    .scroll.dropped{
-      opacity:1;
+
+    /* Scroll / paper */
+    .scroll{
+      position:absolute;
+      top:160px;
+      left:50%;
+      transform: translateX(-50%);
+      width:min(520px, 92%);
+      z-index:2;
       pointer-events:auto;
-      animation: drop 1.05s cubic-bezier(.2,.75,.2,1) forwards;
-    }
-    @keyframes drop{
-      0%   { transform: translateX(-50%) translateY(-40px) scale(.92) rotate(-2deg); }
-      55%  { transform: translateX(-50%) translateY(140px) scale(.98) rotate(1deg); }
-      100% { transform: translateX(-50%) translateY(210px) scale(1) rotate(0deg); }
     }
 
     .paper{
-      position:relative;
       background: linear-gradient(180deg, var(--paper), var(--paper2));
-      color: var(--ink);
-      border-radius: 16px;
-      border: 1px solid rgba(26,22,15,.18);
-      box-shadow: 0 20px 45px rgba(0,0,0,.45);
+      border:1px solid rgba(44,35,23,.25);
+      border-radius:16px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.45);
       overflow:hidden;
+      color:var(--ink);
+      position:relative;
     }
-    .roll{
-      position:absolute;
-      width: 74px; height: 74px;
-      border-radius: 999px;
-      top: -22px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), rgba(0,0,0,.08)),
-                  linear-gradient(180deg, #c9b08b, #a78b63);
-      border: 1px solid rgba(0,0,0,.18);
-      box-shadow: 0 10px 18px rgba(0,0,0,.25);
-    }
-    .roll.left{ left: 10px; }
-    .roll.right{ right: 10px; }
+
     .seal{
       position:absolute;
-      right: 18px;
-      top: 16px;
-      width: 44px; height: 44px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, #b23a4a, var(--wax));
-      box-shadow: 0 14px 18px rgba(0,0,0,.28);
-      border: 1px solid rgba(0,0,0,.22);
-      display:grid; place-items:center;
-      color: rgba(255,255,255,.9);
-      font-weight:800;
-      letter-spacing:.6px;
+      right:12px;
+      top:10px;
+      width:38px;height:38px;
+      border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.45), rgba(0,0,0,.25)),
+                  radial-gradient(circle at 55% 60%, #9b1c1c, #5c0b0b);
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-weight:950;
+      font-size:11px;
+      letter-spacing:.4px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.28);
     }
 
+    .paper-top{
+      padding:16px 16px 12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+    .paper-top b{
+      display:block;
+      font-size:14px;
+    }
+    .paper-top .sub{
+      font-size:12px;
+      opacity:.8;
+      margin-top:2px;
+      line-height:1.25;
+    }
+
+    /* ✅ FIX: do NOT animate height; animate max-height + opacity */
     .paper-inner{
       padding: 28px 18px 18px;
-      height: 0px;
-      overflow:hidden;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
       transform-origin: top;
+      transform: scaleY(.98);
     }
     .unfurl .paper-inner{
-      animation: unfurl 1.05s cubic-bezier(.2,.9,.2,1) forwards;
-    }
-    @keyframes unfurl{
-      from{ height: 0px; opacity:0; }
-      to  { height: 340px; opacity:1; }
-    }
-
-    .paper h2{ margin: 6px 0 4px; font-size: 22px; letter-spacing:.2px; }
-    .paper p{ margin: 0 0 14px; color: rgba(26,22,15,.75); font-size: 13px; line-height: 1.35; }
-
-    .paper .btn{
-      box-shadow:none;
+      max-height: 520px;
+      opacity: 1;
+      transform: scaleY(1);
+      transition: max-height 900ms cubic-bezier(.2,.9,.2,1), opacity 300ms ease, transform 600ms ease;
     }
 
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce){
-      .pigeon,.wing,.scroll.carried,.scroll.dropped,.unfurl .paper-inner,.backpack{ animation:none!important; }
-    }
-
-    .hidden{ display:none!important; }
-    .ok{ color: var(--good); font-weight: 950; }
-    .bad{ color: var(--bad); font-weight: 950; }
-
-    /* Map */
-    .map{
-      height: 280px;
-      border-radius: 20px;
-      border:1px solid rgba(255,255,255,.10);
-      background:
-        radial-gradient(circle at 35% 45%, rgba(201,162,74,.10), transparent 55%),
-        radial-gradient(circle at 72% 35%, rgba(139,30,45,.08), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.38)),
-        repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 6px, transparent 6px 16px);
-      position:relative;
-      overflow:hidden;
-    }
-    .map::after{
-      content:"";
-      position:absolute; inset:-60px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.06), transparent 60%);
-      filter: blur(1px);
-      opacity:.8;
+    /* Scroll carried/dropped */
+    .carried{
+      transform: translateX(-50%) translateY(-60px);
+      opacity: .0;
+      transition: transform 700ms ease, opacity 500ms ease;
       pointer-events:none;
     }
-    .marker{
-      position:absolute;
-      width: 16px; height:16px;
-      border-radius:999px;
-      background: rgba(201,162,74,.95);
-      box-shadow: 0 0 0 8px rgba(201,162,74,.18), 0 12px 18px rgba(0,0,0,.35);
-      transform: translate(-50%,-50%);
-      animation: pulse 1.8s ease-in-out infinite;
-    }
-    @keyframes pulse{
-      0%{ box-shadow: 0 0 0 6px rgba(201,162,74,.14), 0 12px 18px rgba(0,0,0,.35); }
-      50%{ box-shadow: 0 0 0 12px rgba(201,162,74,.18), 0 12px 18px rgba(0,0,0,.35); }
-      100%{ box-shadow: 0 0 0 6px rgba(201,162,74,.14), 0 12px 18px rgba(0,0,0,.35); }
+    .dropped{
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease;
+      pointer-events:auto;
     }
 
-    .log{
-      max-height: 220px;
-      overflow:auto;
-      border-radius: 18px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      padding: 10px;
-      font-size: 12px;
-      color: rgba(242,239,230,.78);
-      line-height: 1.35;
+    /* Right side panel */
+    .panel{
+      padding:18px;
+      border-left:1px solid var(--line);
+      background:rgba(6,8,14,.55);
     }
-    .log b{ color: rgba(242,239,230,.92); }
+    @media (max-width:900px){
+      .panel{border-left:none; border-top:1px solid var(--line)}
+    }
+
+    h1{margin:0 0 6px 0; font-size:18px; letter-spacing:.3px}
+    .muted{color:var(--muted);font-size:13px;line-height:1.35;margin:0}
+
+    label{font-size:12px;color:var(--muted)}
+    input,button{
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(6,8,14,.88);
+      color:var(--txt);
+      padding:10px 12px;
+      outline:none;
+      width:100%;
+    }
+    input:focus{border-color:rgba(124,58,237,.75)}
+    button{
+      cursor:pointer;
+      background:var(--btn);
+      border:none;
+      font-weight:900;
+    }
+    button.secondary{
+      background:rgba(9,10,18,.25);
+      border:1px solid var(--line);
+    }
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(6,8,14,.55);
+      font-size:12px;color:var(--muted)
+    }
+    .mini{font-size:12px}
+    .ok{color:var(--ok);font-weight:900}
+    .bad{color:var(--bad);font-weight:900}
+    .divider{height:1px;background:var(--line);margin:12px 0}
+
+    .msg{min-height:18px}
+
+    /* Form inside scroll */
+    .paperForm{
+      display:grid;
+      gap:10px;
+    }
+    .paperForm .row2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:520px){
+      .paperForm .row2{grid-template-columns:1fr}
+    }
+    .paperActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .paperActions button{width:auto}
+
+    .hint{
+      font-size:12px;
+      opacity:.75;
+      margin-top:6px;
+    }
+
+    /* small footer */
+    .footerNote{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    /* clickable area safety */
+    .paper *{ pointer-events:auto; }
   </style>
 </head>
-
 <body>
-<header>
-  <div class="topbar">
-    <div class="brand">
-      <b>MYR</b>
-      <span>• Portal do Aventureiro (Beta)</span>
-    </div>
 
-    <div class="row">
-      <span class="pill" id="sessionPill"><span class="dot"></span> Sessão: não logado</span>
-      <button class="btn ghost" id="btnAudio">🔊 Som</button>
-      <button class="btn ghost hidden" id="btnLogout">Sair</button>
-      <button class="btn bad" id="btnReset">Reset</button>
-    </div>
-  </div>
-</header>
-
-<main>
-  <!-- LOGIN -->
-  <section class="card" id="loginCard">
-    <div class="intro">
-      <div class="sky"></div>
-
-      <!-- Pombo -->
-      <svg class="pigeon" viewBox="0 0 260 160" aria-label="Pombo mensageiro" role="img">
-        <path d="M70,96 C85,62 125,40 160,50 C192,58 206,84 204,104 C202,125 184,142 158,144 C126,146 88,132 70,96 Z"
-              fill="rgba(230,230,230,.90)" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
-        <path d="M168,58 C182,46 206,46 220,58 C230,68 226,84 212,88 C194,94 172,78 168,58 Z"
-              fill="rgba(245,245,245,.92)" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
-        <circle cx="207" cy="64" r="4.2" fill="rgba(20,15,10,.9)"/>
-        <circle cx="206" cy="63" r="1.5" fill="rgba(255,255,255,.8)"/>
-        <path d="M224,68 L246,76 L224,80 Z" fill="rgba(201,162,74,.95)" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
-        <g class="wing">
-          <path d="M120,78 C106,72 84,76 70,90 C56,106 66,122 86,122 C110,122 132,104 138,90 C144,78 134,78 120,78 Z"
-                fill="rgba(210,210,210,.9)" stroke="rgba(0,0,0,.22)" stroke-width="2"/>
-          <path d="M108,86 C96,88 84,96 78,106" stroke="rgba(0,0,0,.18)" stroke-width="2" fill="none" />
-          <path d="M120,92 C106,98 98,112 98,120" stroke="rgba(0,0,0,.16)" stroke-width="2" fill="none" />
-        </g>
-        <path d="M148,118 C144,128 140,136 134,142" stroke="rgba(0,0,0,.35)" stroke-width="3" fill="none"/>
-        <path d="M156,118 C154,130 150,138 144,144" stroke="rgba(0,0,0,.35)" stroke-width="3" fill="none"/>
+  <div class="stage">
+    <section class="scene">
+      <!-- pigeon -->
+      <svg class="pigeon" viewBox="0 0 120 120" aria-hidden="true">
+        <defs>
+          <linearGradient id="pg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset="1" stop-color="#d9dde6"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="62" cy="62" rx="38" ry="28" fill="url(#pg)"/>
+        <ellipse cx="38" cy="58" rx="18" ry="15" fill="#f2f4f8"/>
+        <circle cx="80" cy="52" r="4" fill="#111827"/>
+        <polygon points="90,58 110,64 92,70" fill="#f4b400"/>
+        <path d="M38 58 C45 40, 65 38, 75 50 C66 60, 52 64, 38 58Z" fill="#e9edf5"/>
+        <path d="M40 76 C60 96, 92 92, 96 70 C86 86, 62 88, 40 76Z" fill="#cfd7e6" opacity=".7"/>
       </svg>
 
-      <!-- Pergaminho -->
+      <!-- scroll -->
       <div class="scroll carried" id="scroll">
         <div class="paper" id="paper">
-          <div class="roll left"></div>
-          <div class="roll right"></div>
           <div class="seal">MYR</div>
+          <div class="paper-top">
+            <div>
+              <b id="paperTitle">Criar conta</b>
+              <div class="sub" id="paperSub">Assine o pergaminho e entre no reino.</div>
+            </div>
+            <div class="pill" style="background:rgba(255,255,255,.35);border-color:rgba(44,35,23,.2);color:#2c2317">
+              Beta
+            </div>
+          </div>
 
           <div class="paper-inner" id="paperInner">
-            <h2 id="authTitle">Criar conta</h2>
-            <p id="authSub">Assine o pergaminho e entre no reino.</p>
-
-            <form id="authForm" autocomplete="on">
-              <div class="row" style="gap:12px">
-                <div style="flex:1;min-width:220px">
+            <form class="paperForm" id="authForm" autocomplete="on">
+              <div class="row2">
+                <div>
                   <label>Usuário</label>
-                  <input id="authUser" placeholder="ex: raul" autocomplete="username" required />
+                  <input id="authUser" placeholder="ex: player1" autocomplete="username" />
                 </div>
-                <div style="flex:1;min-width:220px">
+                <div>
                   <label>Senha</label>
-                  <input id="authPass" type="password" placeholder="••••••••" autocomplete="new-password" required />
+                  <input id="authPass" type="password" placeholder="ex: 1234" autocomplete="current-password" />
                 </div>
               </div>
 
-              <div class="row" style="justify-content:space-between; margin-top: 12px;">
-                <button class="btn" id="authSubmit" type="submit">Criar e entrar</button>
-                <button class="btn ghost" id="replayAnim" type="button">Rever animação</button>
+              <div class="paperActions">
+                <button type="submit" id="btnSubmit">Entrar</button>
+                <button type="button" class="secondary" id="btnToggleMode">Já tenho conta</button>
+                <button type="button" class="secondary" id="btnReplay">Rever animação</button>
               </div>
 
-              <div class="row" style="justify-content:space-between; margin-top: 10px;">
-                <span id="authMsg" class="muted"></span>
-                <span class="tag" style="border-color: rgba(26,22,15,.18); background: rgba(255,255,255,.45); color: rgba(26,22,15,.75);">Salvo no navegador</span>
-              </div>
-
-              <div style="margin-top:10px; text-align:center; font-size:13px; color: rgba(26,22,15,.70);">
-                <span id="switchText">Já tem conta?</span>
-                <a href="#" id="switchLink" style="color: rgba(26,22,15,.92); font-weight: 950; text-decoration:none; border-bottom:1px dashed rgba(26,22,15,.35);">Fazer login</a>
+              <div class="hint" id="hintLine">
+                Dica: clique nos campos se o pergaminho não abrir (ele abre sozinho).
               </div>
             </form>
           </div>
         </div>
       </div>
+    </section>
 
-    </div>
-  </section>
+    <aside class="panel">
+      <h1>🜁 MYR — Login</h1>
+      <p class="muted">
+        Este é um <b>beta</b> só do login com o fix do pergaminho (sem travar).
+      </p>
 
-  <!-- APP -->
-  <section class="hidden" id="appRoot">
-    <div class="grid">
-      <section class="card">
-        <div class="inner">
-          <div class="row" style="justify-content:space-between; align-items:flex-start;">
-            <div>
-              <h2 style="margin-bottom:2px">Ficha</h2>
-              <div class="muted" id="whoLine">—</div>
-            </div>
-            <div class="row">
-              <span class="pill">Fama: <b id="famaVal">0</b></span>
-              <span class="pill">Carga: <b id="loadVal">0/0</b></span>
-            </div>
-          </div>
+      <div class="divider"></div>
 
-          <div class="divider"></div>
+      <div class="row" style="justify-content:space-between">
+        <span class="pill">Teste: <b>player1</b> / <b>1234</b></span>
+        <span class="pill" id="modePill">Modo: <b>Criar</b></span>
+      </div>
 
-          <div class="kpiGrid" id="kpiGrid"></div>
+      <div class="divider"></div>
 
-          <div class="divider"></div>
+      <div class="msg muted mini" id="msg"></div>
 
-          <div class="tabs" id="tabsRow">
-            <button class="tabBtn active" data-tab="tabFicha">Ficha</button>
-            <button class="tabBtn" data-tab="tabInv">Inventário</button>
-            <button class="tabBtn" data-tab="tabEq">Equipamentos</button>
-            <button class="tabBtn" data-tab="tabEfeitos">Efeitos</button>
-            <button class="tabBtn" data-tab="tabDados">Dados</button>
-            <button class="tabBtn" data-tab="tabDiario">Diário</button>
-            <button class="tabBtn" data-tab="tabMapa">Mapa</button>
-            <button class="tabBtn" data-tab="tabLoja">Loja</button>
-            <button class="tabBtn" data-tab="tabNPC">NPCs</button>
-            <button class="tabBtn" data-tab="tabCraft">Crafting</button>
-          </div>
+      <div class="footerNote">
+        Quando você aprovar esse login, eu encaixo ele no seu site grande e coloco:
+        inventário com raridade, equipamentos com defesa automática, buffs/debuffs, crafting, dados, mapa, etc.
+      </div>
+    </aside>
+  </div>
 
-          <div class="divider"></div>
+  <script>
+    const $ = (id)=>document.getElementById(id);
 
-          <div id="tabFicha" class="tabPanel"></div>
-          <div id="tabInv" class="tabPanel hidden"></div>
-          <div id="tabEq" class="tabPanel hidden"></div>
-          <div id="tabEfeitos" class="tabPanel hidden"></div>
-          <div id="tabDados" class="tabPanel hidden"></div>
-          <div id="tabDiario" class="tabPanel hidden"></div>
-          <div id="tabMapa" class="tabPanel hidden"></div>
-          <div id="tabLoja" class="tabPanel hidden"></div>
-          <div id="tabNPC" class="tabPanel hidden"></div>
-          <div id="tabCraft" class="tabPanel hidden"></div>
-        </div>
-      </section>
+    // mini db de teste
+    const USERS = [
+      { user:"player1", pass:"1234" },
+      { user:"mestre", pass:"1234" }
+    ];
 
-      <aside class="card">
-        <div class="inner">
-          <div class="row" style="justify-content:space-between">
-            <h2 style="margin:0">Resumo</h2>
-            <div class="backpack" title="Mochila">
-              🎒
-            </div>
-          </div>
+    let mode = "create"; // create | login
 
-          <div class="divider"></div>
-
-          <div class="list" id="sideSummary"></div>
-
-          <div class="divider"></div>
-
-          <div class="row" style="justify-content:space-between; gap:10px">
-            <div style="flex:1; min-width: 180px;">
-              <label>Fama (0–100)</label>
-              <input id="famaInput" type="number" min="0" max="100" />
-            </div>
-            <div style="min-width: 170px; align-self:end;">
-              <button class="btn ghost" id="btnSaveFama">Salvar fama</button>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="muted" style="font-size:12px;">
-            Beta: tudo salva no navegador (localStorage). Depois a gente deixa mais “perfeito” e conecta com a tua ficha original.
-          </div>
-        </div>
-      </aside>
-    </div>
-  </section>
-</main>
-
-<!-- Mobile bottom nav -->
-<div class="bottomNav hidden" id="bottomNav">
-  <button class="navBtn active" data-tab="tabFicha">📜<span>Ficha</span></button>
-  <button class="navBtn" data-tab="tabInv">🎒<span>Inv</span></button>
-  <button class="navBtn" data-tab="tabEq">🛡️<span>Eq</span></button>
-  <button class="navBtn" data-tab="tabDados">🎲<span>Dados</span></button>
-  <button class="navBtn" data-tab="tabDiario">📖<span>Diário</span></button>
-</div>
-
-<script>
-/* =========================
-   MYR BETA — STORAGE
-========================= */
-const KEY = "myr_beta_v1";
-
-const $ = (id)=>document.getElementById(id);
-const clamp = (n,min,max)=>Math.max(min, Math.min(max,n));
-const now = ()=>new Date().toLocaleString();
-
-function defaultDB(){
-  return {
-    session: { username: null },
-    users: [
-      // exemplo opcional
-      // { username:"player1", pass:"1234", createdAt: Date.now() }
-    ],
-    world: {
-      shop: [
-        { id:"s1", name:"Armadura de Couro", type:"armor", slot:"peito", def:2, weight:6, rarity:"incomum", price:12 },
-        { id:"s2", name:"Cota de Malha", type:"armor", slot:"peito", def:4, weight:12, rarity:"raro", price:28 },
-        { id:"s3", name:"Escudo de Carvalho", type:"shield", slot:"escudo", def:2, weight:7, rarity:"incomum", price:10 },
-        { id:"s4", name:"Espada Curta", type:"weapon", slot:"arma", dmg:"1d6", weight:4, rarity:"comum", price:8 },
-        { id:"s5", name:"Amuleto Rúnico", type:"trinket", slot:"amuleto", def:1, weight:1, rarity:"epico", price:40 },
-        { id:"s6", name:"Poção de Vida", type:"consumable", slot:"", heal:15, weight:1, rarity:"comum", price:6 },
-      ],
-      npcs: [
-        { id:"n1", name:"Eldrin, o Ferreiro", role:"Ferreiro", notes:"", rep: 0 },
-        { id:"n2", name:"Mara da Taverna", role:"Taberneira", notes:"", rep: 0 },
-        { id:"n3", name:"Capitão Varyn", role:"Guarda", notes:"", rep: 0 },
-      ],
-      recipes: [
-        { id:"r1", name:"Poção de Vida", needs:[{name:"Erva Vermelha", qty:2},{name:"Frasco", qty:1}], result:{ name:"Poção de Vida", type:"consumable", heal:15, weight:1, rarity:"comum" } },
-        { id:"r2", name:"Faixa Reforçada", needs:[{name:"Tecido", qty:2},{name:"Ferro", qty:1}], result:{ name:"Faixa Reforçada", type:"trinket", slot:"anel", def:1, weight:1, rarity:"incomum" } },
-      ]
-    },
-    players: {
-      // username -> data
-      // "raul": { ... }
+    function setMsg(text, ok=true){
+      const el = $("msg");
+      el.textContent = text || "";
+      el.className = "msg muted mini " + (text ? (ok ? "ok":"bad") : "");
+      if(text) setTimeout(()=>{ el.textContent=""; el.className="msg muted mini"; }, 2600);
     }
-  };
-}
 
-function loadDB(){
-  const raw = localStorage.getItem(KEY);
-  if(!raw){
-    const db = defaultDB();
-    localStorage.setItem(KEY, JSON.stringify(db));
-    return db;
-  }
-  try { return JSON.parse(raw); }
-  catch {
-    const db = defaultDB();
-    localStorage.setItem(KEY, JSON.stringify(db));
-    return db;
-  }
-}
-function saveDB(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
+    function setMode(next){
+      mode = next;
+      $("modePill").innerHTML = 'Modo: <b>' + (mode==="create" ? "Criar" : "Login") + '</b>';
+      $("paperTitle").textContent = mode==="create" ? "Criar conta" : "Entrar";
+      $("paperSub").textContent = mode==="create"
+        ? "Assine o pergaminho e entre no reino."
+        : "Digite suas credenciais e se acomode.";
 
-let DB = loadDB();
-
-/* =========================
-   AUDIO (sem arquivos externos)
-   - Ambiente simples via WebAudio (drone + ruído)
-========================= */
-let audioOn = false;
-let audioCtx = null;
-let audioNodes = null;
-
-function startAmbient(){
-  if(audioOn) return;
-  audioOn = true;
-  $("btnAudio").textContent = "🔇 Mudo";
-
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const ctx = audioCtx;
-
-  // ruído (vento / papel)
-  const bufferSize = 2 * ctx.sampleRate;
-  const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const out = noiseBuffer.getChannelData(0);
-  for(let i=0;i<bufferSize;i++){
-    out[i] = (Math.random()*2-1) * 0.35;
-  }
-  const noise = ctx.createBufferSource();
-  noise.buffer = noiseBuffer;
-  noise.loop = true;
-
-  const noiseFilter = ctx.createBiquadFilter();
-  noiseFilter.type = "lowpass";
-  noiseFilter.frequency.value = 900;
-
-  const noiseGain = ctx.createGain();
-  noiseGain.gain.value = 0.05;
-
-  // drone (taverna/ambiente)
-  const osc = ctx.createOscillator();
-  osc.type = "sine";
-  osc.frequency.value = 110;
-
-  const oscGain = ctx.createGain();
-  oscGain.gain.value = 0.03;
-
-  const master = ctx.createGain();
-  master.gain.value = 0.9;
-
-  noise.connect(noiseFilter);
-  noiseFilter.connect(noiseGain);
-  noiseGain.connect(master);
-
-  osc.connect(oscGain);
-  oscGain.connect(master);
-
-  master.connect(ctx.destination);
-
-  noise.start();
-  osc.start();
-
-  audioNodes = { noise, noiseFilter, noiseGain, osc, oscGain, master };
-}
-
-function stopAmbient(){
-  if(!audioOn) return;
-  audioOn = false;
-  $("btnAudio").textContent = "🔊 Som";
-  try{
-    audioNodes?.noise?.stop();
-    audioNodes?.osc?.stop();
-  }catch(_e){}
-  try{ audioCtx?.close(); }catch(_e){}
-  audioCtx = null;
-  audioNodes = null;
-}
-
-/* =========================
-   AUTH
-========================= */
-let authMode = "signup"; // signup | login
-
-function getPlayer(username){
-  if(!DB.players[username]){
-    DB.players[username] = {
-      username,
-      createdAt: Date.now(),
-      char: {
-        name: username,
-        attrs: { for:2, des:2, con:2, int:2, von:2, car:2 },
-        base: { vida: 60, mana: 30, defesa: 10, velocidade: 10 },
-        current: { vida: 60, mana: 30 },
-      },
-      fame: 0,
-      inventory: [
-        { id:"i1", name:"Erva Vermelha", type:"mat", weight:0.2, rarity:"comum", qty:3 },
-        { id:"i2", name:"Frasco", type:"mat", weight:0.2, rarity:"comum", qty:1 },
-        { id:"i3", name:"Tecido", type:"mat", weight:0.4, rarity:"comum", qty:2 },
-        { id:"i4", name:"Ferro", type:"mat", weight:1.0, rarity:"comum", qty:1 },
-      ],
-      equip: {
-        cabeca:null, peito:null, maos:null, pernas:null,
-        arma:null, escudo:null, anel1:null, anel2:null, amuleto:null
-      },
-      effects: {
-        buffs: [], // {name, mod:{def:+1, vel:-1...}, turns}
-        conditions: [] // {name, turns}
-      },
-      diary: "",
-      map: { x: 62, y: 58, place: "Estrada Velha" },
-      diceLog: []
-    };
-    saveDB(DB);
-  }
-  return DB.players[username];
-}
-
-function setAuthMode(next){
-  authMode = next;
-  if(authMode === "signup"){
-    $("authTitle").textContent = "Criar conta";
-    $("authSub").textContent = "Assine o pergaminho e entre no reino.";
-    $("authSubmit").textContent = "Criar e entrar";
-    $("switchText").textContent = "Já tem conta?";
-    $("switchLink").textContent = "Fazer login";
-    $("authPass").setAttribute("autocomplete","new-password");
-  }else{
-    $("authTitle").textContent = "Login";
-    $("authSub").textContent = "Sente-se, aventureiro. Sua jornada continua.";
-    $("authSubmit").textContent = "Entrar";
-    $("switchText").textContent = "Não tem conta?";
-    $("switchLink").textContent = "Criar conta";
-    $("authPass").setAttribute("autocomplete","current-password");
-  }
-  $("authMsg").textContent = "";
-}
-
-function signup(username, pass){
-  username = String(username||"").trim().toLowerCase();
-  pass = String(pass||"").trim();
-  if(username.length < 3) return {ok:false, msg:"Usuário muito curto (mín. 3)."};
-  if(pass.length < 3) return {ok:false, msg:"Senha muito curta (mín. 3)."};
-  if(DB.users.some(u=>u.username===username)) return {ok:false, msg:"Esse usuário já existe."};
-  DB.users.push({ username, pass, createdAt: Date.now() });
-  DB.session.username = username;
-  saveDB(DB);
-  getPlayer(username);
-  return {ok:true};
-}
-function login(username, pass){
-  username = String(username||"").trim().toLowerCase();
-  pass = String(pass||"").trim();
-  const u = DB.users.find(x=>x.username===username && x.pass===pass);
-  if(!u) return {ok:false, msg:"Usuário ou senha inválidos."};
-  DB.session.username = username;
-  saveDB(DB);
-  getPlayer(username);
-  return {ok:true};
-}
-function logout(){
-  DB.session.username = null;
-  saveDB(DB);
-  render();
-}
-
-/* =========================
-   GAME LOGIC
-========================= */
-function rarityClass(r){
-  const map = {
-    comum: "rar-comum",
-    incomum:"rar-incomum",
-    raro:"rar-raro",
-    epico:"rar-epico",
-    lendario:"rar-lendario",
-  };
-  return map[r] || "rar-comum";
-}
-
-function invWeight(player){
-  let w = 0;
-  for(const it of player.inventory){
-    const qty = Number(it.qty || 1);
-    w += Number(it.weight||0) * qty;
-  }
-  // add equipped weight
-  for(const [slot, it] of Object.entries(player.equip)){
-    if(it) w += Number(it.weight||0);
-  }
-  return Math.round(w*10)/10;
-}
-
-function loadLimit(player){
-  // limite de carga baseado em FOR + CON
-  const a = player.char.attrs;
-  const limit = 12 + (Number(a.for||0)*2) + (Number(a.con||0)*2);
-  return limit;
-}
-
-function effectMods(player){
-  const mods = { def:0, vel:0, vida:0, mana:0 };
-  for(const b of player.effects.buffs){
-    for(const [k,v] of Object.entries(b.mod||{})){
-      mods[k] = (mods[k]||0) + Number(v||0);
+      $("btnSubmit").textContent = mode==="create" ? "Criar & Entrar" : "Entrar";
+      $("btnToggleMode").textContent = mode==="create" ? "Já tenho conta" : "Criar conta";
     }
-  }
-  // condições simples (pode expandir depois)
-  for(const c of player.effects.conditions){
-    if(c.name==="Amedrontado") mods.def -= 1;
-    if(c.name==="Envenenado") mods.vel -= 1;
-    if(c.name==="Atordoado") mods.vel -= 2;
-  }
-  return mods;
-}
 
-function equippedDefense(player){
-  let def = 0;
-  const e = player.equip;
-  for(const it of Object.values(e)){
-    if(it && it.def) def += Number(it.def||0);
-  }
-  return def;
-}
-
-function derived(player){
-  const a = player.char.attrs;
-  const baseVida = 50 + (a.con*12) + (a.von*6);
-  const baseMana = 20 + (a.int*8) + (a.von*10) + (a.car*2);
-  const baseDef  = 10 + (a.des*3) + (a.von*2) + Math.floor(a.for*0.5);
-  let baseVel = 10 + (a.des*3) + Math.floor(a.for*0.6);
-
-  // equip
-  baseDef += equippedDefense(player);
-
-  // carga
-  const w = invWeight(player);
-  const lim = loadLimit(player);
-  const ratio = lim>0 ? (w/lim) : 0;
-
-  let loadTier = "Leve";
-  if(ratio <= 0.65) loadTier = "Leve";
-  else if(ratio <= 0.85) loadTier = "Médio";
-  else if(ratio <= 1.0) loadTier = "Pesado";
-  else loadTier = "Excesso";
-
-  if(loadTier==="Médio") baseVel -= 1;
-  if(loadTier==="Pesado") baseVel -= 3;
-  if(loadTier==="Excesso") baseVel -= 6;
-
-  // buffs/conds
-  const mods = effectMods(player);
-  baseDef += mods.def;
-  baseVel += mods.vel;
-
-  return {
-    vidaMax: Math.max(1, baseVida + (mods.vida||0)),
-    manaMax: Math.max(0, baseMana + (mods.mana||0)),
-    defesa: Math.max(0, baseDef),
-    velocidade: Math.max(0, baseVel),
-    carga: { w, lim, tier: loadTier }
-  };
-}
-
-function addDiceLog(player, line){
-  player.diceLog.unshift({ ts: Date.now(), line });
-  player.diceLog = player.diceLog.slice(0, 50);
-}
-
-function rollDice(expr){
-  // expr tipo: "2d6+3" (bem simples)
-  const s = String(expr||"").trim().toLowerCase().replace(/\s+/g,"");
-  const m = s.match(/^(\d+)?d(\d+)([+-]\d+)?$/);
-  if(!m) return null;
-  const n = Number(m[1]||1);
-  const faces = Number(m[2]);
-  const mod = Number(m[3]||0);
-  if(!(n>0 && faces>0 && n<=50 && faces<=1000)) return null;
-
-  const rolls = [];
-  let sum = 0;
-  for(let i=0;i<n;i++){
-    const r = 1 + Math.floor(Math.random()*faces);
-    rolls.push(r);
-    sum += r;
-  }
-  const total = sum + mod;
-  return { n, faces, mod, rolls, sum, total };
-}
-
-/* =========================
-   UI RENDER
-========================= */
-function setTab(tabId){
-  document.querySelectorAll(".tabBtn").forEach(b=>{
-    b.classList.toggle("active", b.dataset.tab===tabId);
-  });
-  document.querySelectorAll(".tabPanel").forEach(p=>{
-    p.classList.toggle("hidden", p.id!==tabId);
-  });
-  document.querySelectorAll(".navBtn").forEach(b=>{
-    b.classList.toggle("active", b.dataset.tab===tabId);
-  });
-}
-
-function renderKPIs(player){
-  const d = derived(player);
-  const curVida = clamp(Number(player.char.current.vida||0), 0, d.vidaMax);
-  const curMana = clamp(Number(player.char.current.mana||0), 0, d.manaMax);
-
-  const vidaPct = Math.round(curVida / d.vidaMax * 100);
-  const manaPct = d.manaMax>0 ? Math.round(curMana / d.manaMax * 100) : 0;
-
-  $("kpiGrid").innerHTML = `
-    <div class="kpi">
-      <div class="kpiHead">
-        <b>Vida</b>
-        <span class="pill">Max: <b>${d.vidaMax}</b></span>
-      </div>
-      <div class="row" style="justify-content:space-between; margin-top:6px;">
-        <div class="kpiVal">${curVida}</div>
-        <div class="row" style="gap:6px">
-          <button class="btn ghost" data-stat="vida" data-delta="-5">-5</button>
-          <button class="btn ghost" data-stat="vida" data-delta="-1">-1</button>
-          <button class="btn ghost" data-stat="vida" data-delta="1">+1</button>
-          <button class="btn ghost" data-stat="vida" data-delta="5">+5</button>
-        </div>
-      </div>
-      <div class="bar"><div style="width:${vidaPct}%"></div></div>
-    </div>
-
-    <div class="kpi">
-      <div class="kpiHead">
-        <b>Mana</b>
-        <span class="pill">Max: <b>${d.manaMax}</b></span>
-      </div>
-      <div class="row" style="justify-content:space-between; margin-top:6px;">
-        <div class="kpiVal">${curMana}</div>
-        <div class="row" style="gap:6px">
-          <button class="btn ghost" data-stat="mana" data-delta="-5">-5</button>
-          <button class="btn ghost" data-stat="mana" data-delta="-1">-1</button>
-          <button class="btn ghost" data-stat="mana" data-delta="1">+1</button>
-          <button class="btn ghost" data-stat="mana" data-delta="5">+5</button>
-        </div>
-      </div>
-      <div class="bar"><div style="width:${manaPct}%"></div></div>
-    </div>
-
-    <div class="kpi">
-      <div class="kpiHead">
-        <b>Defesa</b>
-        <span class="pill">Total: <b>${d.defesa}</b></span>
-      </div>
-      <div class="muted">Equipamentos + buffs/condições entram aqui automaticamente.</div>
-    </div>
-
-    <div class="kpi">
-      <div class="kpiHead">
-        <b>Velocidade</b>
-        <span class="pill">Total: <b>${d.velocidade}</b></span>
-      </div>
-      <div class="muted">CARGA: <b>${d.carga.tier}</b> • peso ${d.carga.w}/${d.carga.lim}</div>
-    </div>
-  `;
-}
-
-function renderSide(player){
-  const d = derived(player);
-  const eqDef = equippedDefense(player);
-  const mods = effectMods(player);
-
-  $("loadVal").textContent = `${d.carga.w}/${d.carga.lim} (${d.carga.tier})`;
-  $("famaVal").textContent = String(player.fame||0);
-  $("famaInput").value = String(player.fame||0);
-
-  $("sideSummary").innerHTML = `
-    <div class="itemCard">
-      <div>
-        <b>${escapeHTML(player.char.name)}</b>
-        <div class="muted">Atributos: FOR ${player.char.attrs.for} • DES ${player.char.attrs.des} • CON ${player.char.attrs.con} • INT ${player.char.attrs.int} • VON ${player.char.attrs.von} • CAR ${player.char.attrs.car}</div>
-      </div>
-      <span class="tag">LVL (beta)</span>
-    </div>
-
-    <div class="itemCard">
-      <div>
-        <b>Equipamento</b>
-        <div class="muted">Defesa dos itens: <b>${eqDef}</b></div>
-        <div class="muted">Mods (buff/cond): DEF <b>${mods.def||0}</b> • VEL <b>${mods.vel||0}</b></div>
-      </div>
-      <span class="tag">🛡️</span>
-    </div>
-
-    <div class="itemCard">
-      <div>
-        <b>Efeitos</b>
-        <div class="muted">Buffs: <b>${player.effects.buffs.length}</b> • Condições: <b>${player.effects.conditions.length}</b></div>
-      </div>
-      <span class="tag">🧪</span>
-    </div>
-
-    <div class="itemCard">
-      <div>
-        <b>Mapa</b>
-        <div class="muted">Local: <b>${escapeHTML(player.map.place)}</b></div>
-      </div>
-      <span class="tag">🗺️</span>
-    </div>
-  `;
-}
-
-function escapeHTML(s){
-  return String(s||"")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-
-function renderFicha(player){
-  const d = derived(player);
-  const a = player.char.attrs;
-
-  $("whoLine").textContent = `Aventureiro: ${player.username} • Último selo: ${now()}`;
-
-  $("tabFicha").innerHTML = `
-    <div class="row" style="justify-content:space-between; gap:12px;">
-      <div style="flex:1; min-width:240px;">
-        <label>Nome do personagem</label>
-        <input id="charName" value="${escapeHTML(player.char.name)}" />
-      </div>
-      <div style="width:220px;">
-        <label>Local no mapa</label>
-        <input id="mapPlace" value="${escapeHTML(player.map.place)}" />
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="list">
-      ${["for","des","con","int","von","car"].map(k=>{
-        const label = ({for:"FORÇA", des:"DESTREZA", con:"CONSTITUIÇÃO", int:"INTELIGÊNCIA", von:"VONTADE", car:"CARISMA"})[k];
-        return `
-          <div class="itemCard">
-            <div>
-              <b>${label}</b>
-              <div class="muted">Atual: <b>${a[k]}</b></div>
-            </div>
-            <div class="row" style="gap:8px;">
-              <button class="btn ghost" data-attr="${k}" data-d="-1">-</button>
-              <button class="btn ghost" data-attr="${k}" data-d="1">+</button>
-            </div>
-          </div>
-        `;
-      }).join("")}
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="itemCard">
-      <div>
-        <b>Derivados (auto)</b>
-        <div class="muted">Vida Max: <b>${d.vidaMax}</b> • Mana Max: <b>${d.manaMax}</b></div>
-        <div class="muted">Defesa: <b>${d.defesa}</b> • Velocidade: <b>${d.velocidade}</b></div>
-        <div class="muted">Carga: <b>${d.carga.w}/${d.carga.lim}</b> (${d.carga.tier})</div>
-      </div>
-      <span class="tag">🜁</span>
-    </div>
-  `;
-}
-
-function renderInv(player){
-  const d = derived(player);
-  const inv = player.inventory.slice().sort((a,b)=> (a.name||"").localeCompare(b.name||""));
-
-  $("tabInv").innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <b>Inventário</b>
-        <div class="muted">Peso total (inv + equipado): <b>${d.carga.w}</b> / ${d.carga.lim} • ${d.carga.tier}</div>
-      </div>
-      <button class="btn ghost" id="btnAddItem">+ Adicionar item</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="list">
-      ${inv.length ? inv.map(it=>{
-        const qty = Number(it.qty||1);
-        const w = Number(it.weight||0);
-        const rar = it.rarity || "comum";
-        return `
-          <div class="itemCard">
-            <div style="min-width:0;">
-              <b>${escapeHTML(it.name)} <span class="rarity ${rarityClass(rar)}">(${rar})</span></b>
-              <div class="muted">Tipo: ${escapeHTML(it.type||"item")} • Peso: ${w} • Qtd: ${qty}</div>
-            </div>
-            <div class="row" style="gap:8px;">
-              <button class="btn ghost" data-inv="dec" data-id="${it.id}">-</button>
-              <button class="btn ghost" data-inv="inc" data-id="${it.id}">+</button>
-              <button class="btn bad" data-inv="del" data-id="${it.id}">X</button>
-            </div>
-          </div>
-        `;
-      }).join("") : `<div class="muted">Sem itens. Compre na Loja ou use Crafting.</div>`}
-    </div>
-  `;
-}
-
-function slotLabel(slot){
-  const map = {
-    cabeca:"Cabeça",
-    peito:"Peito",
-    maos:"Mãos",
-    pernas:"Pernas",
-    arma:"Arma",
-    escudo:"Escudo",
-    anel1:"Anel 1",
-    anel2:"Anel 2",
-    amuleto:"Amuleto",
-  };
-  return map[slot] || slot;
-}
-
-function renderEq(player){
-  const e = player.equip;
-  const invEquipables = player.inventory.filter(it=>{
-    const t = it.type;
-    return ["armor","shield","weapon","trinket"].includes(t);
-  });
-
-  function slotAccepts(slot, it){
-    if(!it) return false;
-    if(slot==="arma") return it.type==="weapon";
-    if(slot==="escudo") return it.type==="shield";
-    if(slot==="amuleto") return it.type==="trinket" && (it.slot==="amuleto" || !it.slot);
-    if(slot==="anel1" || slot==="anel2") return it.type==="trinket" && (it.slot==="anel" || !it.slot);
-    if(["cabeca","peito","maos","pernas"].includes(slot)) return it.type==="armor" && (it.slot===slot || it.slot===slotLabel(slot).toLowerCase() || it.slot===slot);
-    // fallback: armadura com slot string
-    return it.type==="armor" && (it.slot===slot);
-  }
-
-  $("tabEq").innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <b>Equipamentos</b>
-        <div class="muted">Equipar soma Defesa automaticamente e afeta carga.</div>
-      </div>
-      <button class="btn ghost" id="btnUnequipAll">Desequipar tudo</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="list">
-      ${Object.keys(e).map(slot=>{
-        const it = e[slot];
-        const rar = it?.rarity || "comum";
-        return `
-          <div class="itemCard">
-            <div style="min-width:0;">
-              <b>${slotLabel(slot)}</b>
-              <div class="muted">
-                ${it ? `${escapeHTML(it.name)} <span class="rarity ${rarityClass(rar)}">(${rar})</span>` : "— vazio —"}
-              </div>
-              <div class="muted">${it ? `DEF +${it.def||0} • Peso ${it.weight||0} ${it.dmg ? `• Dano ${it.dmg}`:""}` : ""}</div>
-            </div>
-            <div class="row" style="gap:8px;">
-              <button class="btn ghost" data-eq="pick" data-slot="${slot}">Equipar</button>
-              <button class="btn bad" data-eq="unequip" data-slot="${slot}" ${it ? "" : "disabled"}>Tirar</button>
-            </div>
-          </div>
-        `;
-      }).join("")}
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="muted">
-      Dica: depois eu coloco “arrastar e soltar” no PC. No mobile fica por botão mesmo.
-    </div>
-  `;
-}
-
-function renderEffects(player){
-  const buffs = player.effects.buffs;
-  const conds = player.effects.conditions;
-
-  $("tabEfeitos").innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <b>Buffs / Debuffs / Condições</b>
-        <div class="muted">Esses efeitos já entram no cálculo de Defesa/Velocidade.</div>
-      </div>
-      <button class="btn ghost" id="btnTick">Passar 1 turno</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="row" style="gap:12px; align-items:flex-end;">
-      <div style="flex:1; min-width:220px;">
-        <label>Novo buff/debuff (nome)</label>
-        <input id="buffName" placeholder="ex: Benção, Maldição..." />
-      </div>
-      <div style="width:130px;">
-        <label>DEF</label>
-        <input id="buffDef" type="number" value="0" />
-      </div>
-      <div style="width:130px;">
-        <label>VEL</label>
-        <input id="buffVel" type="number" value="0" />
-      </div>
-      <div style="width:130px;">
-        <label>Turnos</label>
-        <input id="buffTurns" type="number" value="3" min="1" />
-      </div>
-      <div style="min-width:170px;">
-        <button class="btn" id="btnAddBuff">Adicionar</button>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <b>Buffs/Debuffs</b>
-    <div class="list" style="margin-top:10px;">
-      ${buffs.length ? buffs.map((b,i)=>`
-        <div class="itemCard">
-          <div style="min-width:0;">
-            <b>${escapeHTML(b.name)}</b>
-            <div class="muted">DEF ${b.mod.def>=0?"+":""}${b.mod.def||0} • VEL ${b.mod.vel>=0?"+":""}${b.mod.vel||0} • Turnos: <b>${b.turns}</b></div>
-          </div>
-          <button class="btn bad" data-buff-del="${i}">Remover</button>
-        </div>
-      `).join("") : `<div class="muted">Sem buffs ativos.</div>`}
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="row" style="justify-content:space-between; align-items:flex-end;">
-      <div>
-        <b>Condições</b>
-        <div class="muted">Prontas: Envenenado, Amedrontado, Atordoado, Sangrando.</div>
-      </div>
-      <button class="btn ghost" id="btnAddCond">+ Adicionar condição</button>
-    </div>
-
-    <div class="list" style="margin-top:10px;">
-      ${conds.length ? conds.map((c,i)=>`
-        <div class="itemCard">
-          <div style="min-width:0;">
-            <b>${escapeHTML(c.name)}</b>
-            <div class="muted">Turnos: <b>${c.turns}</b></div>
-          </div>
-          <button class="btn bad" data-cond-del="${i}">Remover</button>
-        </div>
-      `).join("") : `<div class="muted">Sem condições.</div>`}
-    </div>
-  `;
-}
-
-function renderDice(player){
-  const log = player.diceLog || [];
-  $("tabDados").innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <b>Rolagem de dados</b>
-        <div class="muted">Use formato: <b>1d20+3</b>, <b>2d6</b>, <b>1d100</b>.</div>
-      </div>
-      <button class="btn ghost" id="btnClearDice">Limpar log</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="row" style="gap:12px; align-items:flex-end;">
-      <div style="flex:1; min-width:220px;">
-        <label>Expressão</label>
-        <input id="diceExpr" value="1d20" />
-      </div>
-      <div style="min-width:170px;">
-        <button class="btn" id="btnRoll">Rolar</button>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="row" style="gap:8px; flex-wrap:wrap;">
-      ${["1d4","1d6","1d8","1d10","1d12","1d20","1d100"].map(x=>`<button class="btn ghost" data-quick="${x}">${x}</button>`).join("")}
-    </div>
-
-    <div class="divider"></div>
-
-    <b>Log</b>
-    <div class="log" style="margin-top:10px;">
-      ${log.length ? log.map(e=>`<div>• <b>${new Date(e.ts).toLocaleTimeString()}</b> — ${escapeHTML(e.line)}</div>`).join("") : `<div>Nenhuma rolagem ainda.</div>`}
-    </div>
-  `;
-}
-
-function renderDiary(player){
-  $("tabDiario").innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <b>Diário / Lore</b>
-        <div class="muted">Escreve aqui e fica salvo no navegador.</div>
-      </div>
-      <button class="btn ghost" id="btnDiaryStamp">Carimbar data</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <label>Texto</label>
-    <textarea id="diaryText" placeholder="Relate a sessão, lugares, pistas, promessas...">${escapeHTML(player.diary||"")}</textarea>
-
-    <div class="divider"></div>
-
-    <div class="row" style="justify-content:flex-end;">
-      <button class="btn" id="btnSaveDiary">Salvar</button>
-    </div>
-  `;
-}
-
-function renderMap(player){
-  $("tabMapa").innerHTML = `
-    <div class="row" style="justify-content:space-between; align-items:flex-end;">
-      <div>
-        <b>Mapa</b>
-        <div class="muted">Por enquanto é um mapa “imersivo” simples. Depois dá pra virar mapa real com regiões.</div>
-      </div>
-      <button class="btn ghost" id="btnMoveMarker">Mover marcador</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="map" id="mapBox">
-      <div class="marker" id="marker" style="left:${player.map.x}%; top:${player.map.y}%;"></div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="muted">Local atual: <b>${escapeHTML(player.map.place)}</b> • Coordenadas: ${player.map.x.toFixed(0)}%, ${player.map.y.toFixed(0)}%</div>
-  `;
-}
-
-function renderShop(player){
-  const shop = DB.world.shop;
-
-  $("tabLoja").innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <b>Loja</b>
-        <div class="muted">Compra vai direto pro inventário (beta sem moedas reais ainda).</div>
-      </div>
-      <span class="tag">🪙 Ouro (beta)</span>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="list">
-      ${shop.map(it=>{
-        const rar = it.rarity || "comum";
-        return `
-          <div class="itemCard">
-            <div style="min-width:0;">
-              <b>${escapeHTML(it.name)} <span class="rarity ${rarityClass(rar)}">(${rar})</span></b>
-              <div class="muted">Preço: <b>${it.price}</b> • Peso ${it.weight||0} ${it.def?`• DEF +${it.def}`:""} ${it.dmg?`• Dano ${it.dmg}`:""}</div>
-            </div>
-            <button class="btn" data-buy="${it.id}">Comprar</button>
-          </div>
-        `;
-      }).join("")}
-    </div>
-  `;
-}
-
-function renderNPC(player){
-  const npcs = DB.world.npcs;
-
-  $("tabNPC").innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <b>NPCs</b>
-        <div class="muted">Cada NPC tem notas e reputação própria.</div>
-      </div>
-      <button class="btn ghost" id="btnNewNPC">+ Novo NPC</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="list">
-      ${npcs.map(n=>`
-        <div class="itemCard">
-          <div style="min-width:0;">
-            <b>${escapeHTML(n.name)}</b>
-            <div class="muted">${escapeHTML(n.role||"")}</div>
-            <div class="muted">Reputação: <b>${n.rep||0}</b></div>
-          </div>
-          <button class="btn ghost" data-open-npc="${n.id}">Abrir</button>
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
-
-function renderCraft(player){
-  const recipes = DB.world.recipes;
-
-  function hasItems(needs){
-    const inv = player.inventory;
-    for(const n of needs){
-      const it = inv.find(x=>String(x.name).toLowerCase()===String(n.name).toLowerCase());
-      if(!it || Number(it.qty||1) < Number(n.qty||1)) return false;
-    }
-    return true;
-  }
-
-  $("tabCraft").innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <b>Crafting</b>
-        <div class="muted">Consome materiais e cria o item.</div>
-      </div>
-      <span class="tag">⚒️</span>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="list">
-      ${recipes.map(r=>{
-        const ok = hasItems(r.needs);
-        return `
-          <div class="itemCard">
-            <div style="min-width:0;">
-              <b>${escapeHTML(r.name)}</b>
-              <div class="muted">Precisa: ${r.needs.map(n=>`${escapeHTML(n.name)} x${n.qty}`).join(" • ")}</div>
-              <div class="muted">Resultado: <b>${escapeHTML(r.result.name)}</b> <span class="rarity ${rarityClass(r.result.rarity||"comum")}">(${r.result.rarity||"comum"})</span></div>
-            </div>
-            <button class="btn" data-craft="${r.id}" ${ok ? "" : "disabled"}>${ok ? "Forjar" : "Faltam itens"}</button>
-          </div>
-        `;
-      }).join("")}
-    </div>
-  `;
-}
-
-/* =========================
-   NPC MODAL
-========================= */
-function openNPC(id){
-  const n = DB.world.npcs.find(x=>x.id===id);
-  if(!n) return;
-
-  const html = `
-    <div class="overlay" id="npcOv">
-      <div class="modal">
-        <div class="inner">
-          <div class="modalHead">
-            <div>
-              <h2 style="margin:0;">${escapeHTML(n.name)}</h2>
-              <div class="muted">${escapeHTML(n.role||"")}</div>
-            </div>
-            <div class="row">
-              <button class="btn ghost" id="npcClose">Fechar</button>
-              <button class="btn bad" id="npcDel">Deletar</button>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="row" style="gap:12px;">
-            <div style="flex:1; min-width:240px;">
-              <label>Nome</label>
-              <input id="npcName" value="${escapeHTML(n.name)}" />
-            </div>
-            <div style="flex:1; min-width:240px;">
-              <label>Função</label>
-              <input id="npcRole" value="${escapeHTML(n.role||"")}" />
-            </div>
-            <div style="width:160px;">
-              <label>Reputação</label>
-              <input id="npcRep" type="number" min="-100" max="100" value="${Number(n.rep||0)}" />
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <label>Notas</label>
-          <textarea id="npcNotes" placeholder="Dívidas, favores, pistas, promessas...">${escapeHTML(n.notes||"")}</textarea>
-
-          <div class="divider"></div>
-
-          <div class="row" style="justify-content:flex-end;">
-            <button class="btn" id="npcSave">Salvar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML("beforeend", html);
-
-  const close = ()=>$("#npcOv")?.remove();
-  $("#npcClose").onclick = close;
-  $("#npcOv").addEventListener("click",(e)=>{ if(e.target.id==="npcOv") close(); });
-
-  $("#npcSave").onclick = ()=>{
-    n.name = String($("#npcName").value||"").trim() || n.name;
-    n.role = String($("#npcRole").value||"").trim();
-    n.rep = clamp(Number($("#npcRep").value||0), -100, 100);
-    n.notes = String($("#npcNotes").value||"");
-    saveDB(DB);
-    close();
-    render();
-  };
-
-  $("#npcDel").onclick = ()=>{
-    if(!confirm("Deletar esse NPC?")) return;
-    DB.world.npcs = DB.world.npcs.filter(x=>x.id!==id);
-    saveDB(DB);
-    close();
-    render();
-  };
-}
-
-/* =========================
-   EQUIP PICKER MODAL
-========================= */
-function openEquipPicker(player, slot){
-  const inv = player.inventory.filter(it=>{
-    if(slot==="arma") return it.type==="weapon";
-    if(slot==="escudo") return it.type==="shield";
-    if(slot==="amuleto") return it.type==="trinket";
-    if(slot==="anel1" || slot==="anel2") return it.type==="trinket";
-    if(["cabeca","peito","maos","pernas"].includes(slot)) return it.type==="armor";
-    return false;
-  });
-
-  const html = `
-    <div class="overlay" id="eqOv">
-      <div class="modal">
-        <div class="inner">
-          <div class="modalHead">
-            <div>
-              <h2 style="margin:0;">Equipar: ${escapeHTML(slotLabel(slot))}</h2>
-              <div class="muted">Escolha um item do inventário.</div>
-            </div>
-            <button class="btn ghost" id="eqClose">Fechar</button>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="list">
-            ${inv.length ? inv.map(it=>{
-              const rar = it.rarity || "comum";
-              return `
-                <div class="itemCard">
-                  <div style="min-width:0;">
-                    <b>${escapeHTML(it.name)} <span class="rarity ${rarityClass(rar)}">(${rar})</span></b>
-                    <div class="muted">Peso ${it.weight||0} ${it.def?`• DEF +${it.def}`:""} ${it.dmg?`• Dano ${it.dmg}`:""}</div>
-                  </div>
-                  <button class="btn" data-eq-pick="${it.id}">Equipar</button>
-                </div>
-              `;
-            }).join("") : `<div class="muted">Nenhum item compatível no inventário.</div>`}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML("beforeend", html);
-  const close = ()=>$("#eqOv")?.remove();
-  $("#eqClose").onclick = close;
-  $("#eqOv").addEventListener("click",(e)=>{ if(e.target.id==="eqOv") close(); });
-
-  document.querySelectorAll("[data-eq-pick]").forEach(btn=>{
-    btn.onclick = ()=>{
-      const id = btn.getAttribute("data-eq-pick");
-      const it = player.inventory.find(x=>x.id===id);
-      if(!it) return;
-
-      // tira do inventário (qty) e coloca como equipamento (um item “instância”)
-      const qty = Number(it.qty||1);
-      const instance = { ...it, qty: undefined };
-
-      if(qty > 1){
-        it.qty = qty - 1;
-      }else{
-        player.inventory = player.inventory.filter(x=>x.id!==id);
+    /* ✅ FIXED: do not rely on height animation; add fallback open */
+    function runLoginSequence(forceOpen = false){
+      const scroll = $("scroll");
+      const paper = $("paper");
+      if(!scroll || !paper) return;
+
+      // reset classes
+      scroll.classList.remove("dropped");
+      scroll.classList.add("carried");
+      paper.classList.remove("unfurl");
+
+      // reflow
+      void scroll.offsetWidth;
+
+      const openNow = () => {
+        scroll.classList.remove("carried");
+        scroll.classList.add("dropped");
+        paper.classList.add("unfurl");
+      };
+
+      if(forceOpen){
+        openNow();
+        return;
       }
 
-      // se já tinha item equipado, devolve pro inventário
-      const prev = player.equip[slot];
-      if(prev){
-        addToInventory(player, prev);
-      }
+      // normal timing
+      setTimeout(()=>{
+        scroll.classList.remove("carried");
+        scroll.classList.add("dropped");
+      }, 900);
 
-      player.equip[slot] = instance;
-      saveDB(DB);
-      close();
-      render();
-    };
-  });
-}
+      setTimeout(()=>{
+        paper.classList.add("unfurl");
+      }, 1200);
 
-function addToInventory(player, it){
-  // stack por nome+raridade+tipo se for mat/consumível; equipáveis viram item único
-  const stackable = ["mat","consumable"].includes(it.type);
-  if(stackable){
-    const found = player.inventory.find(x=>x.name===it.name && x.type===it.type && (x.rarity||"comum")===(it.rarity||"comum"));
-    if(found){
-      found.qty = Number(found.qty||1) + 1;
-      return;
-    }
-    player.inventory.unshift({ ...it, id: "i_"+Math.random().toString(16).slice(2,8), qty: 1 });
-    return;
-  }
-  player.inventory.unshift({ ...it, id: "i_"+Math.random().toString(16).slice(2,8), qty: 1 });
-}
-
-/* =========================
-   RENDER APP
-========================= */
-function render(){
-  DB = loadDB();
-  const user = DB.session.username;
-
-  $("btnLogout").classList.toggle("hidden", !user);
-  $("appRoot").classList.toggle("hidden", !user);
-  $("loginCard").classList.toggle("hidden", !!user);
-
-  const isMobile = window.matchMedia("(max-width: 979px)").matches;
-  $("bottomNav").classList.toggle("hidden", !user || !isMobile);
-
-  $("sessionPill").textContent = user ? `Sessão: Player (${user})` : "Sessão: não logado";
-
-  if(!user){
-    // login animation kickoff
-    runLoginSequence();
-    return;
-  }
-
-  const player = getPlayer(user);
-
-  renderKPIs(player);
-  renderSide(player);
-  renderFicha(player);
-  renderInv(player);
-  renderEq(player);
-  renderEffects(player);
-  renderDice(player);
-  renderDiary(player);
-  renderMap(player);
-  renderShop(player);
-  renderNPC(player);
-  renderCraft(player);
-
-  // keep current tab
-  const active = document.querySelector(".tabBtn.active")?.dataset?.tab || "tabFicha";
-  setTab(active);
-
-  // Bind handlers in one place
-  bindHandlers(player);
-}
-
-let handlersBound = false;
-function bindHandlers(player){
-  if(handlersBound) return;
-  handlersBound = true;
-
-  // Tabs
-  document.addEventListener("click",(e)=>{
-    const t = e.target.closest(".tabBtn");
-    if(t){
-      setTab(t.dataset.tab);
-    }
-    const n = e.target.closest(".navBtn");
-    if(n){
-      setTab(n.dataset.tab);
-    }
-  });
-
-  // KPI +/- Vida/Mana
-  document.addEventListener("click",(e)=>{
-    const btn = e.target.closest("[data-stat][data-delta]");
-    if(!btn) return;
-    DB = loadDB();
-    const user = DB.session.username;
-    if(!user) return;
-    const p = getPlayer(user);
-    const stat = btn.dataset.stat;
-    const delta = Number(btn.dataset.delta||0);
-    const d = derived(p);
-
-    if(stat==="vida"){
-      p.char.current.vida = clamp(Number(p.char.current.vida||0) + delta, 0, d.vidaMax);
-    }
-    if(stat==="mana"){
-      p.char.current.mana = clamp(Number(p.char.current.mana||0) + delta, 0, d.manaMax);
-    }
-    saveDB(DB);
-    render();
-  });
-
-  // Ficha inputs and attrs
-  document.addEventListener("input",(e)=>{
-    if(e.target?.id==="charName"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      p.char.name = String(e.target.value||"");
-      saveDB(DB);
-      renderSide(p);
-    }
-    if(e.target?.id==="mapPlace"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      p.map.place = String(e.target.value||"");
-      saveDB(DB);
-      renderSide(p);
-    }
-  });
-
-  document.addEventListener("click",(e)=>{
-    const btn = e.target.closest("[data-attr][data-d]");
-    if(!btn) return;
-    DB = loadDB(); const u=DB.session.username; if(!u) return;
-    const p=getPlayer(u);
-    const k = btn.dataset.attr;
-    const d = Number(btn.dataset.d||0);
-    p.char.attrs[k] = clamp(Number(p.char.attrs[k]||0) + d, 0, 20);
-    saveDB(DB);
-    render();
-  });
-
-  // Inventário actions
-  document.addEventListener("click",(e)=>{
-    const btn = e.target.closest("[data-inv]");
-    if(!btn) return;
-    DB = loadDB(); const u=DB.session.username; if(!u) return;
-    const p=getPlayer(u);
-
-    const id = btn.dataset.id;
-    const it = p.inventory.find(x=>x.id===id);
-    if(!it) return;
-
-    if(btn.dataset.inv==="inc"){
-      it.qty = Number(it.qty||1) + 1;
-    }
-    if(btn.dataset.inv==="dec"){
-      const q = Number(it.qty||1) - 1;
-      if(q<=0){
-        p.inventory = p.inventory.filter(x=>x.id!==id);
-      }else it.qty = q;
-    }
-    if(btn.dataset.inv==="del"){
-      p.inventory = p.inventory.filter(x=>x.id!==id);
-    }
-    saveDB(DB);
-    render();
-  });
-
-  document.addEventListener("click",(e)=>{
-    if(e.target?.id==="btnAddItem"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      const name = prompt("Nome do item?");
-      if(!name) return;
-
-      const type = prompt("Tipo (mat/consumable/armor/weapon/shield/trinket/item)?", "item") || "item";
-      const rarity = prompt("Raridade (comum/incomum/raro/epico/lendario)?", "comum") || "comum";
-      const w = Number(prompt("Peso (ex: 1, 0.2)?", "1") || "1");
-      const def = Number(prompt("Defesa (se tiver, ex: 2). Se não tiver, 0.", "0") || "0");
-      const dmg = prompt("Dano (se arma, ex: 1d6). Se não, vazio.", "") || "";
-
-      const it = { id: "i_"+Math.random().toString(16).slice(2,8), name, type, rarity, weight: w, qty: 1 };
-      if(def) it.def = def;
-      if(dmg) it.dmg = dmg;
-      if(type==="armor"){
-        const slot = prompt("Slot da armadura (cabeca/peito/maos/pernas)?", "peito") || "peito";
-        it.slot = slot;
-      }
-      if(type==="trinket"){
-        const slot = prompt("Slot (anel/amuleto)?", "anel") || "anel";
-        it.slot = slot;
-      }
-
-      addToInventory(p, it);
-      saveDB(DB);
-      render();
-    }
-  });
-
-  // Equip
-  document.addEventListener("click",(e)=>{
-    const btn = e.target.closest("[data-eq]");
-    if(!btn) return;
-    DB = loadDB(); const u=DB.session.username; if(!u) return;
-    const p=getPlayer(u);
-
-    const slot = btn.dataset.slot;
-    if(btn.dataset.eq==="pick"){
-      openEquipPicker(p, slot);
-      return;
-    }
-    if(btn.dataset.eq==="unequip"){
-      const prev = p.equip[slot];
-      if(prev){
-        addToInventory(p, prev);
-        p.equip[slot] = null;
-        saveDB(DB);
-        render();
-      }
-    }
-  });
-
-  document.addEventListener("click",(e)=>{
-    if(e.target?.id==="btnUnequipAll"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      for(const slot of Object.keys(p.equip)){
-        if(p.equip[slot]){
-          addToInventory(p, p.equip[slot]);
-          p.equip[slot] = null;
+      // fallback: always open
+      setTimeout(()=>{
+        if(!paper.classList.contains("unfurl")) paper.classList.add("unfurl");
+        if(!scroll.classList.contains("dropped")){
+          scroll.classList.remove("carried");
+          scroll.classList.add("dropped");
         }
-      }
-      saveDB(DB);
-      render();
-    }
-  });
-
-  // Effects
-  document.addEventListener("click",(e)=>{
-    if(e.target?.id==="btnAddBuff"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-
-      const name = String($("#buffName").value||"").trim();
-      const def = Number($("#buffDef").value||0);
-      const vel = Number($("#buffVel").value||0);
-      const turns = Math.max(1, Number($("#buffTurns").value||1));
-      if(!name) return alert("Coloca um nome no buff/debuff.");
-
-      p.effects.buffs.unshift({ name, mod:{ def, vel }, turns });
-      saveDB(DB);
-      render();
+      }, 2200);
     }
 
-    const del = e.target.closest("[data-buff-del]");
-    if(del){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      const idx = Number(del.getAttribute("data-buff-del"));
-      p.effects.buffs.splice(idx,1);
-      saveDB(DB);
-      render();
-    }
+    // submit logic
+    $("authForm").addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const u = ($("authUser").value||"").trim();
+      const p = ($("authPass").value||"").trim();
 
-    if(e.target?.id==="btnAddCond"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      const name = prompt("Condição: Envenenado / Amedrontado / Atordoado / Sangrando", "Envenenado");
-      if(!name) return;
-      const turns = Math.max(1, Number(prompt("Turnos?", "3") || "3"));
-      p.effects.conditions.unshift({ name, turns });
-      saveDB(DB);
-      render();
-    }
-
-    const cdel = e.target.closest("[data-cond-del]");
-    if(cdel){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      const idx = Number(cdel.getAttribute("data-cond-del"));
-      p.effects.conditions.splice(idx,1);
-      saveDB(DB);
-      render();
-    }
-
-    if(e.target?.id==="btnTick"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      for(const b of p.effects.buffs) b.turns = Number(b.turns||1) - 1;
-      p.effects.buffs = p.effects.buffs.filter(b=>Number(b.turns||0) > 0);
-
-      for(const c of p.effects.conditions) c.turns = Number(c.turns||1) - 1;
-      p.effects.conditions = p.effects.conditions.filter(c=>Number(c.turns||0) > 0);
-
-      // exemplo: envenenado causa 1 dano por turno (bem simples)
-      const hasPoison = p.effects.conditions.some(c=>c.name==="Envenenado");
-      if(hasPoison){
-        const d = derived(p);
-        p.char.current.vida = clamp(Number(p.char.current.vida||0) - 1, 0, d.vidaMax);
+      if(!u || !p){
+        setMsg("Preencha usuário e senha.", false);
+        runLoginSequence(true);
+        return;
       }
 
-      saveDB(DB);
-      render();
-    }
-  });
-
-  // Dice
-  document.addEventListener("click",(e)=>{
-    if(e.target?.id==="btnRoll"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      const expr = String($("#diceExpr").value||"").trim();
-      const r = rollDice(expr);
-      if(!r) return alert("Formato inválido. Ex: 1d20+3, 2d6, 1d100");
-
-      const line = `${expr}: [${r.rolls.join(", ")}] ${r.mod? (r.mod>0?`+${r.mod}`:`${r.mod}`):""} => ${r.total}`;
-      addDiceLog(p, line);
-      saveDB(DB);
-      render();
-    }
-    const q = e.target.closest("[data-quick]");
-    if(q){
-      $("#diceExpr").value = q.dataset.quick;
-    }
-    if(e.target?.id==="btnClearDice"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      p.diceLog = [];
-      saveDB(DB);
-      render();
-    }
-  });
-
-  // Diary
-  document.addEventListener("click",(e)=>{
-    if(e.target?.id==="btnSaveDiary"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      p.diary = String($("#diaryText").value||"");
-      saveDB(DB);
-      alert("Diário salvo.");
-    }
-    if(e.target?.id==="btnDiaryStamp"){
-      const t = $("#diaryText");
-      if(!t) return;
-      t.value = (t.value ? (t.value + "\n\n") : "") + `— ${now()} —\n`;
-    }
-  });
-
-  // Map
-  document.addEventListener("click",(e)=>{
-    if(e.target?.id==="btnMoveMarker"){
-      DB = loadDB(); const u=DB.session.username; if(!u) return;
-      const p=getPlayer(u);
-      p.map.x = clamp(p.map.x + (Math.random()*20 - 10), 8, 92);
-      p.map.y = clamp(p.map.y + (Math.random()*20 - 10), 10, 90);
-      saveDB(DB);
-      render();
-    }
-  });
-
-  // Shop
-  document.addEventListener("click",(e)=>{
-    const buy = e.target.closest("[data-buy]");
-    if(!buy) return;
-    DB = loadDB(); const u=DB.session.username; if(!u) return;
-    const p=getPlayer(u);
-    const id = buy.getAttribute("data-buy");
-    const it = DB.world.shop.find(x=>x.id===id);
-    if(!it) return;
-
-    const inst = { ...it, id: "i_"+Math.random().toString(16).slice(2,8), qty: 1 };
-    addToInventory(p, inst);
-    saveDB(DB);
-    render();
-  });
-
-  // NPC
-  document.addEventListener("click",(e)=>{
-    const open = e.target.closest("[data-open-npc]");
-    if(open){
-      openNPC(open.getAttribute("data-open-npc"));
-    }
-    if(e.target?.id==="btnNewNPC"){
-      const name = prompt("Nome do NPC?");
-      if(!name) return;
-      const role = prompt("Função (ferreiro, guarda, etc.)?", "") || "";
-      DB.world.npcs.unshift({ id: "n_"+Math.random().toString(16).slice(2,8), name, role, notes:"", rep:0 });
-      saveDB(DB);
-      render();
-    }
-  });
-
-  // Craft
-  document.addEventListener("click",(e)=>{
-    const c = e.target.closest("[data-craft]");
-    if(!c) return;
-    DB = loadDB(); const u=DB.session.username; if(!u) return;
-    const p=getPlayer(u);
-    const id = c.getAttribute("data-craft");
-    const r = DB.world.recipes.find(x=>x.id===id);
-    if(!r) return;
-
-    // check + consume
-    for(const need of r.needs){
-      const it = p.inventory.find(x=>String(x.name).toLowerCase()===String(need.name).toLowerCase());
-      if(!it || Number(it.qty||1) < Number(need.qty||1)){
-        return alert("Faltam materiais.");
+      if(mode === "create"){
+        // cria local (simulado)
+        const exists = USERS.some(x=>x.user.toLowerCase()===u.toLowerCase());
+        if(exists){
+          setMsg("Esse usuário já existe. Tente 'Login'.", false);
+          return;
+        }
+        USERS.push({ user:u, pass:p });
+        setMsg("Conta criada! (beta) ✅", true);
+        // aqui você redirecionaria pro app real
+        return;
       }
-    }
-    for(const need of r.needs){
-      const it = p.inventory.find(x=>String(x.name).toLowerCase()===String(need.name).toLowerCase());
-      it.qty = Number(it.qty||1) - Number(need.qty||1);
-    }
-    p.inventory = p.inventory.filter(x=>Number(x.qty||1) > 0);
 
-    addToInventory(p, { ...r.result, id:"i_"+Math.random().toString(16).slice(2,8), qty:1 });
-    saveDB(DB);
-    render();
-    alert("Craft concluído!");
-  });
+      // login
+      const ok = USERS.some(x=>x.user===u && x.pass===p);
+      if(!ok){
+        setMsg("Usuário ou senha inválidos.", false);
+        return;
+      }
+      setMsg("Logado! (beta) ✅", true);
+      // aqui você redirecionaria pro app real
+    });
 
-  // Fame
-  $("btnSaveFama").onclick = ()=>{
-    DB = loadDB(); const u=DB.session.username; if(!u) return;
-    const p=getPlayer(u);
-    p.fame = clamp(Number($("famaInput").value||0), 0, 100);
-    saveDB(DB);
-    render();
-  };
-}
+    $("btnToggleMode").onclick = ()=>{
+      setMode(mode==="create" ? "login" : "create");
+      runLoginSequence(true);
+    };
 
-/* =========================
-   LOGIN ANIMATION
-========================= */
-function runLoginSequence(){
-  const scroll = $("scroll");
-  const paper = $("paper");
+    $("btnReplay").onclick = ()=>runLoginSequence(false);
 
-  if(!scroll || !paper) return;
+    // ✅ Open instantly if user clicks/focus inputs (prevents "stuck closed")
+    ["authUser","authPass"].forEach(id=>{
+      const el = $(id);
+      if(el){
+        el.addEventListener("focus", ()=>runLoginSequence(true), { once:true });
+        el.addEventListener("click", ()=>runLoginSequence(true), { once:true });
+      }
+    });
 
-  scroll.classList.remove("dropped");
-  scroll.classList.add("carried");
-  paper.classList.remove("unfurl");
-  void scroll.offsetWidth;
-
-  setTimeout(()=>{
-    scroll.classList.remove("carried");
-    scroll.classList.add("dropped");
-  }, 2250);
-
-  setTimeout(()=>{
-    paper.classList.add("unfurl");
-  }, 3300);
-}
-
-/* =========================
-   BOOT + EVENTS
-========================= */
-$("btnAudio").onclick = async ()=>{
-  if(!audioOn){
-    try{ await (audioCtx?.resume?.() ?? Promise.resolve()); }catch(_e){}
-    startAmbient();
-  }else{
-    stopAmbient();
-  }
-};
-
-$("btnLogout").onclick = ()=>logout();
-
-$("btnReset").onclick = ()=>{
-  if(confirm("Isso apaga tudo desse beta neste navegador. Continuar?")){
-    localStorage.removeItem(KEY);
-    DB = loadDB();
-    location.reload();
-  }
-};
-
-$("switchLink").onclick = (e)=>{
-  e.preventDefault();
-  setAuthMode(authMode==="signup" ? "login" : "signup");
-};
-
-$("replayAnim").onclick = ()=>{
-  runLoginSequence();
-};
-
-$("authForm").addEventListener("submit",(e)=>{
-  e.preventDefault();
-  DB = loadDB();
-
-  const user = $("authUser").value;
-  const pass = $("authPass").value;
-
-  let res;
-  if(authMode==="signup") res = signup(user, pass);
-  else res = login(user, pass);
-
-  if(!res.ok){
-    $("authMsg").innerHTML = `<span class="bad">${escapeHTML(res.msg)}</span>`;
-    return;
-  }
-  $("authMsg").innerHTML = `<span class="ok">Selo aceito. Entrando…</span>`;
-  render();
-});
-
-function boot(){
-  setAuthMode("signup");
-  render();
-
-  // desktop tabs + mobile nav both work; start in tabFicha
-  setTab("tabFicha");
-}
-
-boot();
-</script>
+    // init
+    setMode("create");
+    runLoginSequence(false);
+  </script>
 </body>
 </html>
