@@ -850,7 +850,7 @@
       <div style="margin-top:10px;height:1px;background:linear-gradient(90deg,transparent,rgba(200,149,42,.5),transparent)"></div>
     </div>
     <p class="muted" style="margin-top:0;text-align:center;font-style:italic">
-      Mestre: <b style="color:var(--ink)">mestre / 1234</b> &nbsp;•&nbsp; Player: <b style="color:var(--ink)">player1 / 1234</b>
+      Mestre: <b style="color:var(--ink)"></b> &nbsp;•&nbsp; Player: <b style="color:var(--ink)">player1 / 1234</b>
     </p>
     <div style="padding:16px;background:rgba(5,4,2,.6);border:1px solid rgba(180,140,80,.2);border-radius:3px;margin-top:10px">
       <div class="row">
@@ -2963,3 +2963,2969 @@ try{
 </script>
 </body>
 </html>
+mestre<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MYR — RPG Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0804;
+      --parchment:#1a1510;
+      --parchment2:#221c15;
+      --card:rgba(22,17,12,.95);
+      --muted:#9a8c78;
+      --txt:#e8dcc8;
+      --line:rgba(180,140,80,.14);
+      --lineGold:rgba(180,140,80,.35);
+      --btn:#8b1a1a;
+      --btnHover:#a82020;
+      --btn2:#2d5a1b;
+      --bad:#c0392b;
+      --ok:#2ecc71;
+      --gold:#c8952a;
+      --goldLight:#e8b84b;
+      --bronze:#8b6914;
+      --silver:#8a8a8a;
+      --rune:rgba(200,149,42,.25);
+      --ink:#d4c4a0;
+      --shadow:rgba(0,0,0,.7);
+    }
+    *{box-sizing:border-box}
+
+    /* ========================= BODY — PEDRA ESCURA ========================= */
+    body{
+      margin:0;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+        radial-gradient(ellipse 900px 600px at 15% 0%, rgba(139,26,26,.18), transparent 60%),
+        radial-gradient(ellipse 700px 500px at 90% 80%, rgba(45,90,27,.12), transparent 55%),
+        linear-gradient(170deg,#0d0a06 0%,#0a0804 40%,#080605 100%);
+      color:var(--txt);
+      font-family:'Crimson Pro', Georgia, serif;
+      min-height:100vh;
+    }
+
+    /* ========================= SCROLLBAR ========================= */
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:rgba(0,0,0,.4)}
+    ::-webkit-scrollbar-thumb{background:rgba(139,105,20,.6);border-radius:999px}
+    ::-webkit-scrollbar-thumb:hover{background:rgba(200,149,42,.8)}
+
+    /* ========================= RUNAS FLUTUANTES ========================= */
+    @keyframes runeFloat{
+      0%,100%{opacity:.05;transform:translate(0,0) rotate(0deg) scale(1)}
+      33%{opacity:.12;transform:translate(8px,-15px) rotate(5deg) scale(1.05)}
+      66%{opacity:.07;transform:translate(-5px,8px) rotate(-3deg) scale(.97)}
+    }
+    .runeBg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .runeBg span{
+      position:absolute;color:var(--gold);
+      animation:runeFloat linear infinite;user-select:none;
+      text-shadow:0 0 20px rgba(200,149,42,.4)
+    }
+
+    /* ========================= HEADER — FERRO FORJADO ========================= */
+    header{
+      padding:12px 20px;
+      border-bottom:2px solid var(--lineGold);
+      position:sticky;top:0;z-index:50;
+      font-family:'Cinzel',serif;
+      background:
+        linear-gradient(180deg, rgba(8,6,4,.97) 0%, rgba(12,9,6,.95) 100%);
+      backdrop-filter:blur(14px);
+      box-shadow:0 4px 24px rgba(0,0,0,.7), 0 1px 0 rgba(200,149,42,.15) inset;
+    }
+    /* Ornamento de divisa no header */
+    header::before{
+      content:'';display:block;position:absolute;bottom:-2px;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(200,149,42,.6),rgba(200,149,42,.9),rgba(200,149,42,.6),transparent);
+    }
+    h1{
+      margin:0;font-size:18px;letter-spacing:2px;
+      font-family:'Cinzel',serif;font-weight:900;
+      color:var(--goldLight);
+      text-shadow:0 0 20px rgba(200,149,42,.5), 0 2px 4px rgba(0,0,0,.8);
+    }
+
+    /* ========================= LAYOUT PRINCIPAL ========================= */
+    main{max-width:1300px;margin:0 auto;padding:16px;display:grid;gap:16px;position:relative;z-index:1}
+    .grid{display:grid;gap:16px}
+    @media(min-width:980px){.grid{grid-template-columns:1.2fr .8fr}}
+
+    /* ========================= CARD — PERGAMINHO ========================= */
+    .card{
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"),
+        linear-gradient(145deg, rgba(28,22,14,.97) 0%, rgba(20,16,10,.98) 60%, rgba(24,18,12,.97) 100%);
+      border:1px solid var(--lineGold);
+      border-radius:4px;
+      padding:18px;
+      backdrop-filter:blur(8px);
+      position:relative;
+      box-shadow:
+        0 2px 0 rgba(200,149,42,.08) inset,
+        0 -1px 0 rgba(0,0,0,.5) inset,
+        0 8px 32px rgba(0,0,0,.5),
+        0 2px 8px rgba(0,0,0,.3);
+    }
+    /* Cantos decorativos — "tachas" de pergaminho */
+    .card::before,.card::after{
+      content:'✦';position:absolute;
+      font-size:10px;color:rgba(200,149,42,.35);
+      line-height:1;
+    }
+    .card::before{top:6px;left:8px}
+    .card::after{bottom:6px;right:8px}
+
+    /* card sem ornamentos */
+    .card-plain{background:rgba(18,14,9,.9);border:1px solid var(--lineGold);border-radius:4px;padding:16px}
+
+    /* ========================= SEÇÃO ESCUDO — PAINEL LATERAL ========================= */
+    #sidePanel{
+      background:
+        linear-gradient(160deg, rgba(18,14,10,.98) 0%, rgba(14,11,7,.99) 100%);
+      border:1px solid var(--lineGold);
+      border-radius:4px;
+      padding:18px;
+      position:relative;
+      box-shadow:0 8px 32px rgba(0,0,0,.5);
+    }
+    #sidePanel::before{
+      content:'🛡';position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+      font-size:20px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));
+    }
+
+    /* ========================= TITULO COM ORNAMENTO ========================= */
+    .sectionTitle{
+      font-family:'Cinzel',serif;font-weight:900;font-size:14px;
+      color:var(--goldLight);letter-spacing:1.5px;text-transform:uppercase;
+      display:flex;align-items:center;gap:10px;
+    }
+    .sectionTitle::before,.sectionTitle::after{
+      content:'';flex:1;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(200,149,42,.5))
+    }
+    .sectionTitle::after{
+      background:linear-gradient(90deg,rgba(200,149,42,.5),transparent)
+    }
+
+    /* ========================= DIVISOR ORNAMENTAL ========================= */
+    .divider{
+      height:1px;margin:14px 0;
+      background:linear-gradient(90deg,transparent,var(--lineGold),rgba(200,149,42,.7),var(--lineGold),transparent);
+      position:relative;
+    }
+    .divider::after{
+      content:'⬥';position:absolute;left:50%;top:50%;
+      transform:translate(-50%,-50%);
+      font-size:10px;color:rgba(200,149,42,.5);
+      background:var(--parchment);padding:0 4px;
+    }
+
+    /* ========================= FORMS ========================= */
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    label{
+      font-size:11px;color:var(--muted);display:block;margin-bottom:4px;
+      font-family:'Cinzel',serif;letter-spacing:.5px;text-transform:uppercase
+    }
+    input,select,textarea{
+      border-radius:3px;
+      border:1px solid rgba(180,140,80,.25);
+      background:rgba(8,6,4,.8);
+      color:var(--ink);
+      padding:9px 12px;outline:none;
+      font-family:'Crimson Pro',serif;font-size:15px;
+      transition:border-color .2s,box-shadow .2s
+    }
+    input:focus,select:focus,textarea:focus{
+      border-color:rgba(200,149,42,.6);
+      box-shadow:0 0 0 2px rgba(200,149,42,.1), 0 0 10px rgba(139,26,26,.15);
+    }
+    button{
+      cursor:pointer;
+      background:linear-gradient(145deg,#7a1515,#8b1a1a,#6e1212);
+      border:1px solid rgba(200,149,42,.35);
+      color:var(--goldLight);
+      font-weight:700;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.8px;
+      padding:9px 16px;border-radius:3px;
+      transition:all .15s;
+      text-shadow:0 1px 2px rgba(0,0,0,.8);
+      box-shadow:0 2px 8px rgba(0,0,0,.5), 0 1px 0 rgba(200,149,42,.15) inset;
+      position:relative;overflow:hidden;
+    }
+    button::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,transparent 50%);
+      pointer-events:none;
+    }
+    button:hover:not(:disabled){
+      background:linear-gradient(145deg,#a82020,#b52222,#962020);
+      border-color:rgba(200,149,42,.6);
+      box-shadow:0 4px 16px rgba(139,26,26,.5), 0 1px 0 rgba(200,149,42,.2) inset;
+      transform:translateY(-1px);
+      color:#fff;
+    }
+    button:active:not(:disabled){transform:translateY(0);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+    button.secondary{
+      background:linear-gradient(145deg,rgba(12,9,6,.9),rgba(18,14,9,.9));
+      border:1px solid rgba(180,140,80,.3);color:var(--muted);
+    }
+    button.secondary:hover:not(:disabled){border-color:var(--lineGold);color:var(--ink);background:rgba(28,22,14,.9)}
+    button.danger{background:linear-gradient(145deg,#7a0f0f,#8b1010);border-color:rgba(192,57,43,.5);color:#ffaaaa}
+    button.danger:hover:not(:disabled){background:linear-gradient(145deg,#a01212,#b21414)}
+    button.success{background:linear-gradient(145deg,#1e4012,#234a15);border-color:rgba(46,204,113,.3);color:#90ee90}
+    button:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:grayscale(.5)}
+    button.mini{padding:5px 10px;font-size:10px;letter-spacing:.5px}
+
+    .muted{color:var(--muted);font-size:13px;line-height:1.5}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:4px 10px;
+      border:1px solid rgba(180,140,80,.25);border-radius:2px;
+      background:rgba(8,6,4,.7);
+      font-size:11px;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.3px
+    }
+    .pill.mini{padding:2px 7px;font-size:10px}
+    .hidden{display:none!important}
+    .mini{font-size:12px}
+    .ok{color:var(--ok);font-weight:700}
+    .bad{color:var(--bad);font-weight:700}
+    .gold{color:var(--goldLight);}
+
+    /* ========================= TABS DO CRIADOR ========================= */
+    .tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .tabBtn{
+      background:rgba(8,6,4,.8);border:1px solid rgba(180,140,80,.2);
+      padding:8px 14px;border-radius:2px;font-weight:700;color:var(--muted);
+      font-family:'Cinzel',serif;font-size:10px;letter-spacing:.6px;text-transform:uppercase
+    }
+    .tabBtn.active{
+      background:linear-gradient(145deg,#6e1212,#7a1515);
+      color:var(--goldLight);border-color:rgba(200,149,42,.5);
+      box-shadow:0 2px 10px rgba(139,26,26,.4)
+    }
+
+    /* ========================= OVERLAY / MODAL — PERGAMINHO ========================= */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);padding:18px;overflow:auto;z-index:60;backdrop-filter:blur(6px)}
+    .modal{
+      max-width:1100px;margin:18px auto;
+      border:1px solid var(--lineGold);
+      border-radius:4px;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+        linear-gradient(155deg, rgba(24,19,12,.98) 0%, rgba(16,12,8,.99) 100%);
+      padding:20px;
+      box-shadow:0 40px 100px rgba(0,0,0,.8), 0 0 0 1px rgba(200,149,42,.08);
+    }
+    .modal::before{
+      content:'— ✦ —';display:block;text-align:center;
+      font-size:14px;color:rgba(200,149,42,.4);margin-bottom:14px;
+      letter-spacing:8px;font-family:'Cinzel',serif;
+    }
+    .modalHeader{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .warn{border:1px solid rgba(192,57,43,.4);background:rgba(192,57,43,.08);padding:12px;border-radius:3px}
+    .good{border:1px solid rgba(46,204,113,.3);background:rgba(46,204,113,.06);padding:12px;border-radius:3px}
+
+    /* ========================= SELECTION CARDS ========================= */
+    .selectGrid{display:grid;gap:8px}
+    @media(min-width:900px){.selectGrid{grid-template-columns:1fr 1fr}}
+    .selectCard{
+      border:1px solid rgba(180,140,80,.18);
+      background:rgba(10,8,5,.7);padding:12px;border-radius:3px;
+      display:flex;gap:12px;align-items:flex-start;justify-content:space-between;
+      transition:border-color .2s,background .2s
+    }
+    .selectCard:hover{border-color:rgba(200,149,42,.35);background:rgba(14,11,7,.8)}
+    .selectCard .left{min-width:0}
+    .selectCard b{display:block;font-size:14px;color:var(--ink)}
+    .tag{
+      display:inline-flex;gap:4px;align-items:center;padding:3px 8px;
+      border-radius:2px;border:1px solid rgba(180,140,80,.25);
+      background:rgba(8,6,4,.65);color:var(--muted);font-size:10px;
+      font-family:'Cinzel',serif;letter-spacing:.3px
+    }
+    .selectedGlow{
+      border-color:rgba(200,149,42,.6)!important;
+      background:rgba(20,15,8,.9)!important;
+      box-shadow:0 0 0 2px rgba(200,149,42,.12), 0 0 20px rgba(139,26,26,.2)
+    }
+
+    /* ========================= AVATAR — ESCUDO MOLDURA ========================= */
+    .avatarBox{
+      width:130px;height:130px;
+      border-radius:3px;
+      border:2px solid var(--lineGold);
+      background:rgba(6,5,3,.8);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;
+      box-shadow:0 0 0 4px rgba(0,0,0,.5), 0 0 30px rgba(139,26,26,.15), inset 0 0 20px rgba(0,0,0,.4);
+      flex-shrink:0;
+      position:relative;
+    }
+    .avatarBox::before{
+      content:'';position:absolute;inset:-3px;
+      background:linear-gradient(135deg,rgba(200,149,42,.4),transparent 40%,transparent 60%,rgba(200,149,42,.2));
+      pointer-events:none;z-index:1;
+    }
+    .avatarBox img{width:100%;height:100%;object-fit:cover}
+
+    /* ========================= METERS ========================= */
+    .meterRow{display:grid;grid-template-columns:1fr 150px 140px;gap:10px;align-items:center}
+    @media(max-width:640px){.meterRow{grid-template-columns:1fr 1fr}.meterRow .ctrl{grid-column:1/-1;justify-content:flex-end}}
+    .bar{height:8px;border-radius:2px;background:rgba(5,4,2,.8);border:1px solid rgba(180,140,80,.2);overflow:hidden}
+    .bar>div{height:100%;background:var(--btn);width:0%;transition:width .4s}
+    .ctrl{display:flex;gap:6px;align-items:center}
+    .ctrl .num{min-width:28px;text-align:center;font-weight:700;font-family:'Cinzel',serif}
+
+    /* ========================= HUB TABS ========================= */
+    .hubTabs{
+      display:flex;gap:4px;flex-wrap:wrap;
+      padding:12px 0 10px;
+      border-bottom:1px solid var(--lineGold);
+      margin-bottom:16px;
+      position:relative;
+    }
+    .hubTabs::after{
+      content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(200,149,42,.3),transparent);
+    }
+    .hubTab{
+      background:rgba(8,6,4,.8);
+      border:1px solid rgba(180,140,80,.2);
+      padding:7px 14px;border-radius:2px;
+      font-weight:700;color:var(--muted);
+      cursor:pointer;font-size:11px;font-family:'Cinzel',serif;
+      transition:all .2s;letter-spacing:.5px;text-transform:uppercase
+    }
+    .hubTab:hover{border-color:rgba(200,149,42,.4);color:var(--ink)}
+    .hubTab.active{
+      background:linear-gradient(145deg,#6e1212,#7a1515);
+      color:var(--goldLight);border-color:rgba(200,149,42,.5);
+      box-shadow:0 2px 10px rgba(139,26,26,.4), 0 0 0 1px rgba(200,149,42,.1)
+    }
+    .hubPanel{display:none}
+    .hubPanel.active{display:block}
+
+    /* ========================= KPI — BARRAS DE STATUS ========================= */
+    .kpiGrid{display:grid;gap:10px}
+    @media(min-width:720px){.kpiGrid{grid-template-columns:1fr 1fr}}
+    .kpiBox{
+      border:1px solid rgba(180,140,80,.2);
+      background:rgba(8,6,4,.75);
+      border-radius:3px;padding:14px;
+      transition:border-color .2s;
+      position:relative;
+    }
+    .kpiBox::before{content:'⬥';position:absolute;top:8px;right:10px;font-size:8px;color:rgba(200,149,42,.2)}
+    .kpiBox:hover{border-color:rgba(200,149,42,.35)}
+    .kpiTitle{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .kpiTitle b{font-size:12px;font-family:'Cinzel',serif;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+    .kpiValue{font-size:26px;font-weight:900;font-family:'Cinzel',serif;color:var(--ink);text-shadow:0 0 10px rgba(200,149,42,.2)}
+    .kpiBar{
+      height:8px;border-radius:2px;
+      background:rgba(4,3,2,.8);border:1px solid rgba(180,140,80,.15);
+      overflow:hidden;margin-top:8px;
+    }
+    .kpiBar>div{height:100%;width:0%;transition:width .6s cubic-bezier(.4,0,.2,1)}
+    .xpFill{background:linear-gradient(90deg,#8b6914,#c8952a,#e8b84b)!important}
+    .vidaFill{background:linear-gradient(90deg,#7a0f0f,#c0392b,#e74c3c)!important}
+    .defesaFill{background:linear-gradient(90deg,#1a3a6b,#2980b9,#3498db)!important}
+    .velocidadeFill{background:linear-gradient(90deg,#1a5c1a,#27ae60,#2ecc71)!important}
+    .manaFill{background:linear-gradient(90deg,#3d1260,#8e44ad,#9b59b6)!important}
+
+    /* ========================= CONDIÇÕES ========================= */
+    .condTag{
+      display:inline-flex;align-items:center;gap:5px;
+      padding:3px 9px;border-radius:2px;border:1px solid;
+      font-size:11px;font-weight:700;font-family:'Cinzel',serif;letter-spacing:.3px
+    }
+    .cond-veneno{border-color:rgba(46,180,70,.6);color:#5de87a;background:rgba(39,174,96,.12)}
+    .cond-sangramento{border-color:rgba(192,57,43,.7);color:#ff7070;background:rgba(192,57,43,.15)}
+    .cond-medo{border-color:rgba(200,149,42,.6);color:#e8c060;background:rgba(200,149,42,.12)}
+    .cond-atordoado{border-color:rgba(130,130,130,.5);color:#b0b0b0;background:rgba(100,100,100,.12)}
+    .cond-paralisado{border-color:rgba(52,152,219,.6);color:#7fc8f8;background:rgba(52,152,219,.12)}
+    .cond-amaldicoado{border-color:rgba(155,89,182,.7);color:#c090e8;background:rgba(155,89,182,.15)}
+    .cond-buff{border-color:rgba(46,204,113,.5);color:#90ee90;background:rgba(46,204,113,.1)}
+    .cond-regeneracao{border-color:rgba(46,204,113,.6);color:#5de87a;background:rgba(46,204,113,.12)}
+    .cond-queimando{border-color:rgba(230,126,34,.7);color:#ffaa55;background:rgba(230,126,34,.15)}
+    .cond-congelado{border-color:rgba(174,214,241,.6);color:#aef;background:rgba(174,214,241,.1)}
+
+    /* ========================= INVENTÁRIO ========================= */
+    .invGrid{display:grid;gap:6px}
+    .invItem{
+      display:flex;gap:10px;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-radius:3px;border:1px solid rgba(180,140,80,.18);background:rgba(8,6,4,.6);
+      transition:border-color .2s,background .2s
+    }
+    .invItem:hover{border-color:rgba(200,149,42,.35);background:rgba(14,10,6,.8)}
+    .invItem .iName{font-weight:600;font-size:15px;color:var(--ink)}
+    .invItem .iMeta{font-size:11px;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.3px}
+    .rarity-incomum{border-color:rgba(39,174,96,.35)!important}
+    .rarity-raro{border-color:rgba(41,128,185,.45)!important;box-shadow:0 0 8px rgba(41,128,185,.12)}
+    .rarity-epico{border-color:rgba(142,68,173,.55)!important;box-shadow:0 0 12px rgba(142,68,173,.18)}
+    .rarity-lendario{border-color:rgba(200,149,42,.7)!important;box-shadow:0 0 18px rgba(200,149,42,.2)}
+
+    /* ========================= DADOS ========================= */
+    @keyframes diceRoll{
+      0%{transform:rotate(0deg) scale(.8)}20%{transform:rotate(72deg) scale(1.2)}
+      40%{transform:rotate(144deg) scale(.9)}60%{transform:rotate(216deg) scale(1.1)}
+      80%{transform:rotate(288deg) scale(.95)}100%{transform:rotate(360deg) scale(1)}
+    }
+    @keyframes critFlash{0%,100%{opacity:1}50%{opacity:.3}}
+    .diceBtn{
+      width:58px;height:58px;border-radius:3px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:16px;font-weight:900;
+      border:1px solid rgba(180,140,80,.25);
+      background:linear-gradient(145deg,rgba(10,8,5,.9),rgba(16,12,8,.9));
+      cursor:pointer;transition:all .2s;font-family:'Cinzel',serif;
+      color:var(--muted);position:relative;
+      box-shadow:0 3px 10px rgba(0,0,0,.5)
+    }
+    .diceBtn:hover{border-color:rgba(200,149,42,.6);color:var(--goldLight);box-shadow:0 4px 16px rgba(139,26,26,.4);transform:translateY(-2px)}
+    .diceBtn.rolling{animation:diceRoll .5s ease-out}
+    .diceResult{
+      font-size:52px;font-weight:900;font-family:'Cinzel',serif;
+      text-align:center;padding:16px;color:var(--goldLight);
+      text-shadow:0 0 30px rgba(200,149,42,.5), 0 0 60px rgba(139,26,26,.3);
+      min-height:90px;display:flex;align-items:center;justify-content:center
+    }
+    .diceResult.crit{animation:critFlash .3s ease-out 3;color:#ffdd44}
+    .diceResult.fumble{color:var(--bad)}
+    .rollLog{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+    .rollEntry{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:7px 11px;border-radius:2px;background:rgba(6,5,3,.7);border:1px solid rgba(180,140,80,.15);font-size:13px
+    }
+    .rollEntry .rollVal{font-size:17px;font-weight:900;font-family:'Cinzel',serif}
+
+    /* ========================= MAPA ========================= */
+    .mapWrap{
+      position:relative;border-radius:3px;overflow:hidden;
+      border:1px solid var(--lineGold);
+      background:radial-gradient(ellipse at center,#0e0a06 0%,#07050300 100%);
+    }
+    .mapPin{position:absolute;transform:translate(-50%,-100%);font-size:20px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.9));cursor:pointer;transition:transform .2s;z-index:2}
+    .mapPin:hover{transform:translate(-50%,-100%) scale(1.4)}
+    .mapLabel{position:absolute;background:rgba(5,4,2,.95);border:1px solid var(--lineGold);border-radius:2px;padding:3px 8px;font-size:10px;white-space:nowrap;transform:translate(-50%,4px);pointer-events:none;z-index:3;font-family:'Cinzel',serif;color:var(--goldLight);letter-spacing:.4px}
+    .mapGrid{position:absolute;inset:0;opacity:.06;background-image:linear-gradient(rgba(200,149,42,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(200,149,42,.4) 1px,transparent 1px);background-size:44px 44px}
+
+    /* ========================= NPC ========================= */
+    .npcCard{padding:14px;border-radius:3px;border:1px solid rgba(180,140,80,.2);background:rgba(8,6,4,.65);display:grid;gap:8px;transition:border-color .2s}
+    .npcCard:hover{border-color:rgba(200,149,42,.35)}
+    .relBar{height:7px;border-radius:2px;background:rgba(4,3,2,.8);overflow:hidden;border:1px solid rgba(180,140,80,.15)}
+    .relFill{height:100%;border-radius:2px;transition:width .5s}
+
+    /* ========================= DIÁRIO ========================= */
+    .diaryEntry{
+      padding:14px;border-radius:3px;
+      border:1px solid rgba(180,140,80,.18);
+      background:rgba(8,6,4,.5);
+      border-left:3px solid rgba(200,149,42,.4);
+      position:relative;
+    }
+    .diaryEntry::before{content:'"';position:absolute;top:6px;left:12px;font-size:28px;color:rgba(200,149,42,.15);font-family:Georgia,serif;line-height:1}
+    .diaryEntry .dts{font-size:10px;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.4px}
+
+    /* ========================= TOAST — PERGAMINHO ========================= */
+    #toastContainer{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+    .toastMsg{
+      padding:10px 18px;border-radius:3px;font-size:13px;font-weight:600;font-family:'Cinzel',serif;letter-spacing:.3px;
+      border:1px solid;backdrop-filter:blur(10px);
+      animation:toastIn .3s ease-out forwards;pointer-events:none;
+      box-shadow:0 8px 24px rgba(0,0,0,.6)
+    }
+    @keyframes toastIn{from{opacity:0;transform:translateX(24px) scale(.96)}to{opacity:1;transform:translateX(0) scale(1)}}
+    .toastMsg.good{border-color:rgba(46,204,113,.4);background:rgba(20,40,20,.95);color:#90ee90}
+    .toastMsg.bad{border-color:rgba(192,57,43,.5);background:rgba(40,12,12,.95);color:#ff9090}
+
+    /* ========================= LOG SESSÃO ========================= */
+    .sessionLog{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+    .logEntry{font-size:12px;color:var(--muted);padding:6px 10px;border-radius:2px;background:rgba(6,5,3,.6);border-left:2px solid rgba(200,149,42,.3);font-family:'Crimson Pro',serif}
+    .logEntry b{color:var(--ink)}
+
+    /* ========================= FAMA / REPUTAÇÃO ========================= */
+    .reputBar{height:14px;border-radius:2px;background:rgba(5,4,2,.8);overflow:hidden;border:1px solid rgba(180,140,80,.2);position:relative}
+    .reputFill{height:100%;border-radius:2px;transition:width .6s;background:linear-gradient(90deg,#7a0f0f,#c8952a,#2d5a1b)}
+    .reputLabel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'Cinzel',serif;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+
+    /* ========================= BUFFS/DEBUFFS — EFFECTS ========================= */
+    .buffItem{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:9px 13px;border-radius:3px;border:1px solid rgba(180,140,80,.18);
+      background:rgba(8,6,4,.6);font-size:13px;margin-bottom:4px;
+      transition:border-color .2s
+    }
+    /* Pulso de condição ativa */
+    @keyframes condPulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 2px rgba(200,149,42,.15)}}
+    .buffItem.active-harm{border-color:rgba(192,57,43,.35)!important;animation:condPulse 2s infinite}
+    .buffItem.active-help{border-color:rgba(46,204,113,.25)!important;animation:condPulse 2s infinite}
+
+    /* ========================= TABLES ========================= */
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid rgba(180,140,80,.12);text-align:left;font-size:13px}
+    th{color:var(--muted);font-weight:700;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.6px;text-transform:uppercase}
+    .right{text-align:right}
+
+    /* ========================= SKILL TREE ========================= */
+    .stWrap{display:grid;grid-template-columns:1fr 320px;gap:12px}
+    @media(max-width:900px){.stWrap{grid-template-columns:1fr}}
+    .stToolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .stBoard{position:relative;height:64vh;min-height:420px;border:1px solid var(--lineGold);border-radius:3px;background:radial-gradient(ellipse at center,#0c0906 0%,#060403 100%);overflow:hidden}
+    .stSvg{position:absolute;inset:0;pointer-events:none}
+    .stNode{position:absolute;min-width:160px;max-width:210px;border:1px solid rgba(180,140,80,.25);border-radius:3px;padding:10px;background:rgba(14,11,7,.96);backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,.5);cursor:grab;user-select:none}
+    .stNode:active{cursor:grabbing}
+    .stNode b{display:block;font-size:13px;color:var(--ink)}
+    .stNode .mini{font-size:11px;color:var(--muted);line-height:1.3;font-family:'Crimson Pro',serif}
+    .stNode.sel{outline:2px solid rgba(200,149,42,.6);box-shadow:0 0 0 4px rgba(200,149,42,.1)}
+    .stPill{display:inline-flex;gap:4px;align-items:center;padding:2px 7px;border-radius:2px;border:1px solid rgba(180,140,80,.2);background:rgba(6,5,3,.8);color:var(--muted);font-size:11px;font-family:'Cinzel',serif}
+    .stSide .card{background:rgba(10,8,5,.95)}
+    .stSide input,.stSide textarea,.stSide select{width:100%}
+
+    /* ========================= RESPONSIVE ========================= */
+    @media(max-width:640px){
+      .hubTabs{gap:3px}
+      .hubTab{padding:6px 9px;font-size:10px}
+      .kpiGrid{grid-template-columns:1fr}
+      .diceBtn{width:48px;height:48px;font-size:13px}
+      .card::before,.card::after{display:none}
+    }
+
+    /* ========================= TICKER DE CONDIÇÃO ========================= */
+    @keyframes dmgFloat{
+      0%{opacity:1;transform:translate(-50%,0)}
+      100%{opacity:0;transform:translate(-50%,-50px)}
+    }
+    .dmgFloat{
+      position:fixed;pointer-events:none;z-index:999;
+      font-size:22px;font-weight:900;font-family:'Cinzel',serif;
+      animation:dmgFloat 1.4s ease-out forwards;
+      text-shadow:0 2px 8px rgba(0,0,0,.9)
+    }
+    .dmgFloat.harm{color:#ff5555}
+    .dmgFloat.heal{color:#55ee88}
+
+    /* ========================= TABS (HUB) ========================= */
+    .hubTabs{display:flex;gap:6px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:14px}
+    .hubTab{
+      background:rgba(6,8,14,.75);border:1px solid var(--line);
+      padding:8px 14px;border-radius:999px;font-weight:700;color:var(--muted);
+      cursor:pointer;font-size:13px;font-family:'Cinzel',serif;transition:all .2s;letter-spacing:.3px
+    }
+    .hubTab:hover{border-color:rgba(124,58,237,.4);color:var(--txt)}
+    .hubTab.active{background:var(--btn);color:#fff;border-color:transparent;box-shadow:0 0 14px rgba(124,58,237,.4)}
+    .hubPanel{display:none}
+    .hubPanel.active{display:block}
+
+    /* ========================= FORMS ========================= */
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;font-family:'Cinzel',serif;letter-spacing:.3px}
+    input,select,button,textarea{
+      border-radius:14px;border:1px solid var(--line);background:rgba(6,8,14,.88);color:var(--txt);
+      padding:10px 12px;outline:none;font-family:'Crimson Pro',serif;font-size:14px
+    }
+    input:focus,select:focus,textarea:focus{border-color:rgba(124,58,237,.75);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+    button{cursor:pointer;background:var(--btn);border:none;font-weight:700;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.4px;transition:all .15s}
+    button:hover:not(:disabled){filter:brightness(1.15);transform:translateY(-1px)}
+    button:active:not(:disabled){transform:translateY(0)}
+    button.secondary{background:rgba(9,10,18,.25);border:1px solid var(--line)}
+    button.danger{background:var(--bad)}
+    button.success{background:var(--btn2)}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .muted{color:var(--muted);font-size:13px;line-height:1.45}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(6,8,14,.75);
+      font-size:12px;color:var(--muted)
+    }
+    .divider{height:1px;background:var(--line);margin:12px 0}
+    .hidden{display:none!important}
+    .mini{font-size:12px}
+    .ok{color:var(--ok);font-weight:700}
+    .bad{color:var(--bad);font-weight:700}
+
+    /* ========================= CREATOR TABS ========================= */
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tabBtn{
+      background:rgba(6,8,14,.75);border:1px solid var(--line);
+      padding:9px 13px;border-radius:999px;font-weight:700;color:var(--muted);font-family:'Cinzel',serif;font-size:11px
+    }
+    .tabBtn.active{background:var(--btn);color:#fff;border-color:transparent}
+
+    /* ========================= OVERLAY / MODAL ========================= */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);padding:18px;overflow:auto;z-index:60;backdrop-filter:blur(4px)}
+    .modal{
+      max-width:1120px;margin:18px auto;border:1px solid var(--line);
+      border-radius:22px;background:rgba(8,10,16,.96);backdrop-filter:blur(14px);
+      padding:18px;box-shadow:0 30px 80px rgba(0,0,0,.6)
+    }
+    .modalHeader{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .warn{border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.08);padding:12px;border-radius:14px}
+    .good{border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.08);padding:12px;border-radius:14px}
+
+    /* ========================= SELECTION CARDS ========================= */
+    .selectGrid{display:grid;gap:10px}
+    @media(min-width:900px){.selectGrid{grid-template-columns:1fr 1fr}}
+    .selectCard{
+      border:1px solid var(--line);background:rgba(6,8,14,.65);padding:12px;border-radius:18px;
+      display:flex;gap:12px;align-items:flex-start;justify-content:space-between
+    }
+    .selectCard .left{min-width:0}
+    .selectCard b{display:block;font-size:14px}
+    .tag{display:inline-flex;gap:6px;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(6,8,14,.65);color:var(--muted);font-size:11px;font-family:'Cinzel',serif}
+    .selectedGlow{outline:2px solid rgba(124,58,237,.65);box-shadow:0 0 0 6px rgba(124,58,237,.12)}
+
+    /* ========================= AVATAR ========================= */
+    .avatarBox{
+      width:140px;height:140px;border-radius:18px;border:2px solid var(--line);
+      background:rgba(6,8,14,.65);display:flex;align-items:center;justify-content:center;overflow:hidden;
+      box-shadow:0 0 20px rgba(124,58,237,.15);flex-shrink:0
+    }
+    .avatarBox img{width:100%;height:100%;object-fit:cover}
+
+    /* ========================= METERS ========================= */
+    .meterRow{display:grid;grid-template-columns:1fr 170px 150px;gap:10px;align-items:center}
+    @media(max-width:640px){.meterRow{grid-template-columns:1fr 1fr}.meterRow .ctrl{grid-column:1/-1;justify-content:flex-end}}
+    .bar{height:10px;border-radius:999px;background:rgba(6,8,14,.65);border:1px solid var(--line);overflow:hidden}
+    .bar>div{height:100%;background:var(--btn);width:0%;transition:width .4s}
+    .ctrl{display:flex;gap:8px;align-items:center}
+    .ctrl .num{min-width:28px;text-align:center;font-weight:700}
+
+    /* ========================= KPI BARS ========================= */
+    .kpiGrid{display:grid;gap:10px}
+    @media(min-width:720px){.kpiGrid{grid-template-columns:1fr 1fr}}
+    .kpiBox{border:1px solid var(--line);background:rgba(6,8,14,.65);border-radius:16px;padding:14px;transition:border-color .2s}
+    .kpiBox:hover{border-color:rgba(124,58,237,.3)}
+    .kpiTitle{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .kpiTitle b{font-size:13px;font-family:'Cinzel',serif;letter-spacing:.3px}
+    .kpiValue{font-size:22px;font-weight:900;font-family:'Cinzel',serif}
+    .kpiBar{height:10px;border-radius:999px;background:rgba(6,8,14,.35);border:1px solid var(--line);overflow:hidden;margin-top:8px}
+    .kpiBar>div{height:100%;width:0%;background:var(--btn);transition:width .5s cubic-bezier(.4,0,.2,1)}
+    .xpFill{background:var(--gold)!important}
+    .vidaFill{background:#ef4444!important}
+    .defesaFill{background:#3b82f6!important}
+    .velocidadeFill{background:#22c55e!important}
+    .manaFill{background:#8b5cf6!important}
+
+    /* ========================= INVENTÁRIO ========================= */
+    .invGrid{display:grid;gap:8px}
+    .invItem{
+      display:flex;gap:10px;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(6,8,14,.55);
+      transition:border-color .2s
+    }
+    .invItem:hover{border-color:rgba(124,58,237,.3)}
+    .invItem .iName{font-weight:600;font-size:14px}
+    .invItem .iMeta{font-size:12px;color:var(--muted)}
+    /* Raridade glow */
+    .rarity-comum{}
+    .rarity-incomum{border-color:rgba(34,197,94,.35)!important}
+    .rarity-raro{border-color:rgba(59,130,246,.45)!important;box-shadow:0 0 8px rgba(59,130,246,.15)}
+    .rarity-epico{border-color:rgba(168,85,247,.55)!important;box-shadow:0 0 12px rgba(168,85,247,.2)}
+    .rarity-lendario{border-color:rgba(245,158,11,.55)!important;box-shadow:0 0 16px rgba(245,158,11,.25)}
+
+    /* ========================= CONDIÇÕES ========================= */
+    .condTag{
+      display:inline-flex;align-items:center;gap:6px;padding:4px 10px;
+      border-radius:999px;border:1px solid;font-size:12px;font-weight:600
+    }
+    .cond-veneno{border-color:rgba(34,197,94,.6);color:#22c55e;background:rgba(34,197,94,.1)}
+    .cond-sangramento{border-color:rgba(239,68,68,.6);color:#ef4444;background:rgba(239,68,68,.1)}
+    .cond-medo{border-color:rgba(245,158,11,.6);color:#f59e0b;background:rgba(245,158,11,.1)}
+    .cond-atordoado{border-color:rgba(148,163,184,.6);color:#94a3b8;background:rgba(148,163,184,.1)}
+    .cond-paralisado{border-color:rgba(59,130,246,.6);color:#3b82f6;background:rgba(59,130,246,.1)}
+    .cond-amaldicoado{border-color:rgba(168,85,247,.6);color:#a855f7;background:rgba(168,85,247,.1)}
+    .cond-buff{border-color:rgba(34,197,94,.4);color:#22c55e;background:rgba(34,197,94,.08)}
+
+    /* ========================= DADOS ========================= */
+    @keyframes diceRoll{
+      0%{transform:rotate(0deg) scale(.8)}
+      25%{transform:rotate(90deg) scale(1.2)}
+      50%{transform:rotate(180deg) scale(.9)}
+      75%{transform:rotate(270deg) scale(1.1)}
+      100%{transform:rotate(360deg) scale(1)}
+    }
+    .diceBtn{
+      width:54px;height:54px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+      font-size:22px;font-weight:900;border:2px solid var(--line);background:rgba(6,8,14,.65);
+      cursor:pointer;transition:all .2s;font-family:'Cinzel',serif
+    }
+    .diceBtn:hover{border-color:rgba(124,58,237,.6);box-shadow:0 0 12px rgba(124,58,237,.3);transform:translateY(-2px)}
+    .diceBtn.rolling{animation:diceRoll .4s ease-out}
+    .diceResult{
+      font-size:48px;font-weight:900;font-family:'Cinzel',serif;
+      text-align:center;padding:20px;
+      text-shadow:0 0 30px rgba(124,58,237,.6)
+    }
+    .rollLog{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+    .rollEntry{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:8px 12px;border-radius:10px;background:rgba(6,8,14,.55);border:1px solid var(--line);
+      font-size:13px
+    }
+    .rollEntry .rollVal{font-size:18px;font-weight:900;font-family:'Cinzel',serif}
+
+    /* ========================= MAPA ========================= */
+    .mapWrap{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a0d12}
+    .mapPin{
+      position:absolute;transform:translate(-50%,-100%);
+      font-size:22px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.8));
+      cursor:pointer;transition:transform .2s;z-index:2
+    }
+    .mapPin:hover{transform:translate(-50%,-100%) scale(1.3)}
+    .mapLabel{
+      position:absolute;background:rgba(6,8,14,.9);border:1px solid var(--line);
+      border-radius:8px;padding:4px 8px;font-size:11px;white-space:nowrap;
+      transform:translate(-50%,4px);pointer-events:none;z-index:3;font-family:'Cinzel',serif
+    }
+    .mapGrid{position:absolute;inset:0;opacity:.04;background-image:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px);
+      background-size:40px 40px}
+
+    /* ========================= NPC ========================= */
+    .npcCard{
+      padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(6,8,14,.55);
+      display:grid;gap:8px;transition:border-color .2s
+    }
+    .npcCard:hover{border-color:rgba(124,58,237,.3)}
+    .relBar{height:8px;border-radius:999px;background:rgba(6,8,14,.65);overflow:hidden;border:1px solid var(--line)}
+    .relFill{height:100%;border-radius:999px;transition:width .5s}
+
+    /* ========================= DIÁRIO ========================= */
+    .diaryEntry{
+      padding:14px;border-radius:14px;border:1px solid var(--line);background:rgba(6,8,14,.45);
+      border-left:3px solid rgba(124,58,237,.5)
+    }
+    .diaryEntry .dts{font-size:11px;color:var(--muted);font-family:'Cinzel',serif}
+
+    /* ========================= TOAST ========================= */
+    #toastContainer{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+    .toastMsg{
+      padding:10px 18px;border-radius:14px;font-size:13px;font-weight:600;
+      border:1px solid;backdrop-filter:blur(10px);
+      animation:toastIn .3s ease-out forwards;
+      pointer-events:none
+    }
+    @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+    .toastMsg.good{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.15);color:#22c55e}
+    .toastMsg.bad{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.15);color:#ef4444}
+
+    /* ========================= LOG SESSÃO ========================= */
+    .sessionLog{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+    .logEntry{font-size:12px;color:var(--muted);padding:6px 10px;border-radius:8px;background:rgba(6,8,14,.45);border-left:2px solid rgba(124,58,237,.4)}
+    .logEntry b{color:var(--txt)}
+
+    /* ========================= FAMA / REPUTAÇÃO ========================= */
+    .reputBar{height:16px;border-radius:999px;background:rgba(6,8,14,.65);overflow:hidden;border:1px solid var(--line);position:relative}
+    .reputFill{height:100%;border-radius:999px;transition:width .5s;background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e)}
+    .reputLabel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+
+    /* ========================= BUFFS/DEBUFFS ========================= */
+    .buffItem{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(6,8,14,.55);font-size:13px
+    }
+
+    /* ========================= WHEEL ========================= */
+    .wheelWrap{display:grid;gap:14px;justify-items:center}
+    canvas{border:1px solid var(--line);border-radius:18px;background:rgba(6,8,14,.65);max-width:100%}
+    .pointer{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:20px solid var(--btn);filter:drop-shadow(0 3px 6px rgba(0,0,0,.6));margin-top:-8px}
+    .wheelLegend{width:100%;max-width:900px;display:grid;gap:8px}
+    .legendList{border:1px solid var(--line);border-radius:14px;background:rgba(6,8,14,.65);padding:10px;max-height:180px;overflow:auto}
+    .legendItem{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);padding:4px 0;flex-wrap:wrap}
+    .legendBadge{min-width:34px;text-align:center;padding:2px 6px;border-radius:999px;border:1px solid var(--line);font-weight:700;color:#fff;background:rgba(124,58,237,.35)}
+
+    /* ========================= TABLES ========================= */
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
+    th{color:var(--muted);font-weight:700;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.4px}
+    .right{text-align:right}
+
+    /* ========================= RESPONSIVE ========================= */
+    @media(max-width:640px){
+      .hubTabs{gap:4px}
+      .hubTab{padding:7px 10px;font-size:11px}
+      .kpiGrid{grid-template-columns:1fr}
+      .diceBtn{width:46px;height:46px;font-size:18px}
+    }
+
+    /* ========================= SKILL TREE ========================= */
+    .stWrap{display:grid;grid-template-columns:1fr 320px;gap:12px}
+    @media(max-width:900px){.stWrap{grid-template-columns:1fr}}
+    .stToolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .stBoard{position:relative;height:64vh;min-height:420px;border:1px solid var(--line);border-radius:18px;background:#0c131c;overflow:hidden}
+    .stSvg{position:absolute;inset:0;pointer-events:none}
+    .stNode{
+      position:absolute;min-width:170px;max-width:220px;
+      border:1px solid var(--line);border-radius:16px;padding:10px;
+      background:rgba(18,26,36,.96);backdrop-filter:blur(10px);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:grab;user-select:none
+    }
+    .stNode:active{cursor:grabbing}
+    .stNode b{display:block;font-size:13px}
+    .stNode .mini{font-size:12px;color:var(--muted);line-height:1.2}
+    .stNode.sel{outline:2px solid rgba(43,108,255,.65);box-shadow:0 0 0 6px rgba(43,108,255,.12)}
+    .stPill{display:inline-flex;gap:6px;align-items:center;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:#0b121a;color:var(--muted);font-size:12px}
+    .stSide .card{background:#0c131c}
+    .stSide input,.stSide textarea,.stSide select{width:100%}
+  </style>
+</head>
+<body>
+
+<!-- Runas animadas de fundo -->
+<div class="runeBg" id="runeBg"></div>
+
+<!-- Toast container -->
+<div id="toastContainer"></div>
+
+<header class="row" style="justify-content:space-between">
+  <div class="row" style="gap:14px">
+    <!-- Escudo SVG decorativo -->
+    <svg width="32" height="36" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <path d="M16 1L2 6V18C2 26 9 33 16 35C23 33 30 26 30 18V6L16 1Z" fill="rgba(139,26,26,.35)" stroke="rgba(200,149,42,.6)" stroke-width="1.2"/>
+      <path d="M16 5L6 9V18C6 24 11 30 16 32C21 30 26 24 26 18V9L16 5Z" fill="rgba(100,18,18,.25)" stroke="rgba(200,149,42,.3)" stroke-width=".8"/>
+      <line x1="16" y1="5" x2="16" y2="32" stroke="rgba(200,149,42,.4)" stroke-width=".8"/>
+      <line x1="6" y1="18" x2="26" y2="18" stroke="rgba(200,149,42,.4)" stroke-width=".8"/>
+    </svg>
+    <div>
+      <h1>MYR</h1>
+      <div style="font-size:9px;letter-spacing:3px;color:var(--muted);font-family:'Cinzel',serif;margin-top:-2px">CHRONICLES</div>
+    </div>
+    <span class="pill" id="sessionPill" style="font-size:11px">Não logado</span>
+  </div>
+  <div class="row" style="gap:8px">
+    <button class="secondary mini" id="btnMute" title="Som">🔔</button>
+    <button class="secondary mini" id="btnReset">⚙ Resetar</button>
+    <button class="secondary mini hidden" id="btnLogout">↩ Sair</button>
+  </div>
+</header>
+
+<main>
+  <!-- ====================== LOGIN ====================== -->
+  <section class="card" id="loginCard" style="max-width:600px;margin:0 auto">
+    <!-- Ornamento de pergaminho no topo -->
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:11px;letter-spacing:6px;color:var(--muted);font-family:'Cinzel',serif;text-transform:uppercase">⚔ · Bem-vindo a · ⚔</div>
+      <h2 style="margin:6px 0 2px;font-size:26px;font-family:'Cinzel',serif;font-weight:900;color:var(--goldLight);letter-spacing:3px;text-shadow:0 0 20px rgba(200,149,42,.4)">MYR</h2>
+      <div style="font-size:10px;letter-spacing:5px;color:var(--muted);font-family:'Cinzel',serif">CHRONICLES</div>
+      <div style="margin-top:10px;height:1px;background:linear-gradient(90deg,transparent,rgba(200,149,42,.5),transparent)"></div>
+    </div>
+    <p class="muted" style="margin-top:0;text-align:center;font-style:italic">
+      Mestre: <b style="color:var(--ink)"></b> &nbsp;•&nbsp; Player: <b style="color:var(--ink)">player1 / 1234</b>
+    </p>
+    <div style="padding:16px;background:rgba(5,4,2,.6);border:1px solid rgba(180,140,80,.2);border-radius:3px;margin-top:10px">
+      <div class="row">
+        <div style="flex:1;min-width:200px">
+          <label>Usuário</label>
+          <input id="loginUser" placeholder="Seu nome de login..." autocomplete="username" style="width:100%"/>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <label>Senha</label>
+          <input id="loginPass" placeholder="••••••" type="password" autocomplete="current-password" style="width:100%"/>
+        </div>
+        <div style="min-width:150px;align-self:end">
+          <button id="btnLogin" style="width:100%;padding:11px 16px">⚔ Entrar</button>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px;justify-content:space-between">
+        <span class="muted mini" id="loginMsg"></span>
+        <span class="pill" style="font-size:10px">💾 Salvo localmente</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== APP ====================== -->
+  <section class="hidden" id="appRoot">
+    <div class="grid">
+      <section class="card" id="mainPanel"></section>
+      <aside class="card" id="sidePanel"></aside>
+    </div>
+  </section>
+</main>
+
+<script>
+/* =========================
+   DB
+========================= */
+const KEY = "myr_hub_v1";
+const UI = { activeTab: "tabRaces", hubTab: "hubFicha" };
+
+const ATTR_KEYS = ["Forca","Destreza","Inteligencia","Vontade","Carisma"];
+const ATTR_LABEL = {
+  Forca: "FORÇA",
+  Destreza: "DESTREZA",
+  Inteligencia: "INTELIGÊNCIA",
+  Vontade: "VONTADE (MAGIA)",
+  Carisma: "CARISMA",
+};
+const SKILL_KEYS = ["Combate","Precisao","Resistencia","Investigacao","Persuasao","Arcanismo","Rituais","Oficios"];
+const SKILL_LABEL = {
+  Combate:"Combate",
+  Precisao:"Precisão",
+  Resistencia:"Resistência",
+  Investigacao:"Investigação",
+  Persuasao:"Persuasão",
+  Arcanismo:"Arcanismo",
+  Rituais:"Rituais",
+  Oficios:"Ofícios",
+};
+
+const DISADV_TIER_POINTS = {
+  leve:  { attr: 1, skillPicks: 1 },
+  media: { attr: 2, skillPicks: 2 },
+  grave: { attr: 4, skillPicks: 4 },
+};
+
+const ATTR_ROT = ["Forca","Destreza","Inteligencia","Vontade","Carisma"];
+const SKILL_ROT = ["Combate","Precisao","Resistencia","Investigacao","Persuasao","Arcanismo","Rituais","Oficios"];
+
+const $ = (id)=>document.getElementById(id);
+function mkAttrsZero(){ const o={}; for(const k of ATTR_KEYS) o[k]=0; return o; }
+function mkSkillsZero(){ const o={}; for(const k of SKILL_KEYS) o[k]=0; return o; }
+
+function escapeHTML(str){
+  return String(str||"")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function nowStr(ts){ return new Date(ts).toLocaleString(); }
+function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+function slugify(s){
+  return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+}
+function uniqId(base, used){
+  let id = base, i = 2;
+  while(used.has(id)){ id = `${base}_${i++}`; }
+  used.add(id);
+  return id;
+}
+
+function setActiveTab(tabId){
+  UI.activeTab = tabId || UI.activeTab || "tabRaces";
+  document.querySelectorAll(".tabBtn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.tab===UI.activeTab);
+  });
+  document.querySelectorAll(".tabPanel").forEach(p=>{
+    p.classList.toggle("hidden", p.id!==UI.activeTab);
+  });
+}
+
+function setHubTab(tabId){
+  UI.hubTab = tabId || "hubFicha";
+  document.querySelectorAll(".hubTab").forEach(b=>{
+    b.classList.toggle("active", b.dataset.hub===UI.hubTab);
+  });
+  document.querySelectorAll(".hubPanel").forEach(p=>{
+    p.classList.toggle("active", p.id===UI.hubTab);
+  });
+}
+
+function defaultDB(){
+  const RACES_RAW = `
+Humanos|Humanos do Norte|Humanos do Deserto|Humanos do Mar|Elfos Altos|Elfos da Lua|Elfos do Sol|Elfos Sombrios|Elfos Antigos|Anões da Montanha|Anões da Forja|Anões Profundos|Anões Rúnicos|Halflings Errantes|Halflings do Campo|Gnomos Arcanos|Gnomos Mecânicos|Meio-Elfos|Meio-Orcs|Meio-Gigantes|Meio-Demônios|Meio-Celestiais|Meio-Dragões|Meio-Feras|Meio-Elementais|Meio-Vampiros|Meio-Fadas|Meio-Espíritos
+|Draconianos|Draconianos Antigos|Kobolds|Kobolds Alquímicos|Naga|Naga Reais|Lagartídeos|Serpentinos|Basilídeos|Filhos do Dragão
+|Feralinos (lobo)|Feralinos (felino)|Feralinos (urso)|Feralinos (corvo)|Feralinos (réptil)|Minotauros|Centauros|Sátiros|Homens-Javali|Homens-Cabra
+|Ifrits|Ondinos|Silfídeos|Terranos|Magmáticos|Glaciais|Tempestários|Cinéreos|Cristalinos|Elementais Encarnados
+|Tieflings|Tieflings Abissais|Vampíricos|Vampiros Puros|Licantropos|Malditos da Lua|Filhos da Sombra|Abissais|Portadores da Ruína
+|Aasimar|Aasimar Caídos|Nephilim|Filhos da Luz|Arautos Celestes|Iluminados|Juramentados|Portadores do Verbo|Solares|Luminares
+|Espectrais|Revenantes|Ecos|Mortos-Vivos Conscientes|Ossíferos|Lamentadores|Ceifados|Guardiões do Túmulo|Mortais Retornados
+|Autômatos Antigos|Construtos Vivos|Homúnculos Evoluídos|Simbiontes|Parasitados|Metamorfos|Mímicos Humanoides|Alterados|Cronomarcados|Portadores de Runas
+|Dryades|Filhos da Árvore|Guardiões do Bosque|Silvestres Antigos|Espíritos da Terra|Espíritos Animais|Verdantes|Raiz-Viva|Musgos Conscientes|Entes Menores
+|Fungóides|Insetoides|Aracnídeos|Aviários|Homens-Peixe|Tritões|Abissomarinhos|Crostáceos|Seres de Coral|Leviatânicos
+|Titânicos|Sangue de Gigante|Colossos Menores|Filhos dos Reis Antigos|Herdeiros da Primeira Era|Portadores do Trono|Descendentes do Deus-Morto|Linhagem Proibida|Sangue Esquecido|Últimos de Sua Raça
+|Avatares Mortais|Guardiões do Fim|Criados do Nada|Observadores|Vozes Encarnadas|Portadores do Silêncio|Herdeiros do Abismo|Arquitetos da Realidade|Os Inomináveis
+`.replace(/\n/g,"").trim();
+
+  const CLASSES_RAW = `
+Guerreiro|Bárbaro|Cavaleiro|Gladiador|Mercenário|Sentinela|Duelista|Campeão|General de Guerra|Executor
+|Arqueiro|Atirador|Batedor|Caçador|Caçador de Monstros|Ladino|Assassino|Infiltrador|Acrobata de Combate|Sombra
+|Paladino|Templário|Guardião|Protetor do Juramento|Defensor|Escudeiro Sagrado|Bastião|Porta-Estandarte|Curandeiro de Guerra|Mártir
+|Mago|Arquimago|Feiticeiro|Bruxo|Invocador|Ilusionista|Evocador|Abjurador|Conjurador|Arcanista
+|Necromante|Ocultista|Sombramante|Hexblade|Profanador|Portador da Ruína|Ceifador|Arauto do Abismo|Cultista|Vinculado
+|Clérigo|Sacerdote|Arauto Divino|Exorcista|Inquisidor|Oráculo|Profeta|Iluminado|Portador do Verbo|Juiz Sagrado
+|Druida|Xamã|Guardião do Bosque|Chamador de Feras|Totêmico|Andarilho Selvagem|Vinculado à Terra|Espiritualista Natural|Mestre das Bestas|Druida da Praga
+|Elementalista|Piroconjurador|Criomante|Aeromante|Geomante|Hidromante|Tempestário|Cinereomante|Magmaforjado|Avatar Elemental
+|Cronomante|Distorcedor|Telepata|Psicomante|Oráculo do Tempo|Quebrador de Realidade|Viajante Dimensional|Anomalia Viva|Arquiteto do Possível|Eco Temporal
+|Alquimista|Engenheiro de Guerra|Artífice|Runomante|Tecelão de Encantos|Sabotador|Estrategista|Tático de Campo|Mestre de Armadilhas|Arquiteto Bélico
+|Portador do Caos|Amaldiçoado|Sangrador|Heraldo da Dor|Flagelante|Portador da Loucura|Arauto da Queda|Destruidor|Viciado em Poder|Condutor da Ruína
+|Rei de Batalha|Herdeiro do Trono|Senhor da Guerra|Mestre das Ordens|Arauto do Fim|Guardião do Véu|Quebrador do Véu|Portador da Coroa|Lenda Viva|Escolhido
+|Fragmento|Eco Vivo|Sobrevivente do Fim|Reescritor|Quebra-Regras|Portador do Talvez|Erro do Mundo|Constante|Variável|Anomalia Perfeita
+`.replace(/\n/g,"").trim();
+
+  const raceNames = RACES_RAW.split("|").map(s=>s.trim()).filter(Boolean);
+  const classNames = CLASSES_RAW.split("|").map(s=>s.trim()).filter(Boolean);
+
+  const usedRaceIds = new Set();
+  const races = raceNames.map((name, idx)=>{
+    const id = uniqId("race_" + slugify(name), usedRaceIds);
+    const attrKey = ATTR_ROT[idx % ATTR_ROT.length];
+    const skillKey = SKILL_ROT[idx % SKILL_ROT.length];
+    return {
+      id, tier:"padrao", name,
+      lore:"Uma linhagem conhecida em MYR. Você decide a cultura, aparência e história.",
+      buffs:{ attr:{ [attrKey]: +1 }, skill:{ [skillKey]: +4 } },
+      perks:[`Afinidade: ${ATTR_LABEL[attrKey]}`,`Talento: ${SKILL_LABEL[skillKey]} +4`,`Marca: um detalhe físico/energia que denuncia a linhagem`],
+      note:"Dica: crie um tabu, um juramento ou uma tradição dessa raça."
+    };
+  });
+
+  const usedClassIds = new Set();
+  const classes = classNames.map((name, idx)=>{
+    const id = uniqId("cls_" + slugify(name), usedClassIds);
+    const attrKey = ATTR_ROT[idx % ATTR_ROT.length];
+    const skillKey = SKILL_ROT[idx % SKILL_ROT.length];
+    return { id, name, lore:"Disciplina do mundo MYR — adaptável ao seu estilo.", buffs:{ attr:{ [attrKey]: +1 }, skill:{ [skillKey]: +4 } } };
+  });
+
+  const DEFAULT_RACE_ID = races[0]?.id || "race_humanos";
+  const DEFAULT_CLASS_ID = classes[0]?.id || "cls_guerreiro";
+
+  const disadvantages = [
+    { id:"dv_teimoso", name:"Teimoso", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Dificuldade em ceder; pode travar negociações." },
+    { id:"dv_impulsivo", name:"Impulsivo", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Age antes de pensar; se complica com facilidade." },
+    { id:"dv_ansiedade_leve", name:"Ansiedade leve", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Sob pressão, você hesita ou se atrapalha." },
+    { id:"dv_medo_leve", name:"Medo leve (escolher)", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Escolha um medo; causa penalidade situacional quando aparece." },
+    { id:"dv_sono_inquieto", name:"Sono inquieto", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Acorda mal às vezes; a 1ª cena do dia pode sofrer." },
+    { id:"dv_enjoa_facil", name:"Enjoa fácil", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Viagens longas/cheiros fortes te atrapalham." },
+    { id:"dv_orgulhoso", name:"Orgulhoso", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Dificuldade em pedir ajuda ou admitir erro." },
+    { id:"dv_curiosidade_perigosa", name:"Curiosidade perigosa", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Você mexe no que não deve." },
+    { id:"dv_desatento", name:"Desatento", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Perde detalhes e sinais óbvios." },
+    { id:"dv_supersticioso", name:"Supersticioso", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Sinais/presságios influenciam suas escolhas." },
+    { id:"dv_fala_demais", name:"Fala demais", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Vaza informação sem querer." },
+    { id:"dv_desconfiado", name:"Desconfiado", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Dificuldade em confiar e cooperar." },
+    { id:"dv_ma_fama_local", name:"Má fama local", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"NPCs da região começam menos amigáveis." },
+    { id:"dv_avareza", name:"Avareza", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Reluta em gastar recursos/dinheiro." },
+    { id:"dv_inseg_emoc", name:"Insegurança emocional", tier:"leve", points:{attr:+1, skillPicks:+1}, desc:"Críticas e rejeição te afetam." },
+    { id:"dv_trauma_passado", name:"Trauma do passado", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Gatilhos do passado atrapalham em momentos-chave." },
+    { id:"dv_divida_ativa", name:"Dívida ativa", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Alguém cobra; o Mestre puxa isso pro jogo." },
+    { id:"dv_juramento_limitante", name:"Juramento limitante", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Você tem regras que não pode quebrar." },
+    { id:"dv_codigo_moral_rigido", name:"Código moral rígido", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Algumas soluções ficam fora de cogitação." },
+    { id:"dv_fobia_intensa", name:"Fobia intensa", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Perto do gatilho, você entra em pânico." },
+    { id:"dv_paranoia", name:"Paranoia", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Sempre espera traição; pode sabotar alianças." },
+    { id:"dv_dependencia", name:"Dependência", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Álcool/magia/drogas: sem isso você fica pior." },
+    { id:"dv_marca_visivel", name:"Marca visível", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Você é reconhecido e lembrado." },
+    { id:"dv_perseguido", name:"Perseguido", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Alguém te caça (ou quer te capturar)." },
+    { id:"dv_instab_emoc", name:"Instabilidade emocional", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Oscilações atrapalham sob estresse." },
+    { id:"dv_falta_controle_magico", name:"Falta de controle mágico", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Em falhas, a magia pode sair errada." },
+    { id:"dv_culpa_constante", name:"Culpa constante", tier:"media", points:{attr:+2, skillPicks:+2}, desc:"Peso moral te trava em decisões difíceis." },
+    { id:"dv_maldicao_ativa", name:"Maldição ativa", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Uma maldição te acompanha e sempre volta." },
+    { id:"dv_pacto_forcado", name:"Pacto forçado", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Uma entidade te cobra; você não escolheu isso." },
+    { id:"dv_condenacao_morte", name:"Condenação de morte", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Há um preço na sua cabeça." },
+    { id:"dv_marca_rastreavel", name:"Marca sobrenatural rastreável", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Forças te rastreiam com facilidade." },
+    { id:"dv_entidade_observando", name:"Entidade observando", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Algo te encara — e interfere." },
+    { id:"dv_destino_selado", name:"Destino selado", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Uma profecia te persegue." },
+    { id:"dv_vida_emprestada", name:"Vida emprestada", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Você está vivo 'por tempo'." },
+    { id:"dv_sangue_amaldicoado", name:"Sangue amaldiçoado", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Sua linhagem traz consequências." },
+    { id:"dv_loucura_progressiva", name:"Loucura progressiva", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Piora com o tempo; o Mestre escala." },
+    { id:"dv_juramento_sangue", name:"Juramento de sangue", tier:"grave", points:{attr:+4, skillPicks:+4}, desc:"Quebrar cobra um preço imediato." },
+  ];
+
+  return {
+    users: [
+      { id:"u_master", username:"mestre", password:"1234", role:"master" },
+      { id:"u_p1", username:"player1", password:"1234", role:"player", playerId:"p1" },
+    ],
+    players: [
+      {
+        id:"p1", username:"player1", xp:0, inventory:[], characterCreated:false,
+        character:{
+          avatarDataUrl:"", charName:"Player 1",
+          preferredRaceId:DEFAULT_RACE_ID, classId:DEFAULT_CLASS_ID, finalRaceId:"",
+          attrs:mkAttrsZero(), skills:mkSkillsZero(), disadvantages:[],
+          pools:{ attrBase:10, skillPicksBase:8 },
+          levelSeen:1, levelAttrBonus:0, levelSkillBonus:0, abilities:[],
+          currentStats:{ vida:0, defesa:0, velocidade:0, mana:0 },
+          buffs:[], conditions:[], reputacao:50, fama:0, diary:[],
+          npcs:[], equipados:{cabeca:null,torso:null,pernas:null,maos:null,pe:null,anel1:null,anel2:null,amuleto:null,armaPrincipal:null,armaSecundaria:null},
+          mapPins:[],
+          rollLog:[]
+        },
+        log:[{ts:Date.now(), text:"Conta criada. Primeiro login libera criação."}]
+      }
+    ],
+    races, classes, disadvantages,
+    session:{ userId:null },
+    sessionLog:[]
+  };
+}
+
+const DISADV_LIMITS = { leve:5, media:3, grave:2 };
+
+function disadvCounts(player){
+  const out = { leve:0, media:0, grave:0, total:0 };
+  for(const id of (player.character.disadvantages||[])){
+    const d = getDisadv(id);
+    const t = d?.tier || "media";
+    if(out[t] != null) out[t] += 1;
+    out.total += 1;
+  }
+  return out;
+}
+
+function loadDB(){
+  const raw = localStorage.getItem(KEY);
+  if(!raw){ const db = defaultDB(); localStorage.setItem(KEY, JSON.stringify(db)); return db; }
+  try { return JSON.parse(raw); }
+  catch { const db = defaultDB(); localStorage.setItem(KEY, JSON.stringify(db)); return db; }
+}
+function saveDB(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
+
+let DB = loadDB();
+
+/* ===== MIGRAÇÃO ===== */
+(function migrateDB(){
+  const base = defaultDB();
+  let changed = false;
+  if(!DB || typeof DB !== "object"){ DB = base; changed = true; }
+  if(!Array.isArray(DB.users) || DB.users.length===0){ DB.users = base.users; changed = true; }
+  if(!Array.isArray(DB.players) || DB.players.length===0){ DB.players = base.players; changed = true; }
+  if(!Array.isArray(DB.races) || DB.races.length===0){ DB.races = base.races; changed = true; }
+  if(!Array.isArray(DB.classes) || DB.classes.length===0){ DB.classes = base.classes; changed = true; }
+  if(!Array.isArray(DB.disadvantages) || DB.disadvantages.length===0 || !DB.disadvantages.some(d=>d && typeof d.tier==="string")){ DB.disadvantages = base.disadvantages; changed = true; }
+  if(!DB.session || typeof DB.session !== "object"){ DB.session = { userId:null }; changed = true; }
+  if(!Array.isArray(DB.sessionLog)){ DB.sessionLog = []; changed = true; }
+
+  for(const p of DB.players){
+    if(!p.character || typeof p.character !== "object"){ p.character = {}; changed = true; }
+    const c = p.character;
+    if(typeof c.bonusesApplied !== "boolean"){ c.bonusesApplied = false; changed = true; }
+    if(!c.attrs || typeof c.attrs !== "object"){ c.attrs = mkAttrsZero(); changed = true; }
+    if(!c.skills || typeof c.skills !== "object"){ c.skills = mkSkillsZero(); changed = true; }
+    if(!Array.isArray(c.disadvantages)){ c.disadvantages = []; changed = true; }
+    if(!c.pools || typeof c.pools !== "object"){ c.pools = { attrBase:10, skillPicksBase:8 }; changed = true; }
+    if(typeof c.levelSeen !== "number"){ c.levelSeen = 1; changed = true; }
+    if(typeof c.levelAttrBonus !== "number"){ c.levelAttrBonus = 0; changed = true; }
+    if(typeof c.levelSkillBonus !== "number"){ c.levelSkillBonus = 0; changed = true; }
+    if(!Array.isArray(c.abilities)){ c.abilities = []; changed = true; }
+    if(!c.currentStats || typeof c.currentStats !== "object"){ c.currentStats = { vida:0,defesa:0,velocidade:0,mana:0 }; changed = true; }
+    if(!c.preferredRaceId){ c.preferredRaceId = base.players[0].character.preferredRaceId; changed = true; }
+    if(!c.classId){ c.classId = base.players[0].character.classId; changed = true; }
+    if(typeof c.charName !== "string"){ c.charName = p.username || "Player"; changed = true; }
+    if(typeof c.finalRaceId !== "string"){ c.finalRaceId = ""; changed = true; }
+    if(!Array.isArray(p.inventory)){ p.inventory = []; changed = true; }
+    if(!Array.isArray(p.log)){ p.log = []; changed = true; }
+    if(typeof p.characterCreated !== "boolean"){ p.characterCreated = false; changed = true; }
+    if(!Number.isFinite(Number(p.xp))){ p.xp = 0; changed = true; }
+    // New fields migration
+    if(!Array.isArray(c.buffs)){ c.buffs = []; changed = true; }
+    if(!Array.isArray(c.conditions)){ c.conditions = []; changed = true; }
+    if(typeof c.reputacao !== "number"){ c.reputacao = 50; changed = true; }
+    if(typeof c.fama !== "number"){ c.fama = 0; changed = true; }
+    if(!Array.isArray(c.diary)){ c.diary = []; changed = true; }
+    if(!Array.isArray(c.npcs)){ c.npcs = []; changed = true; }
+    if(!c.equipados || typeof c.equipados !== "object"){ c.equipados = {cabeca:null,torso:null,pernas:null,maos:null,pe:null,anel1:null,anel2:null,amuleto:null,armaPrincipal:null,armaSecundaria:null}; changed = true; }
+    if(!Array.isArray(c.mapPins)){ c.mapPins = []; changed = true; }
+    if(!Array.isArray(c.rollLog)){ c.rollLog = []; changed = true; }
+  }
+  for(const u of DB.users){
+    if(u && u.role==="player" && !u.playerId){
+      const p = DB.players.find(pp=>pp.username===u.username);
+      if(p){ u.playerId = p.id; changed = true; }
+    }
+  }
+  if(changed) saveDB(DB);
+})();
+
+function findUserBySession(){
+  const uid = DB.session.userId;
+  if(!uid) return null;
+  return DB.users.find(u=>u.id===uid) || null;
+}
+function getSessionPlayerId(){
+  const u = findUserBySession();
+  return u && u.playerId ? u.playerId : null;
+}
+function getSessionPlayer(){
+  const pid = getSessionPlayerId();
+  if(!pid) return null;
+  return (DB.players || []).find(p => p.id === pid) || null;
+}
+function getPlayer(pid){ return DB.players.find(p=>p.id===pid); }
+function getRace(rid){ return DB.races.find(r=>r.id===rid) || null; }
+function getClass(cid){ return DB.classes.find(c=>c.id===cid) || null; }
+function getDisadv(did){ return DB.disadvantages.find(d=>d.id===did) || null; }
+
+/* ========================= TOAST ========================= */
+let _muteSound = false;
+function toast(msg, good=true){
+  const container = document.getElementById("toastContainer");
+  if(container){
+    const el = document.createElement("div");
+    el.className = "toastMsg " + (good ? "good" : "bad");
+    el.textContent = msg;
+    container.appendChild(el);
+    setTimeout(()=>{ el.style.opacity="0"; el.style.transform="translateX(24px) scale(.96)"; el.style.transition="all .3s"; setTimeout(()=>el.remove(), 300); }, 2600);
+  }
+  const el2 = document.getElementById("loginMsg");
+  if(el2){ el2.textContent=msg; el2.className="muted mini "+(good?"ok":"bad"); setTimeout(()=>{el2.textContent="";el2.className="muted mini";},2600); }
+}
+
+/* ========================= DAMAGE FLOAT ========================= */
+function showDmgFloat(amount, isHeal=false, x, y){
+  const el = document.createElement("div");
+  el.className = "dmgFloat " + (isHeal ? "heal" : "harm");
+  el.textContent = (isHeal ? "+" : "-") + Math.abs(amount);
+  el.style.left = (x || window.innerWidth/2) + "px";
+  el.style.top  = (y || window.innerHeight/2) + "px";
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1400);
+}
+
+/* ========================= CONDITION TICK ENGINE ========================= */
+// Define efeito automático por tipo de condição
+const COND_EFFECTS = {
+  veneno:      { stat:"vida",     dmgPerTick: 5,  heal:false, label:"☠ Veneno"      },
+  sangramento: { stat:"vida",     dmgPerTick: 8,  heal:false, label:"🩸 Sangramento" },
+  queimando:   { stat:"vida",     dmgPerTick:10,  heal:false, label:"🔥 Queimando"   },
+  congelado:   { stat:"velocidade",dmgPerTick:3,  heal:false, label:"❄ Congelado"   },
+  // buffs que curam / regeneram
+  regeneracao: { stat:"vida",     dmgPerTick: 6,  heal:true,  label:"💚 Regeneração" },
+  buff:        { stat:null,       dmgPerTick: 0,  heal:true,  label:"✨ Buff"        },
+};
+
+// Tick automático de condições — roda a cada 6 segundos em tempo real
+let _condTickInterval = null;
+function startConditionTicker(){
+  if(_condTickInterval) clearInterval(_condTickInterval);
+  _condTickInterval = setInterval(()=>{
+    const p = getSessionPlayer();
+    if(!p || !p.characterCreated) return;
+    DB = loadDB();
+    const p2 = getSessionPlayer(); if(!p2) return;
+    const now = Date.now();
+    let changed = false;
+
+    // Processar condições
+    const activeConds = (p2.character.conditions||[]).filter(cd=>!cd.expires||cd.expires>now);
+    for(const cond of activeConds){
+      const effect = COND_EFFECTS[cond.type];
+      if(!effect || effect.dmgPerTick===0) continue;
+
+      const stat = effect.stat;
+      if(!stat) continue;
+
+      const cur = Number(p2.character.currentStats?.[stat] || 0);
+      const derived = calcDerived(p2);
+      const maxVal = Number(derived[stat] || 1);
+
+      let next;
+      if(effect.heal){
+        // Regeneração — cura mas não ultrapassa o máximo
+        next = Math.min(maxVal, cur + effect.dmgPerTick);
+      } else {
+        // Dano — não vai abaixo de 0
+        next = Math.max(0, cur - effect.dmgPerTick);
+      }
+
+      if(next !== cur){
+        if(!p2.character.currentStats) p2.character.currentStats = {};
+        p2.character.currentStats[stat] = next;
+        changed = true;
+
+        // Log
+        const logTxt = effect.heal
+          ? `${effect.label}: +${effect.dmgPerTick} ${stat}`
+          : `${effect.label}: -${effect.dmgPerTick} ${stat}`;
+        p2.log.unshift({ts:Date.now(), text:logTxt});
+        if(p2.log.length > 80) p2.log = p2.log.slice(0,80);
+
+        // Float visual
+        const kpiEl = document.getElementById(stat+"Val");
+        if(kpiEl){
+          const rect = kpiEl.getBoundingClientRect();
+          showDmgFloat(effect.dmgPerTick, effect.heal, rect.left+rect.width/2, rect.top);
+        } else {
+          showDmgFloat(effect.dmgPerTick, effect.heal);
+        }
+
+        // Toast de aviso só a cada certo tick (para não spammar)
+        if(!cond._lastToast || Date.now()-cond._lastToast > 12000){
+          cond._lastToast = Date.now();
+          const msg = effect.heal
+            ? `${effect.label} curou ${effect.dmgPerTick} de ${stat}`
+            : `${effect.label} causou ${effect.dmgPerTick} de dano em ${stat}!`;
+          toast(msg, effect.heal);
+          if(!_muteSound) playCondSound(effect.heal);
+        }
+
+        // Morte por vida zerada
+        if(stat==="vida" && next<=0){
+          toast("💀 VIDA ZERADA! O personagem caiu!", false);
+          if(!_muteSound) playDeathSound();
+        }
+      }
+    }
+
+    // Remover condições expiradas
+    const prevLen = (p2.character.conditions||[]).length + (p2.character.buffs||[]).length;
+    p2.character.conditions = (p2.character.conditions||[]).filter(cd=>{
+      if(cd.expires && cd.expires < now){ toast(`⏱ "${cd.name}" expirou.`, false); return false; } return true;
+    });
+    p2.character.buffs = (p2.character.buffs||[]).filter(b=>{
+      if(b.expires && b.expires < now){ toast(`⏱ Buff "${b.name}" expirou.`, false); return false; } return true;
+    });
+    const newLen = (p2.character.conditions||[]).length + (p2.character.buffs||[]).length;
+    if(newLen !== prevLen) changed = true;
+
+    if(changed){
+      saveDB(DB);
+      // Atualiza apenas as KPI bars sem re-render completo (performance)
+      updateKpiBarsLive(p2);
+    }
+  }, 6000); // tick a cada 6 segundos
+}
+
+function updateKpiBarsLive(player){
+  // Atualiza valor e barra na UI sem re-render completo
+  const d = calcDerived(player);
+  const cur = player.character.currentStats || {};
+  for(const stat of ["vida","defesa","velocidade","mana"]){
+    const valEl = document.getElementById(stat+"Val");
+    const fillEl = document.getElementById(stat+"Fill");
+    if(!valEl || !fillEl) continue;
+    const curVal = Number(cur[stat]||0);
+    const maxVal = Number(d[stat]||1);
+    valEl.textContent = String(curVal);
+    const pct = maxVal>0 ? Math.max(0,Math.min(100,(curVal/maxVal)*100)) : 0;
+    fillEl.style.width = pct.toFixed(1)+"%";
+  }
+}
+
+function playCondSound(isHeal){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    if(isHeal){
+      osc.frequency.setValueAtTime(440,ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(660,ctx.currentTime+.2);
+      osc.type="sine";
+    } else {
+      osc.frequency.setValueAtTime(200,ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80,ctx.currentTime+.3);
+      osc.type="sawtooth";
+    }
+    gain.gain.setValueAtTime(0.2,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+.3);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+.3);
+  }catch(_){}
+}
+function playDeathSound(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    for(let i=0;i<3;i++){
+      const o=ctx.createOscillator();const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.setValueAtTime(300-i*80,ctx.currentTime+i*.15);
+      o.frequency.exponentialRampToValueAtTime(50,ctx.currentTime+i*.15+.4);
+      o.type="sawtooth";
+      g.gain.setValueAtTime(0.25,ctx.currentTime+i*.15);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*.15+.4);
+      o.start(ctx.currentTime+i*.15);o.stop(ctx.currentTime+i*.15+.4);
+    }
+  }catch(_){}
+}
+
+function logSession(text){
+  if(!Array.isArray(DB.sessionLog)) DB.sessionLog = [];
+  DB.sessionLog.unshift({ ts:Date.now(), text });
+  if(DB.sessionLog.length > 100) DB.sessionLog = DB.sessionLog.slice(0,100);
+  saveDB(DB);
+}
+
+/* ========================= AUTH ========================= */
+function login(username, password){
+  const u = DB.users.find(x=>x.username===username && x.password===password);
+  if(!u) return { ok:false, msg:"Usuário ou senha inválidos." };
+  DB.session.userId = u.id;
+  saveDB(DB);
+  return { ok:true, user:u };
+}
+function logout(){
+  DB.session.userId = null;
+  saveDB(DB);
+  render();
+}
+
+/* ========================= POOLS / POINTS ========================= */
+function disadvBonus(player){
+  let attr=0, skillPicks=0;
+  for(const id of (player.character.disadvantages||[])){
+    const d = getDisadv(id);
+    if(!d) continue;
+    const pack = (d.tier && DISADV_TIER_POINTS[d.tier]) ? DISADV_TIER_POINTS[d.tier] : (d.points || {});
+    attr += Number(pack.attr || 0);
+    skillPicks += Number(pack.skillPicks || 0);
+  }
+  return {attr, skillPicks};
+}
+function totalAttrPoints(player){
+  const base = player.character.pools?.attrBase ?? 10;
+  return base + disadvBonus(player).attr + Number(player.character.levelAttrBonus||0);
+}
+function totalSkillPicks(player){
+  const base = player.character.pools?.skillPicksBase ?? 8;
+  return base + disadvBonus(player).skillPicks + Number(player.character.levelSkillBonus||0);
+}
+function spentAttrPoints(player){
+  let sum=0;
+  for(const k of ATTR_KEYS) sum += Number(player.character.attrs?.[k]||0);
+  return sum;
+}
+function spentSkillPicks(player){
+  let picks=0;
+  for(const k of SKILL_KEYS) picks += Math.floor(Number(player.character.skills?.[k]||0)/4);
+  return picks;
+}
+
+/* ========================= XP / LEVEL ========================= */
+function levelFromXp(xp){ return Math.floor(Math.max(0,Number(xp||0))/100)+1; }
+function ensureLevelState(player){
+  const c = player.character;
+  if(typeof c.levelSeen !== "number") c.levelSeen = 1;
+  if(typeof c.levelAttrBonus !== "number") c.levelAttrBonus = 0;
+  if(typeof c.levelSkillBonus !== "number") c.levelSkillBonus = 0;
+  if(!Array.isArray(c.abilities)) c.abilities = [];
+  if(!c.currentStats || typeof c.currentStats !== "object") c.currentStats = { vida:0, defesa:0, velocidade:0, mana:0 };
+}
+function applyXpDelta(player, delta, reason){
+  const d = Number(delta);
+  if(!Number.isFinite(d)) return;
+  player.xp = Math.max(0, Number(player.xp||0) + d);
+  ensureLevelState(player);
+  const newLevel = levelFromXp(player.xp);
+  const oldLevel = Math.max(1, Number(player.character.levelSeen||1));
+  if(newLevel > oldLevel){
+    let skillGain = 0;
+    for(let l=oldLevel+1; l<=newLevel; l++){ if(l%5===0) skillGain++; }
+    const diff = newLevel - oldLevel;
+    let attrExtra = 0;
+    for(let l=oldLevel+1; l<=newLevel; l++){ if(l%5===0) attrExtra+=2; }
+    player.character.levelAttrBonus = Number(player.character.levelAttrBonus||0) + diff*2 + attrExtra;
+    if(skillGain>0){
+      player.character.levelSkillBonus = Number(player.character.levelSkillBonus||0) + skillGain;
+      player.log.unshift({ts:Date.now(), text:`+${skillGain} pick(s) de Perícia (níveis múltiplos de 5).`});
+    }
+    player.log.unshift({ts:Date.now(), text:`Up! Level ${oldLevel} → ${newLevel} (+${diff*2} pontos de Atributo)`});
+    toast(`⬆️ Level Up! ${oldLevel} → ${newLevel}`, true);
+  }
+  player.character.levelSeen = newLevel;
+  if(reason) player.log.unshift({ts:Date.now(), text:`XP ${d>=0?"+":""}${d} — ${reason}`});
+  saveDB(DB);
+}
+
+/* ========================= BONUSES ========================= */
+function applyBonusesToSheet(player, race, cls){
+  const a = player.character.attrs;
+  const s = player.character.skills;
+  const addAttr = (k,n)=>{ a[k] = Number(a[k]||0)+(n||0); };
+  const addSkill = (k,n)=>{ s[k] = Number(s[k]||0)+(n||0); };
+  for(const [k,v] of Object.entries(race?.buffs?.attr||{})) addAttr(k,v);
+  for(const [k,v] of Object.entries(cls?.buffs?.attr||{})) addAttr(k,v);
+  for(const [k,v] of Object.entries(race?.buffs?.skill||{})) addSkill(k,v);
+  for(const [k,v] of Object.entries(cls?.buffs?.skill||{})) addSkill(k,v);
+}
+
+/* ========================= DERIVED ========================= */
+function calcDerived(player){
+  const a = player.character.attrs;
+  const STR=Number(a.Forca||0), DEX=Number(a.Destreza||0), INT=Number(a.Inteligencia||0), WIL=Number(a.Vontade||0), CHA=Number(a.Carisma||0);
+  // Base
+  let vida = 60+STR*12+WIL*6;
+  let defesa = 10+DEX*3+WIL*2+Math.floor(STR*0.5);
+  let velocidade = 10+DEX*3+Math.floor(STR*0.7);
+  let mana = 25+INT*7+WIL*9+Math.floor(CHA*2);
+  // Equipamentos somam defesa automaticamente
+  const eq = player.character.equipados || {};
+  for(const slot of Object.values(eq)){
+    if(slot && typeof slot === "object"){
+      if(slot.defesa) defesa += Number(slot.defesa||0);
+      if(slot.vida) vida += Number(slot.vida||0);
+    }
+  }
+  // Buffs com duração
+  const now = Date.now();
+  for(const b of (player.character.buffs||[])){
+    if(b.expires && b.expires < now) continue;
+    if(b.stat && b.value){
+      if(b.stat==="vida") vida += Number(b.value);
+      if(b.stat==="defesa") defesa += Number(b.value);
+      if(b.stat==="velocidade") velocidade += Number(b.value);
+      if(b.stat==="mana") mana += Number(b.value);
+    }
+  }
+  return {
+    vida:Math.max(1,vida), defesa:Math.max(0,defesa),
+    velocidade:Math.max(1,velocidade), mana:Math.max(0,mana),
+    pctVida:clamp(Math.round(vida/260*100),0,100),
+    pctDef:clamp(Math.round(defesa/80*100),0,100),
+    pctVel:clamp(Math.round(velocidade/80*100),0,100),
+    pctMana:clamp(Math.round(mana/260*100),0,100),
+  };
+}
+
+/* ========================= STAT BUTTONS ========================= */
+function bindDashboardStatButtons(){
+  if(window.__statBtnsBound) return;
+  window.__statBtnsBound = true;
+  document.addEventListener("click", (ev)=>{
+    const btn = ev.target.closest('button[data-stat][data-step]');
+    if(!btn) return;
+    const kpiBox = btn.closest(".kpiBox");
+    if(!kpiBox) return;
+    ev.preventDefault(); ev.stopPropagation();
+    DB = loadDB();
+    const user = findUserBySession();
+    let pid = user?.playerId;
+    if(!pid && user?.username){ const byName = DB.players.find(pp=>pp.username===user.username); if(byName) pid = byName.id; }
+    const p = pid ? getPlayer(pid) : null;
+    if(!p) return;
+    const stat = btn.dataset.stat;
+    const step = Number(btn.dataset.step || 1);
+    const label = (btn.textContent||"").trim();
+    const dir = label.startsWith("-") ? -1 : 1;
+    if(!p.character) p.character = {};
+    if(!p.character.currentStats || typeof p.character.currentStats !== "object") p.character.currentStats = {};
+    const derived = calcDerived(p);
+    const base = (stat in p.character.currentStats) ? Number(p.character.currentStats[stat]||0) : Number(derived[stat]||0);
+    const next = Math.max(0, base + dir*step);
+    p.character.currentStats[stat] = next;
+    saveDB(DB);
+    render();
+  }, true);
+}
+
+/* ========================= MASTER TOOLS ========================= */
+function masterCreatePlayerLogin(displayName, username, password){
+  if(DB.users.some(u=>u.username===username)) return {ok:false, msg:"Esse usuário já existe."};
+  const base = defaultDB();
+  const playerId = "p" + Math.random().toString(16).slice(2,8);
+  const userId = "u_" + Math.random().toString(16).slice(2,8);
+  DB.players.push({
+    id:playerId, username, xp:0, inventory:[], characterCreated:false,
+    character:{
+      avatarDataUrl:"", charName:displayName,
+      preferredRaceId:base.players[0].character.preferredRaceId,
+      classId:base.players[0].character.classId, finalRaceId:"",
+      attrs:mkAttrsZero(), skills:mkSkillsZero(), disadvantages:[],
+      pools:{ attrBase:10, skillPicksBase:8 },
+      levelSeen:1, levelAttrBonus:0, levelSkillBonus:0, abilities:[],
+      currentStats:{ vida:0,defesa:0,velocidade:0,mana:0 },
+      buffs:[], conditions:[], reputacao:50, fama:0, diary:[], npcs:[],
+      equipados:{cabeca:null,torso:null,pernas:null,maos:null,pe:null,anel1:null,anel2:null,amuleto:null,armaPrincipal:null,armaSecundaria:null},
+      mapPins:[], rollLog:[]
+    },
+    log:[{ts:Date.now(), text:"Conta criada pelo Mestre."}]
+  });
+  DB.users.push({ id:userId, username, password, role:"player", playerId });
+  saveDB(DB);
+  return {ok:true, msg:"Player criado! Login pronto."};
+}
+function masterResetCharacter(playerId){
+  const p = getPlayer(playerId);
+  if(!p) return;
+  const base = defaultDB();
+  p.characterCreated = false;
+  p.character.finalRaceId = "";
+  p.character.attrs = mkAttrsZero();
+  p.character.skills = mkSkillsZero();
+  p.character.disadvantages = [];
+  p.character.preferredRaceId = base.players[0].character.preferredRaceId;
+  p.character.classId = base.players[0].character.classId;
+  p.log.unshift({ts:Date.now(), text:"Mestre resetou o personagem."});
+  saveDB(DB);
+}
+function masterDeletePlayer(playerId){
+  DB.users = DB.users.filter(u=>u.playerId!==playerId);
+  DB.players = DB.players.filter(pp=>pp.id!==playerId);
+  saveDB(DB);
+}
+function masterGiveItem(playerId, itemName){
+  const p = getPlayer(playerId);
+  if(!p) return;
+  const name = String(itemName||"").trim();
+  if(!name) return;
+  p.inventory.unshift({ id:"it_"+Math.random().toString(16).slice(2,8), name, ts:Date.now(), qty:1, rarity:"comum", weight:0.5 });
+  p.log.unshift({ts:Date.now(), text:`Item recebido: ${name}`});
+  saveDB(DB);
+}
+function masterGiveXP(playerId, amount, reason){
+  const p = getPlayer(playerId);
+  if(!p) return;
+  const a = Number(amount);
+  if(!Number.isFinite(a)) return;
+  applyXpDelta(p, a, reason||"Mestre");
+}
+
+/* ========================= UI RENDER ========================= */
+function render(){
+  const user = findUserBySession();
+  $("btnLogout").classList.toggle("hidden", !user);
+  $("loginCard").classList.toggle("hidden", !!user);
+  $("appRoot").classList.toggle("hidden", !user);
+  $("sessionPill").textContent = user
+    ? `Sessão: ${user.role==="master" ? "⚔️ Mestre" : "🛡️ Player"} (${user.username})`
+    : "Sessão: não logado";
+  if(!user) return;
+  if(user.role==="master") renderMaster();
+  else {
+    let pid = user.playerId || (DB.players.find(p=>p.username===user.username)?.id);
+    if(!pid && DB.players.length===1) pid = DB.players[0].id;
+    if(pid && user.playerId!==pid){ user.playerId = pid; saveDB(DB); }
+    if(!pid){
+      $("mainPanel").innerHTML = `<div class="warn"><b>Erro:</b> não achei seu Player. Clique em <b>Resetar dados</b>.</div>`;
+      $("sidePanel").innerHTML = "";
+      return;
+    }
+    renderPlayer(pid);
+    startConditionTicker();
+  }
+}
+
+function renderMaster(){
+  const main = $("mainPanel");
+  main.innerHTML = `
+    <h2 style="margin:0 0 6px;font-size:16px;font-family:'Cinzel',serif">⚔️ Painel do Mestre</h2>
+    <p class="muted" style="margin-top:0">Crie logins, dê XP/itens e gerencie players.</p>
+    <div class="divider"></div>
+    <h3 style="margin:0 0 8px;font-size:13px;font-family:'Cinzel',serif;color:var(--muted)">CRIAR LOGIN</h3>
+    <div class="row">
+      <div style="flex:1;min-width:220px"><label>Nome do personagem</label><input id="m_newName" placeholder="ex: Kael, Nyra, Amon..."></div>
+      <div style="flex:1;min-width:200px"><label>Usuário</label><input id="m_newUser" placeholder="ex: player2"></div>
+      <div style="flex:1;min-width:200px"><label>Senha</label><input id="m_newPass" placeholder="ex: 1234" type="password"></div>
+      <div style="min-width:160px;align-self:end"><button id="m_btnCreate" style="width:100%">Criar</button></div>
+    </div>
+    <div class="muted mini" id="m_msg" style="margin-top:10px"></div>
+    <div class="divider"></div>
+    <h3 style="margin:0 0 8px;font-size:13px;font-family:'Cinzel',serif;color:var(--muted)">GERENCIAR PLAYER</h3>
+    <div class="row">
+      <div style="flex:1;min-width:260px"><label>Player</label><select id="m_selPlayer"></select></div>
+      <div style="min-width:120px"><label>XP</label><input id="m_xpAmt" type="number" value="50"></div>
+      <div style="flex:1;min-width:260px"><label>Motivo</label><input id="m_xpReason" placeholder="ex: missão, combate, roleplay..."></div>
+      <div style="min-width:160px;align-self:end"><button id="m_btnXP" style="width:100%">Dar XP</button></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div style="flex:1;min-width:280px"><label>Item (nome)</label><input id="m_itemName" placeholder="ex: Espada Rúnica, Poção de Vida..."></div>
+      <div style="min-width:120px"><label>Raridade</label>
+        <select id="m_itemRarity"><option value="comum">Comum</option><option value="incomum">Incomum</option><option value="raro">Raro</option><option value="epico">Épico</option><option value="lendario">Lendário</option></select>
+      </div>
+      <div style="min-width:160px;align-self:end"><button id="m_btnItem" class="secondary" style="width:100%">Dar Item</button></div>
+    </div>
+    <div class="divider"></div>
+    <h3 style="margin:0 0 8px;font-size:13px;font-family:'Cinzel',serif;color:var(--muted)">LOG DA SESSÃO</h3>
+    <div style="margin-bottom:10px">
+      <div class="row">
+        <input id="m_logText" style="flex:1" placeholder="Registrar evento da sessão...">
+        <button id="m_btnLog" class="secondary">Registrar</button>
+        <button id="m_btnClearLog" class="danger">Limpar</button>
+      </div>
+    </div>
+    <div class="sessionLog" id="m_sessionLog">
+      ${(DB.sessionLog||[]).slice(0,30).map(e=>`<div class="logEntry"><b>${nowStr(e.ts)}</b> — ${escapeHTML(e.text)}</div>`).join("") || '<div class="muted mini">Nenhum evento.</div>'}
+    </div>
+    <div class="divider"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="m_btnResetChar" class="secondary">Resetar personagem</button>
+      <button id="m_btnDelete" class="danger">Deletar player</button>
+    </div>
+  `;
+
+  const side = $("sidePanel");
+  side.innerHTML = `
+    <h2 style="margin:0 0 6px;font-size:16px;font-family:'Cinzel',serif">Players</h2>
+    <p class="muted" style="margin-top:0">Status de criação.</p>
+    <div id="roster"></div>
+  `;
+
+  const sel = $("m_selPlayer");
+  sel.innerHTML = DB.players.map(p=>{
+    const done = p.characterCreated ? "✅" : "⏳";
+    return `<option value="${p.id}">${done} ${escapeHTML(p.character.charName||p.username)} — @${escapeHTML(p.username)} (XP ${p.xp})</option>`;
+  }).join("");
+
+  $("m_btnCreate").onclick = ()=>{
+    const name=$("m_newName").value.trim(), user=$("m_newUser").value.trim(), pass=$("m_newPass").value.trim();
+    const msg=$("m_msg");
+    if(!name||!user||!pass){ msg.textContent="Preencha todos os campos."; msg.className="muted mini bad"; return; }
+    const res = masterCreatePlayerLogin(name, user, pass);
+    msg.textContent = res.msg; msg.className = "muted mini " + (res.ok?"ok":"bad");
+    DB = loadDB(); render();
+  };
+  $("m_btnXP").onclick = ()=>{ masterGiveXP(sel.value,$("m_xpAmt").value,$("m_xpReason").value.trim()); DB=loadDB(); render(); };
+  $("m_btnItem").onclick = ()=>{
+    const p = getPlayer(sel.value); if(!p) return;
+    const name=String($("m_itemName").value||"").trim(); if(!name) return;
+    const rarity = $("m_itemRarity")?.value || "comum";
+    p.inventory.unshift({ id:"it_"+Math.random().toString(16).slice(2,8), name, ts:Date.now(), qty:1, rarity, weight:0.5 });
+    p.log.unshift({ts:Date.now(), text:`Item recebido: ${name} (${rarity})`});
+    saveDB(DB); DB=loadDB(); render(); toast("Item dado!", true);
+  };
+  $("m_btnLog").onclick = ()=>{
+    const txt = String($("m_logText")?.value||"").trim();
+    if(!txt) return;
+    logSession(txt);
+    $("m_logText").value = "";
+    DB = loadDB(); render();
+  };
+  $("m_btnClearLog").onclick = ()=>{ if(confirm("Limpar log?")){DB.sessionLog=[];saveDB(DB);render();} };
+  $("m_btnResetChar").onclick = ()=>{ if(confirm("Resetar personagem?")){ masterResetCharacter(sel.value); DB=loadDB(); render(); } };
+  $("m_btnDelete").onclick = ()=>{ if(confirm("Deletar player?")){ masterDeletePlayer(sel.value); DB=loadDB(); render(); } };
+  renderRoster();
+}
+
+function renderRoster(){
+  const wrap = $("roster"); if(!wrap) return;
+  wrap.innerHTML = "";
+  DB.players.forEach(p=>{
+    const race = p.character.finalRaceId ? getRace(p.character.finalRaceId)?.name : "—";
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.cssText = "padding:12px;margin-bottom:10px;background:rgba(6,8,14,.55)";
+    div.innerHTML = `
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div style="font-weight:700;font-family:'Cinzel',serif">${escapeHTML(p.character.charName||p.username)}</div>
+          <div class="muted mini">Criado: ${p.characterCreated?"sim":"não"} • Raça: ${escapeHTML(race)} • XP: ${p.xp} • Lvl ${levelFromXp(Number(p.xp||0))}</div>
+        </div>
+        <span class="pill">${p.characterCreated?"✅":"⏳"}</span>
+      </div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+/* ========================= PLAYER RENDER (HUB) ========================= */
+function renderPlayer(playerId, action=null){
+  let p = getPlayer(playerId);
+  const main = $("mainPanel");
+  const side = $("sidePanel");
+
+  if(!p){
+    const u = findUserBySession();
+    const uname = String(u?.username||"").trim().toLowerCase();
+    p = DB.players.find(pp=>String(pp.username||"").trim().toLowerCase()===uname) || null;
+    if(p && u){ const uu = DB.users.find(x=>x.id===u.id); if(uu&&uu.role==="player"&&!uu.playerId){ uu.playerId=p.id; } saveDB(DB); }
+  }
+  if(!p){ main.innerHTML=`<div class="warn">Não achei seu personagem. Clique em <b>Resetar dados</b>.</div>`; side.innerHTML=""; return; }
+
+  if(!p.characterCreated){
+    renderCharacterCreator(p);
+    side.innerHTML = `
+      <h2 style="margin:0 0 6px;font-size:16px;font-family:'Cinzel',serif">🜁 MYR</h2>
+      <p class="muted" style="margin-top:0">Monte seu personagem. Depois finalize.</p>
+      <div class="good"><b class="ok">Dica</b><div class="muted mini">Desvantagens dão pontos extras.</div></div>
+    `;
+    return;
+  }
+
+  ensureLevelState(p);
+  if(action==="open_tree"){ openSkillTreeModal(p.id); return; }
+
+  const c = p.character || {};
+  const lvl = levelFromXp(Number(p.xp||0));
+  const xpStart = (lvl-1)*100;
+  const xpNext = lvl*100;
+  const xpPct = clamp(Math.round((Number(p.xp||0)-xpStart)/100*100),0,100);
+  const race = getRace(c.finalRaceId);
+  const cls = getClass(c.classId);
+  const d = calcDerived(p);
+
+  if(!c.currentStats || typeof c.currentStats!=="object"){
+    c.currentStats = { vida:d.vida, defesa:d.defesa, velocidade:d.velocidade, mana:d.mana };
+    saveDB(DB);
+  }
+  const cur = c.currentStats;
+
+  // Active conditions (not expired)
+  const now = Date.now();
+  const activeConds = (c.conditions||[]).filter(cd=>!cd.expires||cd.expires>now);
+  const activeBuffs = (c.buffs||[]).filter(b=>!b.expires||b.expires>now);
+
+  main.innerHTML = `
+    <!-- HUB TABS -->
+    <div class="hubTabs">
+      <button class="hubTab" data-hub="hubFicha">⚔️ Ficha</button>
+      <button class="hubTab" data-hub="hubInventario">🎒 Inventário</button>
+      <button class="hubTab" data-hub="hubEquip">🛡️ Equipamentos</button>
+      <button class="hubTab" data-hub="hubDados">🎲 Dados</button>
+      <button class="hubTab" data-hub="hubDiario">📖 Diário</button>
+      <button class="hubTab" data-hub="hubNpcs">👥 NPCs</button>
+      <button class="hubTab" data-hub="hubMapa">🗺️ Mapa</button>
+    </div>
+
+    <!-- ===== FICHA ===== -->
+    <div class="hubPanel" id="hubFicha">
+      <div class="row" style="justify-content:space-between;align-items:flex-start;gap:14px">
+        <div class="row" style="gap:14px;align-items:flex-start">
+          <div class="avatarBox">
+            ${c.avatarDataUrl?`<img src="${c.avatarDataUrl}" alt="avatar">`:`<span class="muted mini" style="text-align:center;padding:8px">sem imagem</span>`}
+          </div>
+          <div>
+            <div style="font-size:22px;font-weight:900;font-family:'Cinzel',serif">${escapeHTML(c.charName||p.username)}</div>
+            <div class="muted mini">Classe: <b>${escapeHTML(cls?.name||"—")}</b> • Raça: <b>${escapeHTML(race?.name||"—")}</b></div>
+            <div class="row" style="margin-top:8px;gap:6px">
+              ${activeConds.map(cd=>`<span class="condTag cond-${cd.type||'atordoado'}">${escapeHTML(cd.name)}</span>`).join("")}
+              ${activeBuffs.map(b=>`<span class="condTag cond-buff">↑${escapeHTML(b.name)}</span>`).join("")}
+            </div>
+            <div style="margin-top:10px">
+              <label style="font-size:11px;color:var(--muted)">Alterar imagem</label>
+              <input id="avatarChange" type="file" accept="image/*" style="margin-top:4px">
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:240px">
+          <div class="row" style="justify-content:space-between">
+            <span class="pill">Lvl <b>${lvl}</b> • XP <b>${p.xp}</b> / ${xpNext}</span>
+            <span class="pill">Attr <b>${Number(c.levelAttrBonus||0)}</b> • Pick <b>${Number(c.levelSkillBonus||0)}</b></span>
+          </div>
+          <div class="kpiBar" style="margin-top:8px"><div class="xpFill" style="width:${xpPct}%"></div></div>
+          <div class="row" style="margin-top:10px">
+            <div style="flex:1;min-width:130px"><label class="mini">XP delta</label><input id="xpDelta" type="number" value="50"/></div>
+            <div style="flex:2;min-width:180px"><label class="mini">Motivo</label><input id="xpReason" placeholder="missão, combate..."/></div>
+            <div style="min-width:140px;align-self:end"><button class="secondary" data-action="apply_xp">Aplicar XP</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="kpiGrid">
+        ${renderKpi("❤️ Vida","vida",cur.vida,d.vida,"vidaFill")}
+        ${renderKpi("🛡️ Defesa","defesa",cur.defesa,d.defesa,"defesaFill")}
+        ${renderKpi("⚡ Velocidade","velocidade",cur.velocidade,d.velocidade,"velocidadeFill")}
+        ${renderKpi("🔮 Mana","mana",cur.mana,d.mana,"manaFill")}
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Fama / Reputação -->
+      <div class="card" style="padding:12px;background:rgba(6,8,14,.45)">
+        <div class="row" style="justify-content:space-between">
+          <b style="font-family:'Cinzel',serif;font-size:13px">🌟 Reputação & Fama</b>
+          <span class="pill">Fama: <b>${Number(c.fama||0)}</b></span>
+        </div>
+        <div class="muted mini" style="margin:6px 0">${getReputacaoLabel(Number(c.reputacao||50))}</div>
+        <div class="reputBar"><div class="reputFill" style="width:${clamp(Number(c.reputacao||50),0,100)}%"></div><div class="reputLabel">${Number(c.reputacao||50)}%</div></div>
+        <div class="row" style="margin-top:10px">
+          <button class="secondary mini" data-action="rep_dec">-5 Rep</button>
+          <button class="secondary mini" data-action="rep_inc">+5 Rep</button>
+          <button class="secondary mini" data-action="fama_inc">+1 Fama</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Buffs/Debuffs/Condições -->
+      <div class="card" style="padding:12px;background:rgba(6,8,14,.45)">
+        <div class="row" style="justify-content:space-between">
+          <b style="font-family:'Cinzel',serif;font-size:13px">⚗️ Efeitos Ativos</b>
+          <button class="secondary mini" data-action="add_cond">+ Condição</button>
+        </div>
+        <div class="divider"></div>
+        <div id="buffsArea">
+          ${renderBuffsArea(p)}
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="card" style="padding:14px;background:rgba(6,8,14,.55)">
+        <b style="font-family:'Cinzel',serif">Buffs da Classe</b>
+        <div class="divider"></div>
+        <div class="muted mini">• ${escapeHTML(cls?.lore||"—")}<br>${formatBuffs(cls?.buffs)}</div>
+      </div>
+    </div>
+
+    <!-- ===== INVENTÁRIO ===== -->
+    <div class="hubPanel" id="hubInventario">
+      <div class="row" style="justify-content:space-between">
+        <b style="font-family:'Cinzel',serif;font-size:15px">🎒 Inventário</b>
+        <div class="row" style="gap:8px">
+          <span class="pill">Peso: <b id="totalWeight">0</b> kg</span>
+          <button class="secondary mini" data-action="inv_add">+ Item</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div id="invList">${renderInventory(p)}</div>
+    </div>
+
+    <!-- ===== EQUIPAMENTOS ===== -->
+    <div class="hubPanel" id="hubEquip">
+      <b style="font-family:'Cinzel',serif;font-size:15px">🛡️ Equipamentos</b>
+      <div class="muted mini" style="margin-top:4px">Itens equipados somam bônus automaticamente. Arraste do inventário ou clique para equipar.</div>
+      <div class="divider"></div>
+      <div id="equipArea">${renderEquipArea(p)}</div>
+    </div>
+
+    <!-- ===== DADOS ===== -->
+    <div class="hubPanel" id="hubDados">
+      <b style="font-family:'Cinzel',serif;font-size:15px">🎲 Rolagem de Dados</b>
+      <div class="divider"></div>
+      <div id="diceArea">${renderDiceArea(p)}</div>
+    </div>
+
+    <!-- ===== DIÁRIO ===== -->
+    <div class="hubPanel" id="hubDiario">
+      <div class="row" style="justify-content:space-between">
+        <b style="font-family:'Cinzel',serif;font-size:15px">📖 Diário de ${escapeHTML(c.charName||"")}</b>
+        <button class="secondary mini" data-action="diary_add">+ Entrada</button>
+      </div>
+      <div class="divider"></div>
+      <div id="diaryList">${renderDiary(p)}</div>
+    </div>
+
+    <!-- ===== NPCs ===== -->
+    <div class="hubPanel" id="hubNpcs">
+      <div class="row" style="justify-content:space-between">
+        <b style="font-family:'Cinzel',serif;font-size:15px">👥 NPCs Conhecidos</b>
+        <button class="secondary mini" data-action="npc_add">+ NPC</button>
+      </div>
+      <div class="divider"></div>
+      <div id="npcList">${renderNpcs(p)}</div>
+    </div>
+
+    <!-- ===== MAPA ===== -->
+    <div class="hubPanel" id="hubMapa">
+      <b style="font-family:'Cinzel',serif;font-size:15px">🗺️ Mapa de MYR</b>
+      <div class="muted mini">Clique no mapa para adicionar marcador de localização.</div>
+      <div class="divider"></div>
+      <div id="mapaArea">${renderMapa(p)}</div>
+    </div>
+  `;
+
+  // SIDE PANEL
+  side.innerHTML = `
+    <h2 style="margin:0 0 6px;font-size:15px;font-family:'Cinzel',serif">📌 Resumo</h2>
+
+    <div class="card" style="padding:12px;background:rgba(6,8,14,.55);margin-bottom:10px">
+      <div class="row" style="justify-content:space-between">
+        <b style="font-family:'Cinzel',serif;font-size:13px">Nível</b>
+        <span class="pill">LVL ${lvl}</span>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <span class="muted mini">Pontos de Atributo</span>
+        <span class="pill"><b>${Number(c.levelAttrBonus||0)}</b></span>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:4px">
+        <span class="muted mini">Picks de Perícia</span>
+        <span class="pill"><b>${Number(c.levelSkillBonus||0)}</b></span>
+      </div>
+    </div>
+
+    <div class="card" style="padding:12px;background:rgba(6,8,14,.55);margin-bottom:10px">
+      <div class="row" style="justify-content:space-between;gap:10px;align-items:flex-start">
+        <div><b style="font-family:'Cinzel',serif;font-size:13px">Skills</b><div class="muted mini" style="margin-top:4px">Árvore com pré-requisitos</div></div>
+        <button class="secondary mini" id="btnOpenTree" style="white-space:nowrap">Abrir Árvore</button>
+      </div>
+    </div>
+
+    <div class="card" style="padding:12px;background:rgba(6,8,14,.55);margin-bottom:10px">
+      <b style="font-family:'Cinzel',serif;font-size:13px">Gastar Atributo</b>
+      <div class="divider"></div>
+      ${ATTR_KEYS.map(k=>`
+        <div class="selectCard" style="padding:8px;margin-bottom:6px">
+          <div class="left"><b style="font-size:12px">${ATTR_LABEL[k]}</b><span class="muted mini"> ${Number(c.attrs?.[k]||0)}</span></div>
+          <button class="secondary mini" data-action="lvl_attr_inc" data-key="${k}" ${Number(c.levelAttrBonus||0)<=0?"disabled":""}>+1</button>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="card" style="padding:12px;background:rgba(6,8,14,.55);margin-bottom:10px">
+      <b style="font-family:'Cinzel',serif;font-size:13px">Gastar Perícia</b>
+      <div class="divider"></div>
+      ${SKILL_KEYS.map(k=>`
+        <div class="selectCard" style="padding:8px;margin-bottom:6px">
+          <div class="left"><b style="font-size:12px">${SKILL_LABEL[k]}</b><span class="muted mini"> ${Number(c.skills?.[k]||0)}</span></div>
+          <button class="secondary mini" data-action="lvl_skill_inc" data-key="${k}" ${Number(c.levelSkillBonus||0)<=0?"disabled":""}>+4</button>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="card" style="padding:12px;background:rgba(6,8,14,.55);margin-bottom:10px">
+      <b style="font-family:'Cinzel',serif;font-size:13px">Atributos</b>
+      <div class="divider"></div>
+      ${ATTR_KEYS.map(k=>`<div class="row" style="justify-content:space-between"><span class="muted mini">${ATTR_LABEL[k]}</span><b>${Number(c.attrs?.[k]||0)}</b></div>`).join("")}
+    </div>
+
+    <div class="card" style="padding:12px;background:rgba(6,8,14,.55);margin-bottom:10px">
+      <b style="font-family:'Cinzel',serif;font-size:13px">Perícias</b>
+      <div class="divider"></div>
+      ${SKILL_KEYS.map(k=>`<div class="row" style="justify-content:space-between"><span class="muted mini">${SKILL_LABEL[k]}</span><b>${Number(c.skills?.[k]||0)}</b></div>`).join("")}
+    </div>
+
+    <div class="card" style="padding:12px;background:rgba(6,8,14,.55);margin-bottom:10px">
+      <b style="font-family:'Cinzel',serif;font-size:13px">Desvantagens</b>
+      <div class="divider"></div>
+      ${renderChosenDisadvantages(p)}
+    </div>
+
+    <div class="card" style="padding:12px;background:rgba(6,8,14,.55);margin-bottom:10px">
+      <b style="font-family:'Cinzel',serif;font-size:13px">📋 Log</b>
+      <div class="divider"></div>
+      <div style="max-height:160px;overflow-y:auto">
+        ${(p.log||[]).slice(0,15).map(e=>`<div class="logEntry">${escapeHTML(e.text)}</div>`).join("") || '<span class="muted mini">Vazio.</span>'}
+      </div>
+    </div>
+  `;
+
+  // Bind hub tabs
+  document.querySelectorAll(".hubTab").forEach(btn=>{
+    btn.onclick = ()=>{ setHubTab(btn.dataset.hub); };
+  });
+  setHubTab(UI.hubTab);
+
+  bindDashboardStatButtons();
+  updateKpiBars();
+  updateWeightDisplay(p);
+
+  // Avatar change
+  const inp = $("avatarChange");
+  if(inp){ inp.onchange = async ()=>{ const f=inp.files?.[0]; if(!f) return; const url=await fileToDataUrl(f); const p2=getPlayer(playerId); p2.character.avatarDataUrl=url; p2.log.unshift({ts:Date.now(),text:"Avatar atualizado."}); saveDB(DB);DB=loadDB();render(); }; }
+
+  // Skill tree button
+  const btnTree = $("btnOpenTree");
+  if(btnTree) btnTree.onclick = ()=>openSkillTreeModal(p.id);
+}
+
+/* ========================= REPUTATION LABEL ========================= */
+function getReputacaoLabel(v){
+  if(v>=90) return "🌟 Lendário — todos te conhecem";
+  if(v>=70) return "⭐ Respeitado — aliados leais";
+  if(v>=50) return "⚖️ Neutro — faça suas escolhas";
+  if(v>=30) return "😠 Suspeito — NPCs desconfiam";
+  if(v>=10) return "💀 Infame — inimigos por toda parte";
+  return "🩸 Amaldiçoado — caça ativa";
+}
+
+/* ========================= BUFFS AREA ========================= */
+function renderBuffsArea(player){
+  const now = Date.now();
+  const c = player.character;
+  const conds = (c.conditions||[]).filter(cd=>!cd.expires||cd.expires>now);
+  const buffs = (c.buffs||[]).filter(b=>!b.expires||b.expires>now);
+  if(!conds.length && !buffs.length) return '<span class="muted mini" style="font-style:italic">Nenhum efeito ativo no momento.</span>';
+
+  const condFxMap = {
+    veneno:      {stat:"vida",    dmg:5,  heal:false, icon:"☠",  label:"Veneno"},
+    sangramento: {stat:"vida",    dmg:8,  heal:false, icon:"🩸", label:"Sangramento"},
+    queimando:   {stat:"vida",    dmg:10, heal:false, icon:"🔥", label:"Queimando"},
+    amaldicoado: {stat:"vida",    dmg:4,  heal:false, icon:"🌑", label:"Amaldiçoado"},
+    congelado:   {stat:"velocidade",dmg:3,heal:false, icon:"❄",  label:"Congelado"},
+    regeneracao: {stat:"vida",    dmg:6,  heal:true,  icon:"💚", label:"Regeneração"},
+    buff:        {stat:null,      dmg:0,  heal:true,  icon:"✨", label:"Buff"},
+    medo:        {stat:null,      dmg:0,  heal:false, icon:"👻", label:"Medo"},
+    atordoado:   {stat:null,      dmg:0,  heal:false, icon:"💫", label:"Atordoado"},
+    paralisado:  {stat:null,      dmg:0,  heal:false, icon:"🧊", label:"Paralisado"},
+  };
+
+  const condHtml = conds.map(x=>{
+    const fx = condFxMap[x.type||"atordoado"] || {icon:"⚠",label:x.type,dmg:0,heal:false};
+    const isHarm = !fx.heal && fx.dmg > 0;
+    const timeLeft = x.expires ? Math.max(0,Math.ceil((x.expires-now)/60000)) + " min" : "∞";
+    const dmgLabel = fx.stat && fx.dmg ? `<span class="pill" style="font-size:9px;border-color:${isHarm?"rgba(192,57,43,.4)":"rgba(39,174,96,.4)"};color:${isHarm?"#ff9090":"#90ee90"}">${isHarm?"-":"+"}${fx.dmg} ${fx.stat} /6s</span>` : "";
+    return `<div class="buffItem ${isHarm?"harm":"help"}">
+      <div style="flex:1;min-width:0">
+        <span class="condTag cond-${x.type||'atordoado'}">${fx.icon} ${escapeHTML(x.name)}</span>
+        ${dmgLabel}
+        ${x.desc?`<div class="muted mini" style="margin-top:3px">${escapeHTML(x.desc)}</div>`:""}
+      </div>
+      <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+        <span class="pill" style="font-size:9px">⏱ ${timeLeft}</span>
+        <button class="danger mini" data-action="rm_effect" data-eid="${escapeHTML(x.id||"")}">✕</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  const buffHtml = buffs.map(x=>{
+    const timeLeft = x.expires ? Math.max(0,Math.ceil((x.expires-now)/60000)) + " min" : "∞";
+    const statLabel = x.stat && x.value ? `<span class="pill" style="font-size:9px;border-color:rgba(39,174,96,.4);color:#90ee90">+${x.value} ${x.stat}</span>` : "";
+    return `<div class="buffItem help">
+      <div style="flex:1;min-width:0">
+        <span class="condTag cond-buff">✨ ${escapeHTML(x.name)}</span>
+        ${statLabel}
+        ${x.desc?`<div class="muted mini" style="margin-top:3px">${escapeHTML(x.desc)}</div>`:""}
+      </div>
+      <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+        <span class="pill" style="font-size:9px">⏱ ${timeLeft}</span>
+        <button class="danger mini" data-action="rm_effect" data-eid="${escapeHTML(x.id||"")}">✕</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  return condHtml + buffHtml;
+}
+
+/* ========================= INVENTORY ========================= */
+function renderInventory(player){
+  const inv = player.inventory || [];
+  if(!inv.length) return '<span class="muted mini">Mochila vazia.</span>';
+  return `<div class="invGrid">${inv.map(it=>{
+    const rarity = it.rarity || "comum";
+    const icon = {comum:"📦",incomum:"💚",raro:"💙",epico:"💜",lendario:"🌟"}[rarity]||"📦";
+    return `<div class="invItem rarity-${rarity}">
+      <div>
+        <div class="iName">${icon} ${escapeHTML(it.name)}</div>
+        <div class="iMeta">${rarity.charAt(0).toUpperCase()+rarity.slice(1)} • ${it.qty||1}x • ${it.weight||0.5}kg</div>
+      </div>
+      <div class="row" style="gap:6px">
+        <button class="secondary mini" data-action="equip_item" data-iid="${it.id}" title="Equipar">⚔️</button>
+        <button class="danger mini" data-action="rm_item" data-iid="${it.id}">✕</button>
+      </div>
+    </div>`;
+  }).join("")}</div>`;
+}
+
+function updateWeightDisplay(player){
+  const el = document.getElementById("totalWeight");
+  if(!el) return;
+  const total = (player.inventory||[]).reduce((acc,it)=>acc+(Number(it.weight||0.5)*Number(it.qty||1)),0);
+  el.textContent = total.toFixed(1);
+  el.style.color = total > 30 ? "var(--bad)" : total > 20 ? "var(--gold)" : "inherit";
+}
+
+/* ========================= EQUIP AREA ========================= */
+const SLOT_NAMES = {
+  armaPrincipal:"⚔️ Arma Principal", armaSecundaria:"🗡️ Arma Secundária",
+  cabeca:"⛑️ Cabeça", torso:"🛡️ Torso", pernas:"👖 Pernas", maos:"🧤 Mãos", pe:"👢 Pés",
+  anel1:"💍 Anel 1", anel2:"💍 Anel 2", amuleto:"📿 Amuleto"
+};
+function renderEquipArea(player){
+  const eq = player.character.equipados || {};
+  return Object.entries(SLOT_NAMES).map(([slot, label])=>{
+    const item = eq[slot];
+    return `<div class="buffItem" style="margin-bottom:6px">
+      <div><span class="muted mini" style="font-family:'Cinzel',serif;font-size:11px">${label}</span> <b style="font-size:13px">${item?escapeHTML(item.name):'<span class="muted mini">— vazio —</span>'}</b>${item&&item.defesa?` <span class="pill mini">+${item.defesa} DEF</span>`:""}</div>
+      ${item?`<button class="secondary mini" data-action="unequip_slot" data-slot="${slot}">✕</button>`:""}
+    </div>`;
+  }).join("");
+}
+
+/* ========================= DICE AREA ========================= */
+function renderDiceArea(player){
+  const log = (player.character.rollLog||[]).slice(0,20);
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <b style="font-family:'Cinzel',serif;font-size:13px">Dados</b>
+        <div class="divider"></div>
+        <div class="row" style="flex-wrap:wrap;gap:8px;justify-content:center">
+          ${[4,6,8,10,12,20,100].map(d=>`<div class="diceBtn" data-dice="${d}" id="dice${d}">d${d}</div>`).join("")}
+        </div>
+        <div style="margin-top:16px">
+          <label class="mini">Bônus / modificador</label>
+          <input id="diceBonus" type="number" value="0" style="width:100%">
+        </div>
+        <div style="margin-top:8px">
+          <label class="mini">Qtd de dados</label>
+          <input id="diceQty" type="number" value="1" min="1" max="20" style="width:100%">
+        </div>
+        <div class="diceResult" id="diceResult">—</div>
+      </div>
+      <div>
+        <b style="font-family:'Cinzel',serif;font-size:13px">Histórico</b>
+        <div class="divider"></div>
+        <div class="rollLog" id="rollLog">
+          ${log.map(r=>`<div class="rollEntry"><span>${escapeHTML(r.label)}</span><span class="rollVal" style="color:${r.total>=r.max?'var(--gold)':r.total<=1?'var(--bad)':'inherit'}">${r.total}</span></div>`).join("") || '<span class="muted mini">Nenhuma rolagem.</span>'}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ========================= DIARY ========================= */
+function renderDiary(player){
+  const diary = (player.character.diary||[]);
+  if(!diary.length) return '<span class="muted mini">Nenhuma entrada. Registre os eventos da sessão!</span>';
+  return diary.map(e=>`<div class="diaryEntry" style="margin-bottom:8px">
+    <div class="dts">${nowStr(e.ts)}</div>
+    <div style="margin-top:6px;font-size:14px;line-height:1.5">${escapeHTML(e.text)}</div>
+    <div class="row" style="margin-top:6px;justify-content:flex-end">
+      <button class="danger mini" data-action="rm_diary" data-eid="${e.id}">✕</button>
+    </div>
+  </div>`).join("");
+}
+
+/* ========================= NPCs ========================= */
+function renderNpcs(player){
+  const npcs = (player.character.npcs||[]);
+  if(!npcs.length) return '<span class="muted mini">Nenhum NPC registrado. Adicione personagens que você conheceu!</span>';
+  return `<div style="display:grid;gap:10px">${npcs.map(n=>{
+    const rel = Number(n.rel||50);
+    const relColor = rel>=70?"var(--ok)":rel>=40?"var(--gold)":"var(--bad)";
+    const relLabel = rel>=80?"Aliado leal":rel>=60?"Amigável":rel>=40?"Neutro":rel>=20?"Desconfiado":"Inimigo";
+    return `<div class="npcCard">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <b style="font-family:'Cinzel',serif">${escapeHTML(n.name)}</b>
+          <div class="muted mini">${escapeHTML(n.role||"")}</div>
+        </div>
+        <div class="row" style="gap:6px">
+          <span class="pill mini" style="color:${relColor}">${relLabel}</span>
+          <button class="danger mini" data-action="rm_npc" data-nid="${n.id}">✕</button>
+        </div>
+      </div>
+      <div class="relBar"><div class="relFill" style="width:${rel}%;background:${relColor}"></div></div>
+      <div class="muted mini" style="margin-top:4px">${escapeHTML(n.notes||"")}</div>
+      <div class="row" style="margin-top:6px;gap:6px">
+        <button class="secondary mini" data-action="npc_rel_dec" data-nid="${n.id}">-Rel</button>
+        <button class="secondary mini" data-action="npc_rel_inc" data-nid="${n.id}">+Rel</button>
+      </div>
+    </div>`;
+  }).join("")}</div>`;
+}
+
+/* ========================= MAPA ========================= */
+function renderMapa(player){
+  const pins = player.character.mapPins || [];
+  return `
+    <div class="mapWrap" id="mapWrap" style="height:420px;cursor:crosshair">
+      <div class="mapGrid"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:1">
+        <div style="text-align:center;opacity:.06">
+          <div style="font-size:80px;font-family:'Cinzel',serif">MYR</div>
+          <div style="font-size:16px;letter-spacing:4px">MUNDO ANTIGO</div>
+        </div>
+      </div>
+      ${pins.map(pin=>`
+        <div class="mapPin" style="left:${pin.x}%;top:${pin.y}%" data-pid="${pin.id}" title="${escapeHTML(pin.label||'')}">📍</div>
+        <div class="mapLabel" style="left:${pin.x}%;top:${pin.y}%">${escapeHTML(pin.label||"?")}</div>
+      `).join("")}
+    </div>
+    <div class="muted mini" style="margin-top:6px">Clique no mapa para adicionar pino. ${pins.length} locais marcados.</div>
+    <div class="row" style="margin-top:8px;gap:8px;flex-wrap:wrap">
+      ${pins.map(pin=>`<div class="pill" style="gap:8px">📍 ${escapeHTML(pin.label||"?")} <button class="danger mini" data-action="rm_pin" data-pid="${pin.id}" style="padding:2px 6px">✕</button></div>`).join("")}
+    </div>
+  `;
+}
+
+/* ========================= KPI ========================= */
+function renderKpi(title, id, value, max, fillClass=""){
+  const safeMax = Number.isFinite(Number(max)) ? Number(max) : 0;
+  const safeVal = Number.isFinite(Number(value)) ? Number(value) : 0;
+  const pct = safeMax>0 ? clamp(Math.round((safeVal/safeMax)*100),0,100) : 0;
+  return `
+    <div class="kpiBox">
+      <div class="kpiTitle">
+        <b>${title}</b>
+        <span class="pill mini">Max: ${safeMax}</span>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <div class="kpiValue" id="${id}Val">${safeVal}</div>
+        <div class="row" style="gap:4px">
+          <button type="button" class="secondary mini" data-stat="${id}" data-step="5">-5</button>
+          <button type="button" class="secondary mini" data-stat="${id}" data-step="1">-1</button>
+          <button type="button" class="secondary mini" data-stat="${id}" data-step="1">+1</button>
+          <button type="button" class="secondary mini" data-stat="${id}" data-step="5">+5</button>
+        </div>
+      </div>
+      <div class="kpiBar" title="${safeVal} / ${safeMax}">
+        <div id="${id}Fill" class="${fillClass}" style="width:${pct}%"></div>
+      </div>
+    </div>
+  `;
+}
+
+function updateKpiBars(){
+  const map=[["vida","vidaFill"],["defesa","defesaFill"],["velocidade","velocidadeFill"],["mana","manaFill"]];
+  const toNum=(t)=>{ const s=String(t??"").replace(/[^0-9.-]+/g,""); const n=Number(s); return Number.isFinite(n)?n:0; };
+  for(const [key,fillCls] of map){
+    const fill=document.getElementById(key+"Fill");
+    const valEl=document.getElementById(key+"Val");
+    if(!fill||!valEl) continue;
+    const cur=toNum(valEl.textContent);
+    const refText=fill.closest(".kpiBox")?.querySelector(".pill.mini")?.textContent||"";
+    const ref=toNum(refText.replace("Max:",""));
+    const pct=ref>0?Math.max(0,Math.min(100,(cur/ref)*100)):0;
+    fill.style.width=pct.toFixed(2)+"%";
+  }
+}
+
+function formatBuffs(buffs){
+  if(!buffs) return "";
+  const parts=[];
+  if(buffs.attr){ for(const [k,v] of Object.entries(buffs.attr)){ const lbl=ATTR_LABEL[k]||k; if(v) parts.push(`• ${lbl} ${v>0?"+":""}${v}`); } }
+  if(buffs.skill){ for(const [k,v] of Object.entries(buffs.skill)){ const lbl=SKILL_LABEL[k]||k; if(v) parts.push(`• ${lbl} ${v>0?"+":""}${v}`); } }
+  return parts.length?parts.join("<br>"):"—";
+}
+
+function tierLabel(tier){ if(tier==="grave") return "🔴 Grave"; if(tier==="media") return "🟡 Média"; return "🟢 Leve"; }
+function tierTag(tier){ return `<span class="pill mini">${tierLabel(tier)}</span>`; }
+
+function renderChosenDisadvantages(player){
+  const ids = player?.character?.disadvantages || [];
+  const list = ids.map(id=>getDisadv(id)).filter(Boolean);
+  if(!list.length) return `<span class="muted mini">Nenhuma escolhida.</span>`;
+  return list.map(d=>{
+    const t = d.tier||"leve";
+    return `<div class="row" style="justify-content:space-between;gap:8px;align-items:flex-start">
+      <div><b style="font-size:12px">${escapeHTML(d.name)}</b><div class="muted mini" style="margin-top:2px">${escapeHTML(d.desc||"")}</div></div>
+      <div>${tierTag(t)}</div>
+    </div><div class="divider"></div>`;
+  }).join("").replace(/<div class="divider"><\/div>\s*$/,"");
+}
+
+/* ========================= CHARACTER CREATOR ========================= */
+function renderCharacterCreator(player){
+  const main = $("mainPanel");
+  const c = player.character;
+  if(!c.attrs) c.attrs = mkAttrsZero();
+  if(!c.skills) c.skills = mkSkillsZero();
+  if(!c.disadvantages) c.disadvantages = [];
+  if(!c.pools) c.pools = { attrBase:10, skillPicksBase:8 };
+
+  const attrLeft = totalAttrPoints(player) - spentAttrPoints(player);
+  const skillLeft = totalSkillPicks(player) - spentSkillPicks(player);
+
+  main.innerHTML = `
+    <h2 style="margin:0 0 6px;font-size:17px;font-family:'Cinzel',serif">Criação de Personagem</h2>
+    <p class="muted" style="margin-top:0">Escolha raça e classe, distribua pontos e finalize.</p>
+    <div class="row" style="justify-content:space-between">
+      <span class="pill">Atributos: <b>${attrLeft}</b> restantes</span>
+      <span class="pill">Perícias: <b>${skillLeft}</b> picks</span>
+      <span class="pill">Desvantagens: <b>${(c.disadvantages||[]).length}</b></span>
+    </div>
+    <div class="divider"></div>
+    <div class="row" style="align-items:flex-start">
+      <div class="avatarBox">
+        ${c.avatarDataUrl?`<img src="${c.avatarDataUrl}" alt="avatar">`:`<span class="muted mini" style="text-align:center;padding:8px">Adicionar imagem</span>`}
+      </div>
+      <div style="flex:1;min-width:240px">
+        <label>Imagem do personagem</label>
+        <input id="avatarInput" type="file" accept="image/*">
+        <div class="row" style="margin-top:12px">
+          <div style="flex:1;min-width:220px">
+            <label>Nome do personagem</label>
+            <input id="charName" value="${escapeHTML(c.charName||"")}" placeholder="ex: Kael, Nyra...">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="tabs">
+      <button class="tabBtn" data-tab="tabRaces">Raças</button>
+      <button class="tabBtn" data-tab="tabClasses">Classes</button>
+      <button class="tabBtn" data-tab="tabAttrs">Atributos</button>
+      <button class="tabBtn" data-tab="tabSkills">Perícias</button>
+      <button class="tabBtn" data-tab="tabPower">Skills</button>
+      <button class="tabBtn" data-tab="tabDisadv">Desvantagens</button>
+    </div>
+    <div class="tabPanel" id="tabRaces"></div>
+    <div class="tabPanel" id="tabClasses"></div>
+    <div class="tabPanel" id="tabAttrs"></div>
+    <div class="tabPanel" id="tabSkills"></div>
+    <div class="tabPanel" id="tabPower"></div>
+    <div class="tabPanel" id="tabDisadv"></div>
+    <div class="divider"></div>
+    <div class="row" style="justify-content:flex-end">
+      <button id="btnFinalizeCreation" ${attrLeft<0||skillLeft<0?"disabled":""}>Finalizar Criação</button>
+    </div>
+    ${(attrLeft<0||skillLeft<0)?`<div class="warn" style="margin-top:12px"><b class="bad">Você passou do limite de pontos.</b> Ajuste antes de finalizar.</div>`:""}
+  `;
+
+  document.querySelectorAll(".tabBtn").forEach(btn=>{ btn.onclick=()=>setActiveTab(btn.dataset.tab); });
+  renderRaceTab(player.id);
+  renderClassTab(player.id);
+  renderAttrTab(player.id);
+  renderSkillTab(player.id);
+  renderPowerTab(player.id);
+  renderDisadvTab(player.id);
+
+  $("avatarInput").onchange = async ()=>{ const f=$("avatarInput").files?.[0]; if(!f) return; const url=await fileToDataUrl(f); const p2=getPlayer(player.id); p2.character.avatarDataUrl=url; saveDB(DB);DB=loadDB(); renderCharacterCreator(getPlayer(player.id)); };
+  $("charName").oninput = (e)=>{ const p2=getPlayer(player.id); p2.character.charName=e.target.value; saveDB(DB); };
+  $("btnFinalizeCreation").onclick = ()=>{ const p2=getPlayer(player.id); if(spentAttrPoints(p2)>totalAttrPoints(p2)){alert("Atributos acima do limite.");return;} if(spentSkillPicks(p2)>totalSkillPicks(p2)){alert("Perícias acima do limite.");return;} finalizeCreation(player.id); };
+  setActiveTab(UI.activeTab);
+}
+
+function renderRaceTab(playerId){
+  const p=getPlayer(playerId); if(!p) return;
+  const chosen=p.character.preferredRaceId||DB.races[0]?.id;
+  const tab=$("tabRaces");
+  tab.innerHTML=`<h3 style="margin:0 0 8px;font-size:14px;font-family:'Cinzel',serif">Raças (${DB.races.length})</h3><p class="muted" style="margin-top:0">Cada raça dá +1 attr e +4 perícia.</p><div class="selectGrid">${DB.races.map(r=>{
+    const isSel=r.id===chosen;
+    return `<div class="selectCard ${isSel?'selectedGlow':''}" data-racecard="${escapeHTML(r.id)}" style="gap:14px;align-items:flex-start">
+      <div class="left"><div class="row" style="justify-content:space-between;gap:8px"><b style="font-size:14px">${escapeHTML(r.name)}</b><span class="tag">${r.tier==="perfeita"?"★ Perfeita":"Padrão"}</span></div>
+      ${r.lore?`<div class="muted" style="margin-top:6px;font-size:12px">${escapeHTML(r.lore)}</div>`:""}
+      <div class="divider"></div><div class="muted mini"><b style="color:var(--txt)">Buffs:</b><br>${formatBuffs(r.buffs)||"—"}</div></div>
+      <div><button class="${isSel?'secondary':''}" data-racebtn="${escapeHTML(r.id)}">${isSel?'✓':'Escolher'}</button></div>
+    </div>`;
+  }).join("")}</div>`;
+  tab.onclick=(ev)=>{ const btn=ev.target.closest("[data-racebtn]"); const card=ev.target.closest("[data-racecard]"); const rid=btn?.dataset?.racebtn||card?.dataset?.racecard; if(!rid) return; const p2=getPlayer(playerId); if(!p2) return; p2.character.preferredRaceId=rid; saveDB(DB); render(); };
+}
+
+function renderClassTab(playerId){
+  const p=getPlayer(playerId); const tab=$("tabClasses");
+  const picked=p.character.classId||DB.classes[0]?.id;
+  tab.innerHTML=`<div class="row" style="justify-content:space-between"><div><b style="font-family:'Cinzel',serif">Classes (${DB.classes.length})</b><div class="muted mini">+1 attr e +4 perícia automático.</div></div><span class="tag">MYR</span></div><div class="divider"></div><div class="selectGrid">${DB.classes.map(c=>{
+    const sel=c.id===picked;
+    return `<div class="selectCard ${sel?"selectedGlow":""}"><div class="left"><div class="row" style="justify-content:space-between;gap:10px"><b>${escapeHTML(c.name)}</b><span class="tag">classe</span></div><div class="muted mini" style="margin-top:6px">${escapeHTML(c.lore)}</div><div class="muted mini" style="margin-top:6px">${formatBuffs(c.buffs)}</div></div><div><input type="radio" name="classPick" value="${c.id}" ${sel?"checked":""}></div></div>`;
+  }).join("")}</div>`;
+  tab.querySelectorAll("input[name=classPick]").forEach(inp=>{ inp.onchange=()=>{ const p2=getPlayer(playerId); p2.character.classId=inp.value; saveDB(DB);DB=loadDB(); renderClassTab(playerId); }; });
+}
+
+function renderAttrTab(playerId){
+  const p=getPlayer(playerId); const tab=$("tabAttrs");
+  const total=totalAttrPoints(p); const spent=spentAttrPoints(p); const left=total-spent;
+  tab.innerHTML=`<div class="row" style="justify-content:space-between"><div><b style="font-family:'Cinzel',serif">Distribuir Atributos</b><div class="muted mini">Você tem <b>${total}</b> pontos.</div></div><span class="pill">Restantes: <b>${left}</b></span></div><div class="divider"></div><div style="display:grid;gap:10px">${ATTR_KEYS.map(k=>{
+    const v=Number(p.character.attrs[k]||0);
+    return `<div class="meterRow"><div><div style="font-weight:700;font-family:'Cinzel',serif;font-size:13px">${ATTR_LABEL[k]}</div><div class="muted mini">Valor: <b>${v}</b></div></div><div class="bar"><div style="width:${clamp(v,0,10)*10}%"></div></div><div class="ctrl"><button class="secondary" data-dec="${k}">-</button><span class="num">${v}</span><button class="secondary" data-inc="${k}">+</button></div></div>`;
+  }).join("")}</div>`;
+  tab.querySelectorAll("button[data-inc]").forEach(b=>{ b.onclick=()=>{ const ct=UI.activeTab; const k=b.dataset.inc; const p2=getPlayer(playerId); if(spentAttrPoints(p2)>=totalAttrPoints(p2)) return; p2.character.attrs[k]=Number(p2.character.attrs[k]||0)+1; saveDB(DB);DB=loadDB(); renderCharacterCreator(getPlayer(playerId)); UI.activeTab=ct; setActiveTab(ct); }; });
+  tab.querySelectorAll("button[data-dec]").forEach(b=>{ b.onclick=()=>{ const ct=UI.activeTab; const k=b.dataset.dec; const p2=getPlayer(playerId); p2.character.attrs[k]=Math.max(0,Number(p2.character.attrs[k]||0)-1); saveDB(DB);DB=loadDB(); renderCharacterCreator(getPlayer(playerId)); UI.activeTab=ct; setActiveTab(ct); }; });
+}
+
+function renderSkillTab(playerId){
+  const p=getPlayer(playerId); const tab=$("tabSkills");
+  const total=totalSkillPicks(p); const spent=spentSkillPicks(p); const left=total-spent;
+  tab.innerHTML=`<div class="row" style="justify-content:space-between"><div><b style="font-family:'Cinzel',serif">Distribuir Perícias</b><div class="muted mini">Cada seleção = +4.</div></div><span class="pill">Restantes: <b>${left}</b></span></div><div class="divider"></div><div style="display:grid;gap:10px">${SKILL_KEYS.map(k=>{
+    const v=Number(p.character.skills[k]||0); const picks=Math.floor(v/4);
+    return `<div class="meterRow"><div><div style="font-weight:700;font-family:'Cinzel',serif;font-size:13px">${SKILL_LABEL[k]}</div><div class="muted mini">Valor: <b>${v}</b> (picks: ${picks})</div></div><div class="bar"><div style="width:${clamp(picks,0,12)*8}%"></div></div><div class="ctrl"><button class="secondary" data-sdec="${k}">-</button><span class="num">${v}</span><button class="secondary" data-sinc="${k}">+</button></div></div>`;
+  }).join("")}</div>`;
+  tab.querySelectorAll("button[data-sinc]").forEach(b=>{ b.onclick=()=>{ const ct=UI.activeTab; const k=b.dataset.sinc; const p2=getPlayer(playerId); if(spentSkillPicks(p2)>=totalSkillPicks(p2)) return; p2.character.skills[k]=Number(p2.character.skills[k]||0)+4; saveDB(DB);DB=loadDB(); renderCharacterCreator(getPlayer(playerId)); UI.activeTab=ct; setActiveTab(ct); }; });
+  tab.querySelectorAll("button[data-sdec]").forEach(b=>{ b.onclick=()=>{ const ct=UI.activeTab; const k=b.dataset.sdec; const p2=getPlayer(playerId); p2.character.skills[k]=Math.max(0,Number(p2.character.skills[k]||0)-4); saveDB(DB);DB=loadDB(); renderCharacterCreator(getPlayer(playerId)); UI.activeTab=ct; setActiveTab(ct); }; });
+}
+
+function renderPowerTab(playerId){
+  const tab=$("tabPower"); if(!tab) return;
+  tab.innerHTML=`<div class="row" style="justify-content:space-between"><b style="font-family:'Cinzel',serif">Skills</b><span class="tag">MYR</span></div><div class="divider"></div><div class="good"><b class="ok">Use a Árvore de Skills</b><div class="muted mini" style="margin-top:6px">Após finalizar a criação, você terá acesso à árvore completa com pré-requisitos, mana e tipo.</div></div>`;
+}
+
+function renderDisadvTab(playerId){
+  const p=getPlayer(playerId); const tab=$("tabDisadv"); if(!p||!tab) return;
+  const picked=new Set(p.character.disadvantages||[]);
+  const b=disadvBonus(p); const cts=disadvCounts(p);
+  const groups={leve:{title:"🟢 Leves",subtitle:"até 5",note:"+1 ponto",items:[]},media:{title:"🟡 Médias",subtitle:"até 3",note:"+2 pontos",items:[]},grave:{title:"🔴 Graves / Trágicas",subtitle:"até 2",note:"+4 pontos (PLOT)",items:[]}};
+  for(const d of (DB.disadvantages||[])){ const t=d.tier||"media"; if(groups[t]) groups[t].items.push(d); }
+
+  const renderGroup=(tier)=>{
+    const g=groups[tier]; const limit=DISADV_LIMITS[tier]; const used=cts[tier]||0;
+    return `<div class="card" style="padding:12px;background:rgba(6,8,14,.45)"><div class="row" style="justify-content:space-between;gap:10px"><div><b>${g.title}</b><div class="muted mini">${g.subtitle} • ${g.note}</div></div><span class="pill">Escolhidas: <b>${used}</b> / ${limit}</span></div><div class="divider"></div><div class="selectGrid">${g.items.map(d=>{
+      const sel=picked.has(d.id); const lock=!sel&&used>=limit;
+      return `<label class="selectCard ${sel?"selectedGlow":""}" style="cursor:${lock?'not-allowed':'pointer'};opacity:${lock?.65:1}"><div class="left"><div class="row" style="justify-content:space-between;gap:8px"><b>${escapeHTML(d.name)}</b><span class="tag">+${tier==="leve"?1:tier==="media"?2:4}</span></div><div class="muted mini" style="margin-top:4px">${escapeHTML(d.desc||"")}</div></div><input type="checkbox" data-dv="${escapeHTML(d.id)}" ${sel?"checked":""} ${lock?"disabled":""}></label>`;
+    }).join("")}</div></div>`;
+  };
+
+  tab.innerHTML=`<div class="row" style="justify-content:space-between"><div><b style="font-family:'Cinzel',serif">Desvantagens</b><div class="muted mini">Travas: 5 leves, 3 médias, 2 graves.</div></div><span class="pill">Bônus: <b>+${b.attr}</b> attr • <b>+${b.skillPicks}</b> picks</span></div><div class="divider"></div><div style="display:grid;gap:10px">${renderGroup("leve")}${renderGroup("media")}${renderGroup("grave")}</div>`;
+
+  tab.querySelectorAll("input[type=checkbox][data-dv]").forEach(chk=>{ chk.onchange=()=>{ const id=chk.dataset.dv; const ct=UI.activeTab; const p2=getPlayer(playerId); const d=getDisadv(id); const tier=d?.tier||"media"; const limit=DISADV_LIMITS[tier]; const set=new Set(p2.character.disadvantages||[]); const bc=disadvCounts(p2); if(chk.checked){ if((bc[tier]||0)>=limit){chk.checked=false;toast(`Limite: ${limit} no grupo ${tier}.`,false);return;} set.add(id); } else set.delete(id); p2.character.disadvantages=Array.from(set); saveDB(DB);DB=loadDB(); renderDisadvTab(playerId); renderCharacterCreator(getPlayer(playerId)); UI.activeTab=ct; setActiveTab(ct); }; });
+}
+
+function finalizeCreation(playerId){
+  const p=getPlayer(playerId); if(!p) return;
+  if(spentAttrPoints(p)>totalAttrPoints(p)){alert("Atributos acima do limite.");return;}
+  if(spentSkillPicks(p)>totalSkillPicks(p)){alert("Perícias acima do limite.");return;}
+  const race=getRace(p.character.preferredRaceId)||DB.races?.[0];
+  const cls=getClass(p.character.classId)||DB.classes?.[0];
+  if(!race||!cls){alert("Escolha raça e classe.");return;}
+  if(!p.character.bonusesApplied){applyBonusesToSheet(p,race,cls);p.character.bonusesApplied=true;}
+  p.character.finalRaceId=race.id;
+  p.characterCreated=true;
+  const d0=calcDerived(p);
+  p.character.currentStats={vida:d0.vida,defesa:d0.defesa,velocidade:d0.velocidade,mana:d0.mana};
+  p.log.unshift({ts:Date.now(),text:`Personagem finalizado — Raça: ${race.name} | Classe: ${cls.name}`});
+  saveDB(DB); render(); toast("Personagem finalizado! ⚔️",true);
+}
+
+function fileToDataUrl(file){
+  return new Promise((resolve,reject)=>{ const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=reject; r.readAsDataURL(file); });
+}
+
+/* ========================= GLOBAL EVENTS ========================= */
+$("btnLogin").onclick = ()=>{
+  const u=$("loginUser").value.trim(), p=$("loginPass").value.trim();
+  const res=login(u,p);
+  if(!res.ok){toast(res.msg,false);return;}
+  DB=loadDB(); render();
+};
+$("btnLogout").onclick = ()=>logout();
+$("btnReset").onclick = ()=>{ if(confirm("Apagar todos os dados? Isso não pode ser desfeito.")){ localStorage.removeItem(KEY); DB=loadDB(); render(); } };
+$("btnMute").onclick = ()=>{ _muteSound=!_muteSound; $("btnMute").textContent=_muteSound?"🔕":"🔔"; };
+
+document.addEventListener("submit",(e)=>e.preventDefault(),true);
+document.addEventListener("click",(e)=>{ const b=e.target.closest&&e.target.closest("button"); if(!b) return; if(!b.hasAttribute("type")) b.setAttribute("type","button"); if(String(b.getAttribute("type")).toLowerCase()==="submit") b.setAttribute("type","button"); },true);
+
+/* ========================= ACTION DELEGATION ========================= */
+document.addEventListener("click",(e)=>{
+  const btn=e.target.closest("[data-action]");
+  if(!btn) return;
+  const action=btn.dataset.action;
+  const user=findUserBySession();
+  if(!user) return;
+
+  let p=null;
+  if(user.role==="player") p=getPlayer(user.playerId);
+  else{ const sel=document.getElementById("m_selPlayer"); const pid=(sel&&sel.value)?sel.value:(DB.players[0]?.id||null); if(pid) p=getPlayer(pid); }
+  if(!p) return;
+  ensureLevelState(p);
+
+  if(action==="lvl_attr_inc"){
+    if(!p.characterCreated) return;
+    const key=btn.dataset.key; if(!key) return;
+    if(Number(p.character.levelAttrBonus||0)<=0) return;
+    p.character.levelAttrBonus=Number(p.character.levelAttrBonus||0)-1;
+    p.character.attrs[key]=Number(p.character.attrs?.[key]||0)+1;
+    saveDB(DB); render(); return;
+  }
+  if(action==="lvl_skill_inc"){
+    if(!p.characterCreated) return;
+    const key=btn.dataset.key; if(!key) return;
+    if(Number(p.character.levelSkillBonus||0)<=0) return;
+    p.character.levelSkillBonus=Number(p.character.levelSkillBonus||0)-1;
+    p.character.skills[key]=Number(p.character.skills?.[key]||0)+4;
+    saveDB(DB); render(); return;
+  }
+  if(action==="apply_xp"){
+    const delta=Number($("xpDelta")?.value||0);
+    const reason=String($("xpReason")?.value||"").trim();
+    applyXpDelta(p,delta,reason);
+    toast("XP aplicado!",true); render(); return;
+  }
+  if(action==="open_tree"){
+    if(!p||!p.id) return;
+    openSkillTreeModal(p.id); return;
+  }
+  if(action==="rep_inc"){ p.character.reputacao=clamp((p.character.reputacao||50)+5,0,100); saveDB(DB);render(); return; }
+  if(action==="rep_dec"){ p.character.reputacao=clamp((p.character.reputacao||50)-5,0,100); saveDB(DB);render(); return; }
+  if(action==="fama_inc"){ p.character.fama=(p.character.fama||0)+1; saveDB(DB);render(); return; }
+
+  if(action==="add_cond"){
+    openConditionModal(p.id); return;
+  }
+  if(action==="rm_effect"){
+    const eid=btn.dataset.eid;
+    p.character.conditions=(p.character.conditions||[]).filter(x=>x.id!==eid);
+    p.character.buffs=(p.character.buffs||[]).filter(x=>x.id!==eid);
+    saveDB(DB); render(); return;
+  }
+  if(action==="inv_add"){
+    openItemModal(p.id); return;
+  }
+  if(action==="rm_item"){
+    const iid=btn.dataset.iid;
+    p.inventory=(p.inventory||[]).filter(x=>x.id!==iid);
+    saveDB(DB); render(); return;
+  }
+  if(action==="equip_item"){
+    const iid=btn.dataset.iid;
+    const item=(p.inventory||[]).find(x=>x.id===iid);
+    if(item) openEquipModal(p.id,item);
+    return;
+  }
+  if(action==="unequip_slot"){
+    const slot=btn.dataset.slot;
+    if(!p.character.equipados) p.character.equipados={};
+    p.character.equipados[slot]=null;
+    saveDB(DB); render(); return;
+  }
+  if(action==="diary_add"){
+    openDiaryModal(p.id); return;
+  }
+  if(action==="rm_diary"){
+    const eid=btn.dataset.eid;
+    p.character.diary=(p.character.diary||[]).filter(x=>x.id!==eid);
+    saveDB(DB); render(); return;
+  }
+  if(action==="npc_add"){
+    openNpcModal(p.id); return;
+  }
+  if(action==="rm_npc"){
+    const nid=btn.dataset.nid;
+    p.character.npcs=(p.character.npcs||[]).filter(x=>x.id!==nid);
+    saveDB(DB); render(); return;
+  }
+  if(action==="npc_rel_inc"){
+    const nid=btn.dataset.nid;
+    const npc=(p.character.npcs||[]).find(x=>x.id===nid);
+    if(npc) npc.rel=clamp((npc.rel||50)+10,0,100);
+    saveDB(DB); render(); return;
+  }
+  if(action==="npc_rel_dec"){
+    const nid=btn.dataset.nid;
+    const npc=(p.character.npcs||[]).find(x=>x.id===nid);
+    if(npc) npc.rel=clamp((npc.rel||50)-10,0,100);
+    saveDB(DB); render(); return;
+  }
+  if(action==="rm_pin"){
+    const pid=btn.dataset.pid;
+    p.character.mapPins=(p.character.mapPins||[]).filter(x=>x.id!==pid);
+    saveDB(DB); render(); return;
+  }
+});
+
+/* ========================= MAP CLICK ========================= */
+document.addEventListener("click",(e)=>{
+  const wrap=e.target.closest("#mapWrap");
+  if(!wrap) return;
+  if(e.target.closest("[data-action]")) return;
+  const rect=wrap.getBoundingClientRect();
+  const xPct=Math.round((e.clientX-rect.left)/rect.width*100);
+  const yPct=Math.round((e.clientY-rect.top)/rect.height*100);
+  const label=prompt("Nome deste local:","Local Desconhecido");
+  if(label===null) return;
+  const p=getSessionPlayer();
+  if(!p) return;
+  if(!p.character.mapPins) p.character.mapPins=[];
+  p.character.mapPins.push({id:"pin_"+Math.random().toString(16).slice(2,8), x:xPct, y:yPct, label});
+  saveDB(DB); render();
+  toast("📍 Marcador adicionado!",true);
+});
+
+/* ========================= DICE EVENTS ========================= */
+document.addEventListener("click",(e)=>{
+  const dice=e.target.closest(".diceBtn");
+  if(!dice) return;
+  const sides=Number(dice.dataset.dice);
+  const p=getSessionPlayer();
+  if(!p) return;
+  const qty=Math.max(1,Math.min(20,Number(document.getElementById("diceQty")?.value||1)));
+  const bonus=Number(document.getElementById("diceBonus")?.value||0);
+
+  dice.classList.add("rolling");
+  setTimeout(()=>dice.classList.remove("rolling"),400);
+
+  const rolls=[];
+  for(let i=0;i<qty;i++) rolls.push(Math.floor(Math.random()*sides)+1);
+  const total=rolls.reduce((a,b)=>a+b,0)+bonus;
+  const label=`${qty}d${sides}${bonus!==0?(bonus>0?"+"+bonus:bonus):""}`;
+
+  document.getElementById("diceResult").textContent=total;
+  document.getElementById("diceResult").style.color=total===qty*sides?"var(--gold)":total===qty?"var(--bad)":"var(--txt)";
+
+  if(!p.character.rollLog) p.character.rollLog=[];
+  p.character.rollLog.unshift({label,rolls,bonus,total,max:qty*sides,ts:Date.now()});
+  if(p.character.rollLog.length>50) p.character.rollLog=p.character.rollLog.slice(0,50);
+  saveDB(DB);
+
+  // update log display
+  const logEl=document.getElementById("rollLog");
+  if(logEl){
+    logEl.innerHTML=p.character.rollLog.slice(0,20).map(r=>`<div class="rollEntry"><span>${escapeHTML(r.label)}</span><span class="rollVal" style="color:${r.total>=r.max?'var(--gold)':r.total<=1?'var(--bad)':'inherit'}">${r.total}</span></div>`).join("");
+  }
+
+  if(!_muteSound) playDiceSound(sides, total, qty);
+});
+
+function playDiceSound(sides, total, qty){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    const isCrit=total>=sides*qty; const isFumble=total===qty;
+    osc.frequency.setValueAtTime(isCrit?800:isFumble?120:300, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(isCrit?1200:isFumble?80:150, ctx.currentTime+0.15);
+    osc.type=isCrit?"sine":"triangle";
+    gain.gain.setValueAtTime(0.3,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.3);
+  }catch(_){}
+}
+
+/* ========================= MODALS ========================= */
+function openConditionModal(playerId){
+  const html=`
+    <div class="overlay" id="ovCond">
+      <div class="modal" style="max-width:480px">
+        <div class="modalHeader"><b style="font-family:'Cinzel',serif">+ Efeito / Condição</b><button class="danger" id="closeCond">✕</button></div>
+        <div class="divider"></div>
+        <label>Nome do efeito</label><input id="condName" placeholder="ex: Veneno, Bênção, Lentidão..." style="width:100%;margin-bottom:10px">
+        <label>Tipo</label>
+        <select id="condType" style="width:100%;margin-bottom:10px">
+          <option value="veneno">🟢 Veneno</option>
+          <option value="sangramento">🔴 Sangramento</option>
+          <option value="medo">🟡 Medo</option>
+          <option value="atordoado">⚪ Atordoado</option>
+          <option value="paralisado">🔵 Paralisado</option>
+          <option value="amaldicoado">🟣 Amaldiçoado</option>
+          <option value="buff">✨ Buff</option>
+        </select>
+        <label>Descrição (opcional)</label><input id="condDesc" placeholder="O que acontece..." style="width:100%;margin-bottom:10px">
+        <label>Duração (minutos, 0=permanente)</label><input id="condDur" type="number" value="0" min="0" style="width:100%;margin-bottom:14px">
+        <div class="row" style="justify-content:flex-end"><button id="condSave">Adicionar</button></div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  $("closeCond").onclick=()=>$("ovCond")?.remove();
+  $("ovCond").onclick=(e)=>{ if(e.target.id==="ovCond") $("ovCond")?.remove(); };
+  $("condSave").onclick=()=>{
+    const name=String($("condName").value||"").trim(); if(!name) return;
+    const type=$("condType").value;
+    const desc=String($("condDesc").value||"").trim();
+    const dur=Number($("condDur").value||0);
+    const id="eff_"+Math.random().toString(16).slice(2,8);
+    const expires=dur>0 ? Date.now()+dur*60*1000 : null;
+    const p=getPlayer(playerId); if(!p) return;
+    if(type==="buff"){
+      if(!p.character.buffs) p.character.buffs=[];
+      p.character.buffs.push({id,name,desc,expires});
+    } else {
+      if(!p.character.conditions) p.character.conditions=[];
+      p.character.conditions.push({id,name,type,desc,expires});
+    }
+    saveDB(DB); $("ovCond")?.remove(); render();
+    toast(`Efeito "${name}" adicionado!`,true);
+  };
+}
+
+function openItemModal(playerId){
+  const html=`
+    <div class="overlay" id="ovItem">
+      <div class="modal" style="max-width:480px">
+        <div class="modalHeader"><b style="font-family:'Cinzel',serif">+ Novo Item</b><button class="danger" id="closeItem">✕</button></div>
+        <div class="divider"></div>
+        <label>Nome</label><input id="itemName" placeholder="ex: Espada Rúnica, Poção..." style="width:100%;margin-bottom:10px">
+        <div class="row" style="gap:10px">
+          <div style="flex:1"><label>Raridade</label><select id="itemRarity" style="width:100%"><option value="comum">Comum</option><option value="incomum">Incomum</option><option value="raro">Raro</option><option value="epico">Épico</option><option value="lendario">Lendário</option></select></div>
+          <div style="flex:1"><label>Qtd</label><input id="itemQty" type="number" value="1" min="1" style="width:100%"></div>
+          <div style="flex:1"><label>Peso (kg)</label><input id="itemWeight" type="number" value="0.5" step="0.1" style="width:100%"></div>
+        </div>
+        <label style="margin-top:10px">Bônus de Defesa (ao equipar)</label><input id="itemDefesa" type="number" value="0" min="0" style="width:100%;margin-bottom:14px">
+        <div class="row" style="justify-content:flex-end"><button id="itemSave">Adicionar</button></div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  $("closeItem").onclick=()=>$("ovItem")?.remove();
+  $("ovItem").onclick=(e)=>{ if(e.target.id==="ovItem") $("ovItem")?.remove(); };
+  $("itemSave").onclick=()=>{
+    const name=String($("itemName").value||"").trim(); if(!name) return;
+    const p=getPlayer(playerId); if(!p) return;
+    p.inventory.unshift({
+      id:"it_"+Math.random().toString(16).slice(2,8), name,
+      rarity:$("itemRarity").value,
+      qty:Math.max(1,Number($("itemQty").value||1)),
+      weight:Math.max(0,Number($("itemWeight").value||0.5)),
+      defesa:Number($("itemDefesa").value||0), ts:Date.now()
+    });
+    p.log.unshift({ts:Date.now(),text:`Item adicionado: ${name}`});
+    saveDB(DB); $("ovItem")?.remove(); render(); toast("Item adicionado!",true);
+  };
+}
+
+function openEquipModal(playerId, item){
+  const slotsOpts=Object.entries(SLOT_NAMES).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+  const html=`
+    <div class="overlay" id="ovEquip">
+      <div class="modal" style="max-width:400px">
+        <div class="modalHeader"><b style="font-family:'Cinzel',serif">Equipar: ${escapeHTML(item.name)}</b><button class="danger" id="closeEquip">✕</button></div>
+        <div class="divider"></div>
+        <label>Slot</label><select id="equipSlot" style="width:100%;margin-bottom:14px">${slotsOpts}</select>
+        <div class="row" style="justify-content:flex-end"><button id="equipSave">Equipar</button></div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  $("closeEquip").onclick=()=>$("ovEquip")?.remove();
+  $("equipSave").onclick=()=>{
+    const slot=$("equipSlot").value;
+    const p=getPlayer(playerId); if(!p) return;
+    if(!p.character.equipados) p.character.equipados={};
+    p.character.equipados[slot]={...item};
+    saveDB(DB); $("ovEquip")?.remove(); render(); toast(`${item.name} equipado!`,true);
+  };
+}
+
+function openDiaryModal(playerId){
+  const html=`
+    <div class="overlay" id="ovDiary">
+      <div class="modal" style="max-width:560px">
+        <div class="modalHeader"><b style="font-family:'Cinzel',serif">📖 Nova Entrada</b><button class="danger" id="closeDiary">✕</button></div>
+        <div class="divider"></div>
+        <label>Registro da sessão</label>
+        <textarea id="diaryText" style="width:100%;min-height:140px;margin-bottom:14px" placeholder="O que aconteceu hoje? Escreva livremente..."></textarea>
+        <div class="row" style="justify-content:flex-end"><button id="diarySave">Salvar entrada</button></div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  $("closeDiary").onclick=()=>$("ovDiary")?.remove();
+  $("ovDiary").onclick=(e)=>{ if(e.target.id==="ovDiary") $("ovDiary")?.remove(); };
+  $("diarySave").onclick=()=>{
+    const text=String($("diaryText").value||"").trim(); if(!text) return;
+    const p=getPlayer(playerId); if(!p) return;
+    if(!p.character.diary) p.character.diary=[];
+    p.character.diary.unshift({id:"de_"+Math.random().toString(16).slice(2,8),text,ts:Date.now()});
+    saveDB(DB); $("ovDiary")?.remove(); render(); toast("Entrada salva!",true);
+  };
+}
+
+function openNpcModal(playerId){
+  const html=`
+    <div class="overlay" id="ovNpc">
+      <div class="modal" style="max-width:480px">
+        <div class="modalHeader"><b style="font-family:'Cinzel',serif">👤 Novo NPC</b><button class="danger" id="closeNpc">✕</button></div>
+        <div class="divider"></div>
+        <label>Nome</label><input id="npcName" placeholder="ex: Aldric, a Bruxa, Capitão..." style="width:100%;margin-bottom:10px">
+        <label>Papel / Profissão</label><input id="npcRole" placeholder="ex: Mercador, Inimigo, Guia..." style="width:100%;margin-bottom:10px">
+        <label>Relação inicial (0-100)</label><input id="npcRel" type="number" value="50" min="0" max="100" style="width:100%;margin-bottom:10px">
+        <label>Notas</label><textarea id="npcNotes" style="width:100%;min-height:80px;margin-bottom:14px" placeholder="Missões, segredos, observações..."></textarea>
+        <div class="row" style="justify-content:flex-end"><button id="npcSave">Adicionar NPC</button></div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML("beforeend",html);
+  $("closeNpc").onclick=()=>$("ovNpc")?.remove();
+  $("ovNpc").onclick=(e)=>{ if(e.target.id==="ovNpc") $("ovNpc")?.remove(); };
+  $("npcSave").onclick=()=>{
+    const name=String($("npcName").value||"").trim(); if(!name) return;
+    const p=getPlayer(playerId); if(!p) return;
+    if(!p.character.npcs) p.character.npcs=[];
+    p.character.npcs.push({
+      id:"npc_"+Math.random().toString(16).slice(2,8), name,
+      role:String($("npcRole").value||"").trim(),
+      rel:clamp(Number($("npcRel").value||50),0,100),
+      notes:String($("npcNotes").value||"").trim()
+    });
+    saveDB(DB); $("ovNpc")?.remove(); render(); toast("NPC adicionado!",true);
+  };
+}
+
+/* ========================= SKILL TREE ========================= */
+function ensureSkillTree(player){
+  if(!player.character) player.character={};
+  if(!player.character.skillTree||typeof player.character.skillTree!=="object") player.character.skillTree={nodes:[],links:[]};
+  if(!Array.isArray(player.character.skillTree.nodes)) player.character.skillTree.nodes=[];
+  if(!Array.isArray(player.character.skillTree.links)) player.character.skillTree.links=[];
+  return player.character.skillTree;
+}
+
+function injectSkillTreeStyles(){
+  if(document.getElementById("stStyles")) return;
+  const st=document.createElement("style");
+  st.id="stStyles";
+  st.textContent=`
+    .stWrap{display:grid;grid-template-columns:1fr 320px;gap:12px}
+    @media(max-width:900px){.stWrap{grid-template-columns:1fr}}
+    .stToolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .stBoard{position:relative;height:64vh;min-height:420px;border:1px solid var(--line);border-radius:18px;background:#0c131c;overflow:hidden}
+    .stSvg{position:absolute;inset:0;pointer-events:none}
+    .stNode{position:absolute;min-width:170px;max-width:220px;border:1px solid var(--line);border-radius:16px;padding:10px;background:rgba(18,26,36,.96);backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:grab;user-select:none}
+    .stNode:active{cursor:grabbing}
+    .stNode b{display:block;font-size:13px}
+    .stNode .mini{font-size:12px;color:var(--muted);line-height:1.2}
+    .stNode.sel{outline:2px solid rgba(43,108,255,.65);box-shadow:0 0 0 6px rgba(43,108,255,.12)}
+    .stPill{display:inline-flex;gap:6px;align-items:center;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:#0b121a;color:var(--muted);font-size:12px}
+    .stSide .card{background:#0c131c}
+    .stSide input,.stSide textarea,.stSide select{width:100%}
+  `;
+  document.head.appendChild(st);
+}
+
+function openSkillTreeModal(playerId){
+  injectSkillTreeStyles();
+  DB=loadDB();
+  const p=getPlayer(playerId); if(!p) return;
+  const tree=ensureSkillTree(p);
+  const state={mode:"move",selectedId:null,linkFrom:null};
+
+  const html=`
+    <div class="overlay" id="ovSkillTree">
+      <div class="modal">
+        <div class="modalHeader">
+          <div>
+            <div style="font-size:16px;font-weight:900;font-family:'Cinzel',serif">🌿 Árvore de Skills — ${escapeHTML(p.character.charName||p.username)}</div>
+            <div class="muted mini">Modo <b id="stModeLabel">MOVER</b> • arraste nós, crie pré-requisitos.</div>
+          </div>
+          <div class="row">
+            <button class="secondary" id="stExport">Exportar JSON</button>
+            <button class="secondary" id="stImport">Importar JSON</button>
+            <button class="danger" id="stClose">Fechar</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="stToolbar">
+          <button id="stAdd">+ Nova skill</button>
+          <button class="secondary" id="stMode">Alternar: mover/link</button>
+          <span class="pill">Nós: <b id="stCount">0</b> • Links: <b id="stLinkCount">0</b></span>
+          <span class="muted mini" id="stHint"></span>
+        </div>
+        <div class="divider"></div>
+        <div class="stWrap">
+          <div class="stBoard" id="stBoard">
+            <svg class="stSvg" id="stSvg"></svg>
+            <div id="stNodes"></div>
+          </div>
+          <div class="stSide" id="stSide">
+            <div class="card">
+              <b style="font-family:'Cinzel',serif">Editor</b><div class="divider"></div>
+              <div class="muted mini" id="stEmpty">Clique numa skill para editar.</div>
+              <div id="stForm" class="hidden">
+                <label class="mini">Nome</label><input id="stName" placeholder="Ex: Corte do Véu">
+                <div class="row" style="margin-top:10px">
+                  <div style="flex:1;min-width:100px"><label class="mini">Nível</label><input id="stLevel" type="number" min="1" value="1"></div>
+                  <div style="flex:1;min-width:100px"><label class="mini">Mana</label><input id="stMana" type="number" min="0" value="5"></div>
+                </div>
+                <div class="row" style="margin-top:10px">
+                  <div style="flex:1"><label class="mini">Tipo</label><select id="stType"><option value="ativa">Ativa</option><option value="passiva">Passiva</option><option value="reacao">Reação</option></select></div>
+                  <div style="flex:1"><label class="mini">Status</label><select id="stState"><option value="bloqueada">Bloqueada</option><option value="liberada">Liberada</option><option value="comprada">Comprada</option></select></div>
+                </div>
+                <div style="margin-top:10px"><label class="mini">Descrição</label><textarea id="stDesc" placeholder="Efeito curto e claro..."></textarea></div>
+                <div class="row" style="margin-top:10px">
+                  <button class="secondary" id="stDel">Remover</button>
+                  <button id="stSave">Salvar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML("beforeend",html);
+
+  const close=()=>{ document.getElementById("ovSkillTree")?.remove(); saveDB(DB); };
+  $("stClose").onclick=close;
+  $("ovSkillTree").addEventListener("click",(e)=>{ if(e.target.id==="ovSkillTree") close(); });
+
+  const board=$("stBoard"), svg=$("stSvg"), nodesWrap=$("stNodes");
+
+  function persist(){ const p2=getPlayer(playerId); if(!p2) return; ensureSkillTree(p2).nodes=tree.nodes; ensureSkillTree(p2).links=tree.links; saveDB(DB); }
+  function updateCounters(){ $("stCount").textContent=String(tree.nodes.length); $("stLinkCount").textContent=String(tree.links.length); }
+  function setMode(next){ state.mode=next; $("stModeLabel").textContent=next==="move"?"MOVER":"LINK"; $("stHint").textContent=next==="move"?"Arraste as skills para organizar.":"Clique na A e depois na B para criar pré-requisito."; state.linkFrom=null; }
+
+  function nodeCenter(n){ const el=nodesWrap.querySelector(`[data-node="${n.id}"]`); const w=el?el.offsetWidth:180; const h=el?el.offsetHeight:90; return{x:n.x+w/2,y:n.y+h/2}; }
+  function drawLinks(){ const bb=board.getBoundingClientRect(); svg.setAttribute("viewBox",`0 0 ${bb.width} ${bb.height}`); svg.setAttribute("width",bb.width); svg.setAttribute("height",bb.height); const lines=[]; for(const lk of tree.links){ const a=tree.nodes.find(x=>x.id===lk.from); const b=tree.nodes.find(x=>x.id===lk.to); if(!a||!b) continue; const p1=nodeCenter(a); const p2=nodeCenter(b); lines.push(`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(43,108,255,.75)" stroke-width="3"/>`); lines.push(`<circle cx="${p2.x}" cy="${p2.y}" r="5" fill="rgba(43,108,255,.85)"/>`); } svg.innerHTML=lines.join(""); }
+  function renderNodes(){ nodesWrap.innerHTML=tree.nodes.map(n=>{ const sel=n.id===state.selectedId?"sel":""; return `<div class="stNode ${sel}" data-node="${n.id}" style="left:${n.x}px;top:${n.y}px"><b>${escapeHTML(n.name||"Nova Skill")}</b><div class="mini">${escapeHTML(n.desc||"")}</div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><span class="stPill">Lvl ${n.level||1}</span><span class="stPill">${n.mana||0} Mana</span><span class="stPill">${escapeHTML(n.type||"ativa")}</span><span class="stPill">${escapeHTML(n.state||"bloqueada")}</span></div></div>`; }).join(""); updateCounters(); drawLinks(); }
+
+  function openEditor(n){ state.selectedId=n?.id||null; const empty=$("stEmpty"); const form=$("stForm"); if(!n){empty.classList.remove("hidden");form.classList.add("hidden");renderNodes();return;} empty.classList.add("hidden");form.classList.remove("hidden"); $("stName").value=n.name||""; $("stLevel").value=n.level||1; $("stMana").value=n.mana||0; $("stType").value=n.type||"ativa"; $("stState").value=n.state||"bloqueada"; $("stDesc").value=n.desc||""; renderNodes(); }
+
+  $("stAdd").onclick=()=>{ const bb=board.getBoundingClientRect(); const node={id:"sk_"+Math.random().toString(16).slice(2,8),x:Math.max(12,Math.round(bb.width*0.12)),y:Math.max(12,Math.round(bb.height*0.12)),name:"Nova Skill",desc:"Descreva o efeito...",level:1,mana:5,type:"ativa",state:"bloqueada"}; tree.nodes.push(node); persist(); openEditor(node); };
+  $("stMode").onclick=()=>setMode(state.mode==="move"?"link":"move");
+  $("stExport").onclick=()=>{ const json=JSON.stringify(tree,null,2); navigator.clipboard?.writeText(json).then(()=>toast("JSON copiado!",true)).catch(()=>prompt("Copie o JSON:",json)); };
+  $("stImport").onclick=()=>{ const raw=prompt("Cole o JSON da árvore:"); if(!raw) return; try{const obj=JSON.parse(raw); if(!Array.isArray(obj.nodes)||!Array.isArray(obj.links)) throw new Error(); tree.nodes=obj.nodes; tree.links=obj.links; persist(); openEditor(null); renderNodes(); toast("Árvore importada!",true);}catch{toast("JSON inválido.",false);} };
+  $("stSave").onclick=()=>{ const n=tree.nodes.find(x=>x.id===state.selectedId); if(!n) return; n.name=String($("stName").value||"").trim()||"Skill"; n.level=Math.max(1,Number($("stLevel").value||1)); n.mana=Math.max(0,Number($("stMana").value||0)); n.type=$("stType").value; n.state=$("stState").value; n.desc=String($("stDesc").value||"").trim(); persist(); renderNodes(); toast("Skill salva.",true); };
+  $("stDel").onclick=()=>{ const id=state.selectedId; if(!id) return; if(!confirm("Remover essa skill?")) return; tree.nodes=tree.nodes.filter(x=>x.id!==id); tree.links=tree.links.filter(l=>l.from!==id&&l.to!==id); state.selectedId=null; state.linkFrom=null; persist(); openEditor(null); renderNodes(); toast("Skill removida.",true); };
+
+  let drag=null;
+  nodesWrap.addEventListener("mousedown",(e)=>{ const el=e.target.closest&&e.target.closest(".stNode"); if(!el) return; const id=el.dataset.node; const n=tree.nodes.find(x=>x.id===id); if(!n) return; if(state.mode==="link"){ if(!state.linkFrom){state.linkFrom=id;state.selectedId=id;renderNodes();toast("Escolha a skill de DESTINO.",true);}else{const from=state.linkFrom;const to=id;if(from===to){state.linkFrom=null;toast("Cancelado.",false);return;}const exists=tree.links.some(l=>l.from===from&&l.to===to);if(!exists)tree.links.push({from,to});state.linkFrom=null;persist();renderNodes();toast("Pré-requisito criado.",true);} openEditor(n); return; } state.selectedId=id; openEditor(n); const rect=board.getBoundingClientRect(); drag={id,startX:e.clientX,startY:e.clientY,nodeX:n.x,nodeY:n.y,rectW:rect.width,rectH:rect.height}; e.preventDefault(); });
+  window.addEventListener("mousemove",(e)=>{ if(!drag||state.mode!=="move") return; const n=tree.nodes.find(x=>x.id===drag.id); if(!n) return; n.x=clamp(drag.nodeX+(e.clientX-drag.startX),8,drag.rectW-240); n.y=clamp(drag.nodeY+(e.clientY-drag.startY),8,drag.rectH-120); renderNodes(); });
+  window.addEventListener("mouseup",()=>{ if(!drag) return; persist(); drag=null; });
+
+  setMode("move"); openEditor(null); renderNodes();
+}
+
+/* ========================= RUNE BACKGROUND ========================= */
+(function initRuneBg(){
+  const wrap=document.getElementById("runeBg");
+  if(!wrap) return;
+  const runes=["ᚠ","ᚢ","ᚦ","ᚨ","ᚱ","ᚲ","ᚷ","ᚹ","ᚺ","ᚾ","ᛁ","ᛃ","ᛇ","ᛈ","ᛉ","ᛊ","ᛏ","ᛒ","ᛖ","ᛗ","ᛚ","ᛜ","ᛞ","ᛟ"];
+  for(let i=0;i<18;i++){
+    const span=document.createElement("span");
+    span.textContent=runes[Math.floor(Math.random()*runes.length)];
+    span.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${8+Math.random()*16}s;animation-delay:${Math.random()*-20}s;font-size:${28+Math.random()*36}px`;
+    wrap.appendChild(span);
+  }
+})();
+
+/* ========================= INIT ========================= */
+render();
+
+try{
+  window.openSkillTreeModal=openSkillTreeModal;
+  const _btn=document.getElementById("btnOpenTree");
+  if(_btn){ _btn.addEventListener("click",(e)=>{ e.preventDefault(); const p=getSessionPlayer(); if(p?.id) openSkillTreeModal(p.id); }); }
+}catch(_){}
+</script>
+</body>
+</html>
+
